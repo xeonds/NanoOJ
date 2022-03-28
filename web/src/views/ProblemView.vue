@@ -1,7 +1,7 @@
 <template></template>
 
 <script>
-import { defineComponent } from "@vue/composition-api";
+import ProblemList from "@/components/ProblemList.vue";
 
 export default {
   name: "ProblemView",
