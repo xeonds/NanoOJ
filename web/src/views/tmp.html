@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html lang="cn" style="position: fixed; width: 100%; overflow: hidden; ">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=1200">
+    <title>首页 - X-OJ</title>
+    <link rel="stylesheet" href="template/syzoj/css/style.css">
+    <link rel="stylesheet" href="template/syzoj/css/tomorrow.css">
+    <link rel="stylesheet" href="template/syzoj/css/semantic.min.css">
+    <link rel="stylesheet" href="template/syzoj/css/katex.min.css">
+    <script defer src="template/syzoj/css/katex.js"></script>
+    <script>
+        var katex_config = {
+            delimiters: [{
+                left: "$$",
+                right: "$$",
+                display: true
+            }, {
+                left: "$",
+                right: "$",
+                display: false
+            }]
+        };
+    </script>
+    <script defer src="template/syzoj/css/auto-render.min.js" onload="renderMathInElement(document.body, katex_config)"></script>
+    <link href="template/syzoj/css/morris.min.css" rel="stylesheet">
+    <link href="template/syzoj/css/FiraMono.css" rel="stylesheet">
+    <link href="template/syzoj/css/latin.css" rel="stylesheet">
+    <link href="template/syzoj/css/latin-ext.css" rel="stylesheet">
+    <link href="template/syzoj/css/Exo.css" rel="stylesheet">
+    <script src="./template/syzoj/jquery.min.js"></script>
+</head>
+
+<body style="position: relative; margin-top: 49px; height: calc(100% - 49px); overflow-y: overlay; ">
+    <div class="ui fixed borderless menu" style="position: fixed; height: 49px; z-index:99999">
+        <div class="ui container">
+
+        </div>
+    </div>
+    <div style="margin-top: 28px; ">
+        <div id="main" class="ui main container">
+            <div class="padding">
+                <div class="ui three column grid">
+                    <div class="eleven wide column">
+                        <h4 class="ui top attached block header"><i class="ui info icon"></i>公告</h4>
+                        <div class="ui bottom attached segment">
+                            <table class="ui very basic table">
+                                <thead>
+                                    <tr>
+                                        <th>标题</th>
+                                        <th>时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <a href="viewnews.php?id=1004"></a>
+                                        </td>
+                                        <td>2022-03-16 19:48:43</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h4 class="ui top attached block header"><i class="ui signal icon"></i>排名</h4>
+                        <div class="ui bottom attached segment">
+                            <table class="ui very basic center aligned table" style="table-layout: fixed; ">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px; ">#</th>
+                                        <th style="width: 170px; ">用户名（学号）</th>
+                                        <th>个性签名</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td>1</td>
+                                        <td><a href="userinfo.php?user=admin">admin</a></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="right floated five wide column">
+                        <h4 class="ui top attached block header"><i class="ui rss icon"></i> 最近更新 </h4>
+                        <div class="ui bottom attached segment">
+                            <table class="ui very basic center aligned table">
+                                <thead>
+                                    <tr>
+                                        <th width="60%">标题</th>
+                                        <th width="40%">时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><a href="problem.php?id=1006">#10004. 「一本通 1.1 例 5」智力大冲浪</a></td>
+                                        <td>2022-04-08</td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="problem.php?id=1005">#10003. 「一本通 1.1 例 4」加工生产调度</a></td>
+                                        <td>2022-04-08</td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="problem.php?id=1004">Update</a></td>
+                                        <td>2022-04-08</td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="problem.php?id=1003">Insert</a></td>
+                                        <td>2022-04-08</td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="problem.php?id=1002">Where</a></td>
+                                        <td>2022-04-08</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h4 class="ui top attached block header"><i class="ui search icon"></i>查找</h4>
+                        <div class="ui bottom attached segment">
+                            <form action="problem.php" method="get">
+                                <div class="ui search" style="width: 100%; ">
+                                    <div class="ui left icon input" style="width: 100%; ">
+                                        <input class="prompt" style="width: 100%; " type="text" placeholder="题目编号 …" name="id">
+                                        <i class="search icon"></i>
+                                    </div>
+                                    <div class="results" style="width: 100%; "></div>
+                                </div>
+                            </form>
+                        </div>
+                        <h4 class="ui top attached block header"><i class="ui calendar icon"></i>近期比赛</h4>
+                        <div class="ui bottom attached center aligned segment">
+                            <table class="ui very basic center aligned table">
+                                <thead>
+                                    <tr>
+                                        <th>作业比赛名称</th>
+                                        <th>开始时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><a href="contest.php?cid=1000">Python习题集</a></td>
+                                        <td>2022-03-16 19:00:00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="template/syzoj/css/semantic.min.js"></script>
+    <script src="template/syzoj/css/Chart.min.js"></script>
+    <footer>
+        <style>
+            .footer {
+                line-height: 1.4285em;
+                font-family: "Lato", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "WenQuanYi Micro Hei", "Droid Sans Fallback", "sans-serif";
+                box-sizing: inherit;
+                padding: 0 !important;
+                border: none !important;
+                color: #888;
+                font-size: 1rem;
+                margin: 35px 0 14px !important;
+                position: relative;
+                width: 100%;
+                bottom: 0;
+                background: none transparent;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        </style>
+        <div class="footer">
+            <div class="ui center aligned container">
+                <div>&copy;2022 X-OJ | powered by <a style="color: inherit !important;" class=" " title="GitHub" target="_blank" rel="noreferrer noopener" href="https://github.com/zhblue/hustoj">HUSTOJ</a>, Theme by <a style="color: inherit !important;" href="https://github.com/syzoj">SYZOJ</a></div>
+                <!--   <div> Running on <a href='https://debian.org' target='_blank'>Debian11</a> / <a href='https://www.loongson.cn' target='_blank'>Loongson 3A3000</a> </div> -->
+            </div>
+        </div>
+        </div>
+
+    </footer>
+</body>
+
+</html>
+<!--not cached-->

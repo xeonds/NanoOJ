@@ -1,10 +1,17 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/problem">Problem</router-link> |
-    <router-link to="/rank">Rank</router-link>
-  </nav>
-  <router-view />
+  <div>
+    <nav>
+      <router-link to="/">主页</router-link> |
+      <router-link to="/problemset">问题</router-link> |
+      <router-link to="/category">来源/分类</router-link> |
+      <router-link to="/contest">竞赛/作业</router-link> |
+      <router-link to="/status">状态</router-link> |
+      <router-link to="/ranklist">排名</router-link> |
+      <router-link to="/about">常见问答</router-link> |
+      <router-link to="/user">Username</router-link>
+    </nav>
+    <router-view />
+  </div>
 </template>
 
 <style>
