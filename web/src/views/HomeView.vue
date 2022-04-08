@@ -2,6 +2,9 @@
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png" />
     <HelloWorld msg="Welcome to NanoOJ" />
+    <NotificationBoard></NotificationBoard>
+    <ProblemList></ProblemList>
+    <RankList></RankList>
   </div>
 </template>
 

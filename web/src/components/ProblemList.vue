@@ -1,6 +1,5 @@
 <template>
-PBMList
-  <table>
+  <table>PBMList
     <th>
       <td></td>
       <td></td>

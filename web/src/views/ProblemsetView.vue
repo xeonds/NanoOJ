@@ -1,5 +1,7 @@
 <template>
-  <div></div>
+  <div>
+    <ProblemList></ProblemList>
+  </div>
 </template>
 
 <script>

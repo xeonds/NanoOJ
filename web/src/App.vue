@@ -8,7 +8,7 @@
       <router-link to="/status">状态</router-link> |
       <router-link to="/ranklist">排名</router-link> |
       <router-link to="/about">常见问答</router-link> |
-      <router-link to="/user">Username</router-link>
+      <router-link to="/account">Username</router-link>
     </nav>
     <router-view />
   </div>
