@@ -43,6 +43,10 @@ class dbQueueProc:
 def code_judge(code, lang):
     # return value: 0/1=wait, 4=accept, ...
     lang=['C','C++','Java','Python','PHP','C#','JavaScript','Go','SQL'][lang]
+    if lang=='Python':
+        for row in dataset:
+            if not row[0]==eval(code,row[1]):
+                return 2
     return 4
 
 queue = dbQueueProc()
