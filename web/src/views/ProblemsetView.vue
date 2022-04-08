@@ -1,4 +1,6 @@
-<template></template>
+<template>
+  <div></div>
+</template>
 
 <script>
 import ProblemList from "@/components/ProblemList.vue";

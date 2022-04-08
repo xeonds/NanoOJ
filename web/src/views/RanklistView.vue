@@ -1,10 +1,10 @@
-<template></template>
+<template>
+  <div>rankList</div>
+</template>
 
 <script>
-import { defineComponent } from "@vue/composition-api";
-
 export default {
-  name: "RankView",
+  name: "RanklistView",
   components: {},
 };
 </script>
