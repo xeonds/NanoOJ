@@ -1,27 +1,37 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to NanoOJ" />
-    <NotificationBoard></NotificationBoard>
-    <ProblemList></ProblemList>
-    <RankList></RankList>
+    <el-space wrap size="large" style="margin:0 0;">
+        <NotificationBoard style="width:48vw;"></NotificationBoard>
+        <RankList style="width:20vw;"></RankList>
+        <ProblemList style="width:48vw;"></ProblemList>
+        <SearchBox style="width:20vw;"></SearchBox>
+        <RecentContest style="width:20vw;"></RecentContest>
+    </el-space>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
 import NotificationBoard from "@/components/NotificationBoard.vue";
 import ProblemList from "@/components/ProblemList.vue";
 import RankList from "@/components/RankList.vue";
+import SearchBox from "@/components/SearchBox.vue";
+import RecentContest from "@/components/RecentContest.vue";
 
 export default {
   name: "HomeView",
   components: {
-    HelloWorld,
     NotificationBoard,
     ProblemList,
     RankList,
+    SearchBox,
+    RecentContest,
   },
 };
 </script>
+
+<style scoped>
+.home {
+  width: 100%;
+  max-width: 1024px;
+}
+</style>

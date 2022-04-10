@@ -2,7 +2,7 @@
   <el-card class="box-card">
     <template #header>
       <div class="card-header">
-        <span>排名</span>
+        <span>近期比赛</span>
       </div>
     </template>
   </el-card>
@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: "RankList",
+  name: "RecentContest",
   props: {},
 };
 </script>

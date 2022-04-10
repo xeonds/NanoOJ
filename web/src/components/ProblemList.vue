@@ -1,13 +1,11 @@
 <template>
-  <table>PBMList
-    <th>
-      <td></td>
-      <td></td>
-    </th>
-    <tbody>
-      
-    </tbody>
-  </table>
+  <el-card class="box-card">
+    <template #header>
+      <div class="card-header">
+        <span>最新问题</span>
+      </div>
+    </template>
+  </el-card>
 </template>
 
 <script>
