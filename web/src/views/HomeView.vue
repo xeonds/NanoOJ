@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <el-space wrap size="large" style="margin:0 0;">
+    <el-space wrap size="large" style="margin:16px;">
         <NotificationBoard style="width:48vw;"></NotificationBoard>
         <RankList style="width:20vw;"></RankList>
         <ProblemList style="width:48vw;"></ProblemList>
