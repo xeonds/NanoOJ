@@ -51,7 +51,7 @@ const routes = [{
 ]
 
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHashHistory('/pages/nano-oj/'),
     routes
 })
 

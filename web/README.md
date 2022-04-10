@@ -22,3 +22,9 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## FAQ
+
+### Change dist dir
+
+change base to target in `src/router/index.js`. Then build
