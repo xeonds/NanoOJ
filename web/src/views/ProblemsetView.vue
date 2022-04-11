@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <ProblemList></ProblemList>
+  <div class="problem">
+    <ProblemList style="width: 80vw"></ProblemList>
   </div>
 </template>
 

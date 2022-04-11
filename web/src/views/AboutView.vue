@@ -29,9 +29,16 @@
       <h2 class="ui header">个人资料<br /></h2>
       <p>
         本站不提供头像存储服务，而是使用 Gravatar 进行头像显示。请使用邮箱注册
-        <a href="https://zh-cn.wordpress.com/">WordPress.com</a>，登录
-        <a href="https://cn.gravatar.com/">Gravatar</a> 并上传头像。同样使用
-        Gravatar 的 OJ 有 Vijos、COGS、UOJ 等。
+        <el-link
+          type="primary"
+          target="_blank"
+          href="https://zh-cn.wordpress.com/"
+          >WordPress.com</el-link
+        >，登录
+        <el-link type="primary" target="_blank" href="https://cn.gravatar.com/"
+          >Gravatar</el-link
+        >
+        并上传头像。同样使用 Gravatar 的 OJ 有 Vijos、COGS、UOJ 等。
       </p>
       <h2 class="ui header">返回结果说明<br /></h2>
       <div class="ques-view">
@@ -138,7 +145,7 @@ export default {
 </script>
 
 <style scoped>
-.about{
+.about {
   width: 100%;
   max-width: 768px;
 }
