@@ -1,11 +1,7 @@
 <template>
-  <el-card class="box-card">
-    <template #header>
-      <div class="card-header">
-        <span>查找</span>
-      </div>
-    </template>
-  </el-card>
+  <div class="card-header">
+    <el-input placeholder="请输入搜索内容" prefix-icon="el-icon-search"></el-input>
+  </div>
 </template>
 
 <script>

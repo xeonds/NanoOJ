@@ -1,12 +1,31 @@
 <template>
   <div class="home">
-    <el-space wrap size="large" style="margin:16px;">
-        <NotificationBoard style="width:48vw;"></NotificationBoard>
-        <RankList style="width:20vw;"></RankList>
-        <ProblemList style="width:48vw;"></ProblemList>
-        <SearchBox style="width:20vw;"></SearchBox>
-        <RecentContest style="width:20vw;"></RecentContest>
-    </el-space>
+    <el-row>
+      <el-col :span="16">
+        <el-card style="width: 100%">
+          <h3>通知</h3>
+          <NotificationBoard></NotificationBoard>
+        </el-card>
+        <el-card style="width: 100%">
+          <h3>最新问题</h3>
+          <ProblemList></ProblemList>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card style="width: 100%">
+          <h3>排行榜</h3>
+          <RankList></RankList>
+        </el-card>
+        <el-card style="width: 100%">
+          <h3>搜索</h3>
+          <SearchBox></SearchBox>
+        </el-card>
+        <el-card style="width: 100%">
+          <h3>近期测试</h3>
+          <ContestList></ContestList>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -15,7 +34,7 @@ import NotificationBoard from "@/components/NotificationBoard.vue";
 import ProblemList from "@/components/ProblemList.vue";
 import RankList from "@/components/RankList.vue";
 import SearchBox from "@/components/SearchBox.vue";
-import RecentContest from "@/components/RecentContest.vue";
+import ContestList from "@/components/ContestList.vue";
 
 export default {
   name: "HomeView",
@@ -24,7 +43,7 @@ export default {
     ProblemList,
     RankList,
     SearchBox,
-    RecentContest,
+    ContestList,
   },
 };
 </script>
