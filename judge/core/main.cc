@@ -9,23 +9,29 @@
 using namespace std;
 
 class SourceCodeJudgement {
-public:
-    static const int time_limit = 5;
-    static bool judge(string source_code, string param, string expect_output) {
-        // Compile the source code
-        string temp_file = "temp.cpp";
-        ofstream temp(temp_file);
-        temp << source_code;
-        temp.close();
-        string compile_command = "g++ -o program " + temp_file;
+private:
+    vector<string> source_files;
+    vector<string> input_files;
+    vector<string> expect_files;
+    int time_limit;
+
+    bool judge(string source_file, string input_file, string expect_file) {
+        string compile_command = "g++ -o program " + source_file;
+        string expect_output;
+        ifstream Expect_file(expect_file);
+        if (Expect_file.is_open()) {
+            expect_output = string((istreambuf_iterator<char>(Expect_file)), istreambuf_iterator<char>());
+        }
+        Expect_file.close();
+
         int compile_result = system(compile_command.c_str());
         if (compile_result != 0) {
             // Compilation failed
             return false;
         }
 
-        // Run the program with the given parameter
-        string run_command = "./program " + param;
+        // Run the program with the given input
+        string run_command = "./program < " + input_file;
         string program_output;
         FILE *fp = popen(run_command.c_str(), "r");
         char buf[1024];
@@ -41,65 +47,65 @@ public:
         expect_output.erase(std::remove(expect_output.begin(), expect_output.end(), '\n'), expect_output.end());
         return program_output == expect_output;
     }
-    
-    static void cleanup() {
-        system("rm -f program temp.cpp");
+
+public:
+    SourceCodeJudgement(vector<string> source_files, vector<string> input_files, vector<string> expect_files, int time_limit = 5) : source_files(source_files), input_files(input_files), expect_files(expect_files), time_limit(time_limit) {}
+
+    ~SourceCodeJudgement() {
+        remove("program");
+        // for (int i = 0; i < source_files.size(); i++) {
+        //     remove(source_files[i].c_str());
+        //     remove(input_files[i].c_str());
+        //     remove(expect_files[i].c_str());
+        // }
     }
 
-    static int run(vector<string> source_files, vector<string> expect_files){
+    int run(){
         for (int i = 0; i < source_files.size(); i++) {
-            string source_code;
-            string expect_output;
-            ifstream source_file(source_files[i]);
-            ifstream expect_file(expect_files[i]);
-            if (source_file.is_open() && expect_file.is_open()) {
-                source_code = string((istreambuf_iterator<char>(source_file)), istreambuf_iterator<char>());
-                expect_output = string((istreambuf_iterator<char>(expect_file)), istreambuf_iterator<char>());
-                source_file.close();
-                expect_file.close();
-            } else {
-                cout << "Error: failed to open source or expect file" << endl;
-                return 1;
-            }
-            if (!SourceCodeJudgement::judge(source_code, "", expect_output)) {
+            if (!judge(source_files[i], input_files[i], expect_files[i])) {
                 cout << "Test case " << i+1 << " failed" << endl;
             } else {
                 cout << "Test case " << i+1 << " passed" << endl;
             }
         }
-        SourceCodeJudgement::cleanup();
         return 0;
     }
 };
 
 int main(int argc, char * argv[]) {
-    bool is_source = true;
     if (argc == 1) {
-        cout << "Usage: Single file mode:  ./judge -s [source_file1] [source_file2] ... -e [output_file1] [output_file2] ..." << endl
-             << "       SQL query mode:    ./judge -d"<<endl;
+        cout << "Usage: Single file mode:  ./judge -s [source_file1] ... -i [input_file1] ... -e [output_file1] ..." << endl;
         return 1;
     } else {
+        // Read input from params
         vector<string> source_files;
+        vector<string> input_files;
         vector<string> expect_files;
+        int flag = 0;
         for (int i = 1; i < argc; i++) {
             string arg = argv[i];
             if (arg == "-s") {
-                is_source = true;
+                flag = 0;
+            } else if (arg == "-i") {
+                flag = 1;
             } else if (arg == "-e") {
-                is_source = false;
+                flag = 2;
             } else {
-                if (is_source) {
+                if (flag == 0) {
                     source_files.push_back(arg);
-                } else {
+                } else if (flag == 1) {
+                    input_files.push_back(arg);
+                } else{
                     expect_files.push_back(arg);
                 }
             }
         }
-        if (source_files.size() != expect_files.size()) {
-            cout << "Error: number of source files and expect files do not match" << endl;
+        if (source_files.size() != expect_files.size() || source_files.size() != input_files.size() || expect_files.size() != input_files.size()) {
+            cout << "Error: number of source files, input files and expect files do not match" << endl;
             return 1;
         }
-        return SourceCodeJudgement::run(source_files, expect_files);
+        SourceCodeJudgement judge(source_files, input_files, expect_files);
+        judge.run();
     }
     
     return 0;
