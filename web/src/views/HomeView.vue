@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="24">
         <el-card>
-          <NotificationBoard></NotificationBoard>
+          <NotificationBoard :notifications="notifications"></NotificationBoard>
         </el-card>
       </el-col>
     </el-row>
@@ -11,13 +11,13 @@
       <el-col :span="16">
         <el-card>
           <h3>最新问题</h3>
-          <ProblemList></ProblemList>
+          <ProblemList :problems="problems"></ProblemList>
         </el-card>
       </el-col>
       <el-col :span="8">
         <el-card>
           <h3>排行榜</h3>
-          <RankList></RankList>
+          <RankList :ranks="ranks"></RankList>
         </el-card>
         <el-card>
           <h3>搜索</h3>
@@ -25,7 +25,7 @@
         </el-card>
         <el-card>
           <h3>近期测试</h3>
-          <ContestList></ContestList>
+          <ContestList :contests="contests"></ContestList>
         </el-card>
       </el-col>
     </el-row>
@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import NotificationBoard from "@/components/NotificationBoard.vue";
 import ProblemList from "@/components/ProblemList.vue";
 import RankList from "@/components/RankList.vue";
@@ -47,6 +48,9 @@ export default {
     RankList,
     SearchBox,
     ContestList,
+  },
+  computed: {
+    ...mapGetters(["problems", "notifications", "contests"]),
   },
 };
 </script>

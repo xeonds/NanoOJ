@@ -1,4 +1,8 @@
 import { createStore } from "vuex";
+import problem from "./modules/problem";
+import user from "./modules/user";
+import submission from "./modules/submission";
+import notification from "./modules/notification";
 
 export default createStore({
   state: {
@@ -16,6 +20,18 @@ export default createStore({
       state.isLoggedIn = true;
     },
   },
-  actions: {},
-  modules: {},
+  modules: {
+    problem,
+    user,
+    submission,
+    notification,
+  },
+  actions: {
+    async init({dispatch}){
+      await dispatch("problem/fetchProblems");
+      await dispatch("user/fetchUsers");
+      await dispatch("submission/fetchSubmissions");
+      await dispatch("notification/fetchNotifications");
+    }
+  },
 });

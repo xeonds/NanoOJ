@@ -1,7 +1,7 @@
 <template>
   <div class="problem">
     <h1>问题</h1>
-    <ProblemList></ProblemList>
+    <ProblemList :problems="problem"></ProblemList>
   </div>
 </template>
 
@@ -10,6 +10,12 @@ import ProblemList from "@/components/ProblemList.vue";
 
 export default {
   name: "ProblemsetView",
+  computed: {
+    ...mapGetters("problem", ["getProblemById"]),
+    problem() {
+      return this.getProblemById(this.$route.params.id);
+    },
+  },
   components: {
     ProblemList,
   },

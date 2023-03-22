@@ -53,13 +53,7 @@ export default {
     FooterBox,
   },
   created() {
-    this.fetchData();
-  },
-  methods: {
-    fetchData: async function () {
-      const response = await this.axios.get("problems");
-      this.$store.commit("setData", response.data);
-    },
+    this.$store.dispatch("init");
   },
 };
 </script>
