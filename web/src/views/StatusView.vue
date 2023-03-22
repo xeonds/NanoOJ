@@ -1,7 +1,7 @@
 <template>
-  <div style="width: 80vw">
+  <div>
     <h1>提交记录</h1>
-    <el-table :data="submission" style="width: 100%">
+    <el-table :data="submission">
       <el-table-column prop="submitTime" label="提交时间"></el-table-column>
       <el-table-column prop="submitID" label="提交ID"></el-table-column>
       <el-table-column prop="problemID" label="题目id"></el-table-column>
@@ -14,14 +14,14 @@
 
 <script>
 export default {
-  name: 'StatusView',
+  name: "StatusView",
   props: {
     submission: {
       type: Array,
-      default: () => []
-    }
-  }
-}
+      default: () => [],
+    },
+  },
+};
 </script>
 
 <style scoped>

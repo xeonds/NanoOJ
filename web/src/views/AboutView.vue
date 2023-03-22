@@ -145,8 +145,4 @@ export default {
 </script>
 
 <style scoped>
-.about {
-  width: 100%;
-  max-width: 768px;
-}
 </style>

@@ -1,26 +1,29 @@
 <template>
-  <div class="home">
+  <div id="home">
     <el-row>
-      <el-col :span="16">
-        <el-card style="width: 100%">
-          <h3>通知</h3>
+      <el-col :span="24">
+        <el-card>
           <NotificationBoard></NotificationBoard>
         </el-card>
-        <el-card style="width: 100%">
+      </el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="16">
+        <el-card>
           <h3>最新问题</h3>
           <ProblemList></ProblemList>
         </el-card>
       </el-col>
       <el-col :span="8">
-        <el-card style="width: 100%">
+        <el-card>
           <h3>排行榜</h3>
           <RankList></RankList>
         </el-card>
-        <el-card style="width: 100%">
+        <el-card>
           <h3>搜索</h3>
           <SearchBox></SearchBox>
         </el-card>
-        <el-card style="width: 100%">
+        <el-card>
           <h3>近期测试</h3>
           <ContestList></ContestList>
         </el-card>
@@ -49,8 +52,13 @@ export default {
 </script>
 
 <style scoped>
-.home {
+.el-card {
+  border-radius: 4px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+el-card {
   width: 100%;
-  max-width: 1024px;
 }
 </style>
