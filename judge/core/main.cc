@@ -2,7 +2,6 @@
 #include <bits/stdc++.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "sqlite3.h"
 #include <unistd.h>
 #include <fstream>
 #include <vector>
@@ -73,73 +72,12 @@ public:
     }
 };
 
-class NanoOJDB {
-public:
-    sqlite3 *db;
-    char *zErrMsg = 0;
-    int rc;
-    const char *sql;
-    const char* data = "Callback function called";
-    static int callback(void *data, int argc, char **argv, char **azColName){
-        int i;
-        fprintf(stderr, "%s: ", (const char*)data);
-        for(i = 0; i<argc; i++){
-            printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-        }
-        printf("\n");
-        return 0;
-    }
-    NanoOJDB() {
-        rc = sqlite3_open("NanoOJ.db", &db);
-        if( rc ) {
-            fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-            exit(0);
-        } else {
-            fprintf(stderr, "Opened database successfully\n");
-        }
-    }
-    ~NanoOJDB() {
-        sqlite3_close(db);
-    }
-    void execute(const char* sql) {
-        rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
-        if( rc != SQLITE_OK ){
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
-            sqlite3_free(zErrMsg);
-        } else {
-            fprintf(stdout, "Operation done successfully\n");
-        }
-    }
-    void commits_judger() {
-        NanoOJDB db;
-        const char* sql = "SELECT * FROM commits";
-        sqlite3_stmt *stmt;
-        sqlite3_prepare_v2(db.db, sql, -1, &stmt, NULL);
-        int rc = sqlite3_step(stmt);
-        while (rc != SQLITE_DONE) {
-            if (rc == SQLITE_ROW) {
-                int id = sqlite3_column_int(stmt, 0);
-                string source_code = string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)));
-                string expect_output = string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)));
-                bool result = SourceCodeJudgement::judge(source_code, "", expect_output);
-                const char* update_sql = ("UPDATE commits SET result=" + to_string(result) + " WHERE id=" + to_string(id)).c_str();
-                db.execute(update_sql);
-            }
-            rc = sqlite3_step(stmt);
-        }
-        sqlite3_finalize(stmt);
-    }
-};
-
-
 int main(int argc, char * argv[]) {
     bool is_source = true;
     if (argc == 1) {
         cout << "Usage: Single file mode:  ./judge -s [source_file1] [source_file2] ... -e [output_file1] [output_file2] ..." << endl
              << "       SQL query mode:    ./judge -d"<<endl;
         return 1;
-    } else if (argc == 2 && string(argv[1]) == "-d") {
-        NanoOJDB nano_oj;
     } else {
         vector<string> source_files;
         vector<string> expect_files;
@@ -157,12 +95,10 @@ int main(int argc, char * argv[]) {
                 }
             }
         }
-    
         if (source_files.size() != expect_files.size()) {
             cout << "Error: number of source files and expect files do not match" << endl;
             return 1;
         }
-    
         return SourceCodeJudgement::run(source_files, expect_files);
     }
     
