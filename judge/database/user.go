@@ -8,6 +8,15 @@ import (
 	"xyz.xeonds/nano-oj/model"
 )
 
+func GetUsers() ([]model.User, error) {
+	var users []model.User
+	result := NanoDB.Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return users, nil
+}
+
 func GetUserByEmail(email string) (*model.User, error) {
 	var user model.User
 	result := NanoDB.Where("email = ?", email).First(&user)
@@ -50,5 +59,15 @@ func CreateUser(user *model.User) error {
 	}
 	user.Password = string(hashedPassword)
 	result := NanoDB.Create(&user)
+	return result.Error
+}
+
+func UpdateUser(user *model.User) error {
+	result := NanoDB.Save(&user)
+	return result.Error
+}
+
+func DeleteUser(username string) error {
+	result := NanoDB.Where("username = ?", username).Delete(&model.User{})
 	return result.Error
 }

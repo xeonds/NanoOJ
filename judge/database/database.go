@@ -10,9 +10,13 @@ import (
 
 var NanoDB *gorm.DB
 
+func init() {
+	Connect()
+}
+
 func Connect() error {
 	var err error
-	NanoDB, err = gorm.Open(sqlite.Open("./judge.NanoDB"), &gorm.Config{})
+	NanoDB, err = gorm.Open(sqlite.Open("./NanoOJ.db"), &gorm.Config{})
 	if err != nil {
 		log.Println("Open database failed")
 		return err

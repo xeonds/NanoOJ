@@ -27,7 +27,7 @@ func init() {
 	}
 }
 
-func Judge(c *gin.Context) {
+func JudgeProblemByID(c *gin.Context) {
 	problemID := c.PostForm("problemID")
 	sourceCode := c.PostForm("sourceCode")
 	id, err := strconv.Atoi(problemID)
