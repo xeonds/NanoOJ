@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>帮助</h1>
+    <h1>关于NanoOJ</h1>
     <div>
       <h2>评测</h2>
       <p>
@@ -13,33 +13,9 @@
         <code
           >gcc Main.c -o Main -fno-asm -Wall -lm --static -std=c99
           -DONLINE_JUDGE</code
-        >，您可以使用 <code>#pragma GCC optimize ("O2")</code> 手工开启 O2
-        优化； <br />
-        Pascal 使用 <code>fpc 3.0.4</code> 编译，命令为 &nbsp;
-        <code>fpc Main.pas -oMain -O1 -Co -Cr -Ct -Ci</code>。 <br />
-        Java 使用 <code>OpenJDK 11.0.9.1</code> 编译，命令为
-        <code> javac -J-Xms32m -J-Xmx256m Main.java</code>，如果您的代码中没有
-        <code>public class</code>，请将入口类命名为
-        <code>Main</code>，在评测时提供额外 2 秒的运行时间和 512MB 的运行内存。
-        <br />
-        这里给出的编译器版本仅供参考，请以实际编译器版本为准。
+        ><br />
       </p>
       <p>请使用<strong>标准输入输出</strong>。</p>
-
-      <h2 class="ui header">个人资料<br /></h2>
-      <p>
-        本站不提供头像存储服务，而是使用 Gravatar 进行头像显示。请使用邮箱注册
-        <el-link
-          type="primary"
-          target="_blank"
-          href="https://zh-cn.wordpress.com/"
-          >WordPress.com</el-link
-        >，登录
-        <el-link type="primary" target="_blank" href="https://cn.gravatar.com/"
-          >Gravatar</el-link
-        >
-        并上传头像。同样使用 Gravatar 的 OJ 有 Vijos、COGS、UOJ 等。
-      </p>
       <h2 class="ui header">返回结果说明<br /></h2>
       <div class="ques-view">
         <p>
@@ -95,43 +71,6 @@ int main(){
     }
     return 0;
 }</code></pre>
-      </div>
-      <p><strong>fpc (.pas)</strong></p>
-      <div class="ui existing segment">
-        <pre style="margin-top: 0; margin-bottom: 0">
-<code class="lang-pascal">var
-a, b: integer;
-begin
-    while not eof(input) do begin
-        readln(a, b);
-        writeln(a + b);
-    end;
-end.</code></pre>
-      </div>
-      <p><strong>javac (.java)</strong></p>
-      <div class="ui existing segment">
-        <pre style="margin-top: 0; margin-bottom: 0">
-<code class="lang-java">import java.util.Scanner;	
-public class Main {
-    public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
-        while (in.hasNextInt()) {
-            int a = in.nextInt();
-            int b = in.nextInt();
-            System.out.println(a + b);
-        }
-    }
-}</code></pre>
-      </div>
-      <p><strong>python3 (.py)</strong></p>
-      <div class="ui existing segment">
-        <pre style="margin-top: 0; margin-bottom: 0">
-<code class="lang-c">import io
-import sys
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
-for line in sys.stdin:
-    a = line.split()
-    print(int(a[0]) + int(a[1]))</code></pre>
       </div>
     </div>
   </div>

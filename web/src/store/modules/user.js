@@ -12,7 +12,7 @@ const mutations = {
 
 const actions = {
   async fetchUsers({ commit }) {
-    const response = await axios.get("users");
+    const response = await this.axios.get("users");
     commit("setUsers", response.data);
   },
 };
