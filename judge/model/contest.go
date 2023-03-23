@@ -8,9 +8,10 @@ import (
 
 type Contest struct {
 	gorm.Model
-	Problems  []Problem `gorm:"many2many:contest_problems;"`
-	Note      string
-	Release   time.Time
-	StartTime time.Time
-	EndTime   time.Time
+	ContestID  uint32
+	ProblemIDs []uint32 `gorm:"many2many:contest_problems;"`
+	Note       string
+	Release    time.Time
+	StartTime  time.Time
+	EndTime    time.Time
 }

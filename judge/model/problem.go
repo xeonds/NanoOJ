@@ -3,9 +3,11 @@ package model
 import "gorm.io/gorm"
 
 type Problem struct {
-    gorm.Model
-	ProblemID      int    `gorm:"uniqueIndex"`
-    ProblemNote    string
-	ProblemInput   string
-	ExpectedOutput string
+	gorm.Model
+	ProblemID          uint32 `gorm:"uniqueIndex"`
+	ProblemTitle       string
+	ProblemDifficulty  int
+	ProblemDescription string
+	ProblemInputs      []string `gorm:"type:text"`
+	ExpectedOutputs    []string `gorm:"type:text"`
 }
