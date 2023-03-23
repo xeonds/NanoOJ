@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"xyz.xeonds/nano-oj/controller"
 	"xyz.xeonds/nano-oj/middleware"
@@ -11,9 +13,6 @@ func initRouter(r *gin.Engine) {
 	apiRouter := r.Group("/api/v1")
 	apiRouter.Use(middleware.AuthMiddleware())
 
-	judgeRouter := apiRouter.Group("/judge")
-	judgeRouter.POST("/problems/:id", controller.JudgeProblemByID)
-
 	apiRouter.GET("/problems", controller.GetProblems)
 	apiRouter.GET("/problems/:id", controller.GetProblemByID)
 	apiRouter.POST("/problems", controller.CreateProblem)
@@ -22,6 +21,7 @@ func initRouter(r *gin.Engine) {
 
 	apiRouter.GET("/submissions", controller.GetSubmissions)
 	apiRouter.GET("/submissions/:id", controller.GetSubmissionByID)
+	apiRouter.POST("/submission", controller.CreateSubmission)
 
 	apiRouter.GET("/users", controller.GetUsers)
 	apiRouter.POST("/user/register", controller.Register)
@@ -31,5 +31,5 @@ func initRouter(r *gin.Engine) {
 	apiRouter.DELETE("/user/:id", controller.DeleteUser)
 
 	// Static files
-	r.Static("/", "./public")
+	r.NoRoute(gin.WrapH(http.FileServer(gin.Dir("./public", false))))
 }
