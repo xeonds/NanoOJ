@@ -5,25 +5,30 @@ import (
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"xyz.xeonds/nano-oj/model"
+	"xyz.xeonds/nano-oj/database/model"
 )
 
 var NanoDB *gorm.DB
 
 func init() {
-	Connect()
+	err := Connect()
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
 }
 
 func Connect() error {
-	var err error
-	NanoDB, err = gorm.Open(sqlite.Open("./NanoOJ.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("./NanoOJ.db"), &gorm.Config{})
 	if err != nil {
-		log.Println("Open database failed")
+		log.Println("Failed to open database")
 		return err
 	}
-	NanoDB.AutoMigrate(&model.Submission{})
-	NanoDB.AutoMigrate(&model.Problem{})
-	NanoDB.AutoMigrate(&model.User{})
+	err = db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{})
+	if err != nil {
+		log.Println("Failed to migrate tables")
+		return err
+	}
+	NanoDB = db
 
 	return nil
 }
@@ -31,13 +36,14 @@ func Connect() error {
 func Close() error {
 	db, err := NanoDB.DB()
 	if err != nil {
-		log.Println("Get database connection failed")
+		log.Println("Failed to get database connection")
 		return err
 	}
 	err = db.Close()
 	if err != nil {
-		log.Println("Close database failed")
+		log.Println("Failed to close database")
 		return err
 	}
+
 	return nil
 }

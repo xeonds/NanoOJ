@@ -7,9 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"xyz.xeonds/nano-oj/core"
 	"xyz.xeonds/nano-oj/database"
-	"xyz.xeonds/nano-oj/model"
+	"xyz.xeonds/nano-oj/database/model"
 )
 
 var JudgeQueue = make(chan model.Submission, 100)
@@ -67,7 +66,7 @@ func JudgeWorker() {
 			return
 		}
 	}
-	task := core.SourceCodeJudgement{
+	task := SourceCodeJudgement{
 		Workdir:     tempFolder,
 		Lang:        "c",
 		SourceFile:  programFile,

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"xyz.xeonds/nano-oj/database"
-	"xyz.xeonds/nano-oj/model"
+	"xyz.xeonds/nano-oj/database/model"
 )
 
 func GetSubmissions(c *gin.Context) {
