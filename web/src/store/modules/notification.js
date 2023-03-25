@@ -21,9 +21,13 @@ const getters = {
   getNotificationById: (state) => (id) => {
     return state.notifications.find((notification) => notification.id === id);
   },
+  getNotifications: (state) => (id) => {
+    return state.notifications;
+  },
 };
 
 export default {
+  namespaced: true,
   state,
   mutations,
   actions,

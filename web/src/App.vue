@@ -5,9 +5,8 @@
         <el-menu
           default-active="1"
           mode="horizontal"
-          router="true"
+          :router="true"
           :ellipsis="false"
-          @select="handleSelect"
         >
           <el-menu-item
             class="logo"
@@ -29,7 +28,7 @@
           <el-menu-item index="3" route="/contest">竞赛/作业</el-menu-item>
           <el-menu-item index="4" route="/status">状态</el-menu-item>
           <el-menu-item index="5" route="/ranklist">排名</el-menu-item>
-          <el-menu-item index="6" route="/about">常见问答</el-menu-item>
+          <!--<el-menu-item index="6" route="/about">常见问答</el-menu-item>-->
           <div class="flex-grow" />
           <el-menu-item index="7" route="/login">登录</el-menu-item>
           <el-menu-item index="8" route="/register">注册</el-menu-item>

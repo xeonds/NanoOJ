@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="24">
         <el-card>
-          <NotificationBoard :notifications="notifications"></NotificationBoard>
+          <NotificationBoard :notifications="getNotifications"></NotificationBoard>
         </el-card>
       </el-col>
     </el-row>
@@ -11,13 +11,13 @@
       <el-col :span="16">
         <el-card>
           <h3>最新问题</h3>
-          <ProblemList :problems="problems"></ProblemList>
+          <ProblemList :problems="getProblems"></ProblemList>
         </el-card>
       </el-col>
       <el-col :span="8">
         <el-card>
           <h3>排行榜</h3>
-          <RankList :ranks="ranks"></RankList>
+          <RankList :ranks="getRanks"></RankList>
         </el-card>
         <el-card>
           <h3>搜索</h3>
@@ -25,7 +25,7 @@
         </el-card>
         <el-card>
           <h3>近期测试</h3>
-          <ContestList :contests="contests"></ContestList>
+          <ContestList :contests="getContests"></ContestList>
         </el-card>
       </el-col>
     </el-row>
@@ -50,7 +50,7 @@ export default {
     ContestList,
   },
   computed: {
-    ...mapGetters(["problems", "notifications", "contests"]),
+    ...mapGetters(["getProblems", "getNotifications", "getRanks", "getContests"]),
   },
 };
 </script>
