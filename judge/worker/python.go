@@ -7,18 +7,12 @@ import (
 	"strings"
 )
 
-func (s *task) cJudger() string {
-	compileCommand := "g++ -o " + s.Workdir + "/program " + s.SourceFile
-	compileResult, _ := exec.Command("bash", "-c", compileCommand).Output()
-	if len(compileResult) != 0 {
-		// TODO: return detailed info
-		return "Compilation failed"
-	}
+func (s *task) pyJudger() string {
 	var result string
 	for i := 0; i < len(s.InputFiles); i++ {
 		expectOutput, _ := os.ReadFile(s.ExpectFiles[i])
 		// Run the program with the given input
-		runCommand := s.Workdir + "/program < " + s.InputFiles[i]
+		runCommand := "python3 " + s.Workdir + "/" + s.SourceFile + " < " + s.InputFiles[i]
 		programOutput, _ := exec.Command("bash", "-c", runCommand).Output()
 
 		// Compare the program output with the expected output

@@ -13,6 +13,26 @@ import (
 
 var JudgeQueue = make(chan model.Submission, 100)
 
+type task struct {
+	Workdir     string
+	Lang        string
+	SourceFile  string
+	InputFiles  []string
+	ExpectFiles []string
+	TimeLimit   int
+}
+
+func (s *task) judge() (string, error) {
+	switch s.Lang {
+	case "c", "cpp":
+		return s.cJudger(), nil
+	// case "python":
+	// return judgement.pyJudger(), nil
+	default:
+		return "", fmt.Errorf("unsupported language: %s", s.Lang)
+	}
+}
+
 func IsEmpty() bool {
 	return len(JudgeQueue) == 0
 }
@@ -30,13 +50,14 @@ func JudgeWorker() {
 		database.NanoDB.Save(&submission)
 		return
 	}
+	// get the problem
 	problem, err := database.GetProblemByID(uint32(id))
 	if err != nil {
 		submission.Status = "failed"
 		database.NanoDB.Save(&submission)
 		return
 	}
-
+	// create workdir
 	tempFolder := filepath.Join("tmp", fmt.Sprintf("temp_%d", time.Now().UnixNano()))
 	_ = os.Mkdir(tempFolder, 0755)
 	programFile := filepath.Join(tempFolder, "program.cc")
@@ -46,6 +67,7 @@ func JudgeWorker() {
 		database.NanoDB.Save(&submission)
 		return
 	}
+	// load input/output files to disk
 	inputFiles := make([]string, len(problem.ProblemInputs))
 	outputFiles := make([]string, len(problem.ExpectedOutputs))
 	for i, inputFile := range problem.ProblemInputs {
@@ -66,15 +88,16 @@ func JudgeWorker() {
 			return
 		}
 	}
-	task := SourceCodeJudgement{
+	// build a new task and run
+	t := task{
 		Workdir:     tempFolder,
-		Lang:        "c",
+		Lang:        submission.Language,
 		SourceFile:  programFile,
 		InputFiles:  inputFiles,
 		ExpectFiles: outputFiles,
 		TimeLimit:   1000,
 	}
-	result, err := task.Judge()
+	result, err := t.judge()
 	if err != nil {
 		submission.Status = "failed"
 		database.NanoDB.Save(&submission)
