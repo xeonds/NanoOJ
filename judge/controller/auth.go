@@ -11,7 +11,7 @@ import (
 
 func Login(c *gin.Context) {
 	var input struct {
-		Email    string `json:"email" binding:"required,email"`
+		Email    string `json:"email" binding:"required,email"` //Email format authorized here
 		Password string `json:"password" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {

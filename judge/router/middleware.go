@@ -7,31 +7,34 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type jwtClaims struct {
-	UserID uint64 `json:"user_id"`
-	jwt.StandardClaims
-}
-
-func authMiddleware() gin.HandlerFunc {
+func authMiddleware(requiredPermissionLevel int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
-		token, err := jwt.ParseWithClaims(tokenString, &jwtClaims{}, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			return []byte("secret"), nil
 		})
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
-		claims, ok := token.Claims.(*jwtClaims)
-		if !ok || !token.Valid {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token invalid"})
+		if !token.Valid {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
-		c.Set("user_id", claims.UserID)
+		// check if the user has the required permission level
+		userPermissionLevel := int(token.Claims.(jwt.MapClaims)["permission_level"].(float64))
+		if userPermissionLevel < requiredPermissionLevel {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+			return
+		}
+		// set user ID and permission level in request context
+		userID := int(token.Claims.(jwt.MapClaims)["user_id"].(float64))
+		c.Set("user_id", userID)
+		c.Set("permission_level", userPermissionLevel)
 
 		c.Next()
 	}
