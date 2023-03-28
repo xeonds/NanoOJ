@@ -15,8 +15,9 @@ func CheckPasswordHash(password, hash string) bool {
 
 func GenerateToken(user *model.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user.ID,
-		"exp":     time.Now().Add(time.Hour * 24).Unix(),
+		"user_id":          user.ID,
+		"exp":              time.Now().Add(time.Hour * 24).Unix(),
+		"permission_level": user.Permission,
 	})
 	tokenString, err := token.SignedString([]byte("secret"))
 	if err != nil {

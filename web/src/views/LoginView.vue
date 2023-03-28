@@ -53,19 +53,20 @@ export default {
   },
   methods: {
     async login() {
-      this.axios.post("/user/login", {
-        email: this.email,
-        password: this.password,
-      })
-      .then(response => {
-        const data = response.data;
-        this.$store.dispatch("auth/login", data.token);
-        this.$store.dispatch("auth/setLoggedInStatus", true);
-        this.$router.push("/");
-      })
-      .catch(error => {
-        console.log(error)
-      });
+      this.axios
+        .post("/user/login", {
+          email: this.email,
+          password: this.password,
+        })
+        .then((response) => {
+          const data = response.data;
+          this.$store.dispatch("login", data.token);
+          this.$store.dispatch("setLoggedInStatus", true);
+          this.$router.push("/");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     async register() {
       try {

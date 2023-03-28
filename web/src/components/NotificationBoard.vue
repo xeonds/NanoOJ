@@ -7,9 +7,14 @@
       arrow="never"
     >
       <el-carousel-item
+
         v-for="(notification, index) in notifications"
         :key="index"
-        ><div v-html="notification"></div>
+      >
+          <h3>{{ notification.Title }}</h3>
+          <p>{{ notification.Content }}</p>
+          <p>发布时间：{{ notification.Release }}</p>
+          <p>更新时间：{{ notification.UpdateTime }}</p>
       </el-carousel-item>
     </el-carousel>
     <div v-if="notifications.length === 0">暂无公告</div>
@@ -22,10 +27,7 @@ export default {
   props: {
     notifications: {
       type: Array,
-      default: () => [
-        "<h2>测试公告1</h2> <p>Hello, world!</p>",
-        "<h2>测试公告2</h2> <p>Hello, world!</p>",
-      ],
+      default: () => [],
     },
   },
 };

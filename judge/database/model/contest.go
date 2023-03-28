@@ -9,7 +9,7 @@ import (
 type Contest struct {
 	gorm.Model
 	ContestID  uint32
-	ProblemIDs []uint32 `gorm:"many2many:contest_problems;"`
+	ProblemIDs []uint32 `gorm:"type:uint32"`
 	Note       string
 	Release    time.Time
 	StartTime  time.Time

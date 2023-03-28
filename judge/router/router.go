@@ -28,6 +28,12 @@ func InitRouter(r *gin.Engine) {
 	apiRouter.PUT("/contests/:id", authMiddleware(1), controller.UpdateContest)
 	apiRouter.DELETE("/contests/:id", authMiddleware(1), controller.DeleteContest)
 
+	apiRouter.GET("/notifications", controller.GetNotifications)
+	apiRouter.GET("/notifications/:id", controller.GetNotificationByID)
+	apiRouter.POST("/notifications", authMiddleware(0), controller.CreateNotification)
+	apiRouter.PUT("/notifications/:id", authMiddleware(0), controller.UpdateNotification)
+	apiRouter.DELETE("/notifications/:id", authMiddleware(0), controller.DeleteNotification)
+
 	usersRouter := apiRouter.Group("/users")
 	usersRouter.GET("", controller.GetUser)
 	usersRouter.GET("/:user_id", controller.GetUser)

@@ -1,7 +1,7 @@
 <template>
   <div class="problem">
     <h1>问题</h1>
-    <ProblemList :problems="problem"></ProblemList>
+    <ProblemList :problems="problems"></ProblemList>
   </div>
 </template>
 
@@ -12,10 +12,7 @@ import { mapGetters } from "vuex";
 export default {
   name: "ProblemsetView",
   computed: {
-    ...mapGetters("problem", ["getProblemById"]),
-    problem() {
-      return this.getProblemById(this.$route.params.id);
-    },
+    ...mapGetters({ problems: "getProblems" }),
   },
   components: {
     ProblemList,

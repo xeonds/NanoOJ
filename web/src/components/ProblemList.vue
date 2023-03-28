@@ -2,11 +2,11 @@
   <el-table :data="problems">
     <el-table-column label="问题ID">
       <template v-slot="{row}">
-        <router-link :to="'/problem/' + row.id">{{row.id}}</router-link>
+        <router-link :to="'/problem/' + row.ID">{{row.ID}}</router-link>
       </template>
     </el-table-column>
-    <el-table-column prop="title" label="问题标题"></el-table-column>
-    <el-table-column prop="difficulty" label="题目难度"></el-table-column>
+    <el-table-column prop="ProblemTitle" label="问题标题"></el-table-column>
+    <el-table-column prop="ProblemDifficulty" label="题目难度"></el-table-column>
     <el-table-column prop="passRate" label="通过率"></el-table-column>
   </el-table>
 </template>
@@ -17,7 +17,7 @@ export default {
    props: {
     problems: {
       type: Array,
-      default: () => [{"id":0,"title":"Hello, world", "difficulty": "LUNATIC", "passRate": "1/9961"}]
+      default: () => []
     }
    }
 };

@@ -23,7 +23,7 @@ func Connect() error {
 		log.Println("Failed to open database")
 		return err
 	}
-	err = db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{})
+	err = db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{}, &model.Contest{}, &model.Notification{})
 	if err != nil {
 		log.Println("Failed to migrate tables")
 		return err

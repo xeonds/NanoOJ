@@ -14,6 +14,72 @@
 >想提前试下判题机可以直接把 `judge/core/` 里边那些玩意编译出来（要用Linux编译哦）用用看。
 >用法的话，不带参数直接运行程序就会输出。
 
+```tree
+NanoOJ/
+├── judge/  # 后端目录
+│   ├── config/  # 配置文件目录
+│   │   ├── config.go  # 读取和处理配置文件的代码
+│   │   └── config.yaml  # 配置文件，例如数据库连接信息
+│   ├── controller/  # 控制器目录
+│   │   ├── auth.go  # 处理用户身份验证相关请求的代码
+│   │   ├── problem.go  # 处理问题相关请求的代码
+│   │   ├── submission.go  # 处理代码提交相关请求的代码
+│   │   ├── testset.go  # 处理测试集相关请求的代码
+│   │   └── user.go  # 处理用户相关请求的代码
+│   ├── database/  # 数据库目录
+│   │   ├── migrate/  # 数据库迁移文件目录
+│   │   │   ├── 20220301_init.sql  # 初始化数据库表的 SQL 文件
+│   │   │   └── 20220324_add_submission_status_column.sql  # 增加提交状态列的 SQL 文件
+│   │   ├── model/  # 数据模型目录
+│   │   │   ├── problem.go  # 问题模型
+│   │   │   ├── submission.go  # 提交模型
+│   │   │   └── user.go  # 用户模型
+│   │   ├── database.go  # 数据库连接和初始化代码
+│   │   └── repository.go  # 数据库操作的统一接口
+│   ├── middleware/  # 中间件目录
+│   │   ├── auth.go  # 身份验证中间件
+│   │   └── logging.go  # 日志中间件
+│   ├── router/  # 路由目录
+│   │   ├── middleware.go  # 路由中间件
+│   │   └── router.go  # 路由处理代码
+│   ├── worker/  # 后台工作目录
+│   │   └── judger.go  # 评测机代码
+│   ├── main.go  # 后端程序入口文件
+│   └── go.mod  # Golang 依赖管理文件
+│
+└── web/  # 前端目录
+    ├── public/  # 静态资源目录
+    ├── src/  # 代码目录
+    │   ├── api/  # API 相关代码目录
+    │   │   ├── auth.js  # 处理用户身份验证相关 API 的代码
+    │   │   ├── problem.js  # 处理问题相关 API 的代码
+    │   │   ├── submission.js  # 处理提交相关 API 的代码
+    │   │   ├── testset.js  # 处理测试集相关 API 的代码
+    │   │   └── user.js # 
+    │   ├── assets/  # 静态资源目录
+    │   ├── components/  # 组件目录
+    │   ├── router/  # 路由目录
+    │   ├── store/  # Vuex 相关代码目录
+    │   │   ├── modules/  # Vuex 模块目录
+    │   │   ├── actions.js  # Vuex actions 代码
+    │   │   ├── getters.js  # Vuex getters 代码
+    │   │   ├── index.js  # Vuex 入口文件
+    │   │   ├── mutations.js  # Vuex mutations 代码
+    │   │   └── state.js  # Vuex state 代码
+    │   ├── views/  # 视图目录
+    │   ├── App.vue  # Vue 根组件
+    │   ├── main.js  # Vue 程序入口文件
+    │   ├── router.js  # Vue 路由配置文件
+    │   └── store.js  # Vuex 状态管理文件
+    ├── .eslintrc.js  # ESLint 配置文件
+    ├── babel.config.js  # Babel 配置文件
+    ├── package.json  # NPM 依赖管理文件
+    ├── postcss.config.js  # PostCSS 配置文件
+    ├── README.md  # 项目说明文件
+    ├── vue.config.js  # Vue CLI 配置文件
+    └── yarn.lock  # Yarn 依赖管理锁文件
+```
+
 ## 计划
 
 - 先把数据库设计好吧（摊

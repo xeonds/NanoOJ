@@ -18,40 +18,41 @@
 </template>
 
 <script>
-import axios from "axios";
+import { mapGetters } from "vuex";
 
 export default {
   name: "ProblemView",
   components: {},
+  data: function () {
+    return {
+      code: "",
+    };
+  },
   computed: {
-    problemData() {
-      return this.$store.state.problemData;
-    },
+    ...mapGetters({
+      problems: "getProblems",
+      problem: "getProblemById",
+    }),
     problemTitle() {
       const id = this.$route.params.id;
-      return this.problemData[id].title;
+      return this.problem(id).ProblemDescription;
     },
     problemNote() {
       const id = this.$route.params.id;
-      return this.problemData[id].note;
+      return this.problem(id).problemNote;
     },
   },
-  setup() {
-    const code = "";
-    const submitCode = () => {
-      axios
-        .post("/api/v1/judge", { code: code.value })
+  methods: {
+    submitCode: function () {
+      this.axios
+        .post("/submissions", { code: this.code })
         .then((response) => {
           console.log(response.data);
         })
         .catch((error) => {
           console.log(error);
         });
-    };
-    return {
-      code,
-      submitCode,
-    };
+    },
   },
 };
 </script>

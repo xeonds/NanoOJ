@@ -12,7 +12,7 @@ import (
 func GetContests(c *gin.Context) {
 	var contests []model.Contest
 	database.NanoDB.Find(&contests)
-	c.JSON(http.StatusOK, gin.H{"data": contests})
+	c.JSON(http.StatusOK, contests)
 }
 
 func GetContestByID(c *gin.Context) {
