@@ -47,6 +47,7 @@ func JudgeWorker() {
 	id, err := strconv.ParseUint(problemID, 10, 32)
 	if err != nil {
 		submission.Status = "failed"
+		fmt.Println("failed to parse", err)
 		database.NanoDB.Save(&submission)
 		return
 	}
@@ -54,16 +55,18 @@ func JudgeWorker() {
 	problem, err := database.GetProblemByID(uint32(id))
 	if err != nil {
 		submission.Status = "failed"
+		fmt.Println("failed to fetch problem", err)
 		database.NanoDB.Save(&submission)
 		return
 	}
 	// create workdir
 	tempFolder := filepath.Join("tmp", fmt.Sprintf("temp_%d", time.Now().UnixNano()))
-	_ = os.Mkdir(tempFolder, 0755)
+	_ = os.MkdirAll(tempFolder, 0755)
 	programFile := filepath.Join(tempFolder, "program.cc")
 	err = os.WriteFile(programFile, []byte(sourceCode), 0644)
 	if err != nil {
 		submission.Status = "failed"
+		fmt.Println("failed to create workdir", err)
 		database.NanoDB.Save(&submission)
 		return
 	}
@@ -75,6 +78,7 @@ func JudgeWorker() {
 		err = os.WriteFile(inputFiles[i], []byte(inputFile), 0644)
 		if err != nil {
 			submission.Status = "failed"
+			fmt.Println("failed to load file", err)
 			database.NanoDB.Save(&submission)
 			return
 		}
@@ -83,7 +87,7 @@ func JudgeWorker() {
 		outputFiles[i] = filepath.Join(tempFolder, outputFile)
 		err = os.WriteFile(outputFiles[i], []byte(outputFile), 0644)
 		if err != nil {
-			submission.Status = "failed"
+			fmt.Println("failed to load file", err)
 			database.NanoDB.Save(&submission)
 			return
 		}
@@ -100,10 +104,12 @@ func JudgeWorker() {
 	result, err := t.judge()
 	if err != nil {
 		submission.Status = "failed"
+		fmt.Println("language not supported", err)
 		database.NanoDB.Save(&submission)
 		return
 	}
 	submission.Status = result
+	fmt.Println(result)
 	database.NanoDB.Save(&submission)
 }
 
