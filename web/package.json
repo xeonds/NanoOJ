@@ -1,11 +1,12 @@
 {
-  "name": "web",
-  "version": "0.1.0",
+  "name": "nano-oj-web",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "core-js": "^3.29.1",
@@ -16,20 +17,13 @@
     "vuex": "^4.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
-    "@babel/eslint-parser": "^7.12.16",
-    "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-plugin-eslint": "~5.0.0",
-    "@vue/cli-plugin-router": "~5.0.0",
-    "@vue/cli-plugin-vuex": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
+    "@vitejs/plugin-vue": "^4.1.0",
+    "vite": "^4.2.0",
     "axios": "^0.18.1",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "sass": "^1.27.0",
-    "sass-loader": "^10.0.4",
-    "vue-cli-plugin-axios": "^0.0.4",
-    "vue-cli-plugin-element-plus": "~0.0.13"
+    "sass-loader": "^10.0.4"
   },
   "eslintConfig": {
     "root": true,
@@ -44,11 +38,5 @@
       "parser": "@babel/eslint-parser"
     },
     "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead",
-    "not ie 11"
-  ]
+  }
 }

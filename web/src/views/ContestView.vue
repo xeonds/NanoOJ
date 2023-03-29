@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import ContestList from "@/components/ContestList.vue";
+import ContestList from "../components/ContestList.vue";
 
 export default {
   name: "ContestView",

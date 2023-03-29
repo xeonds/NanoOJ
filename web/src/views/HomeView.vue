@@ -34,11 +34,11 @@
 
 <script>
 import { mapGetters } from "vuex";
-import NotificationBoard from "@/components/NotificationBoard.vue";
-import ProblemList from "@/components/ProblemList.vue";
-import RankList from "@/components/RankList.vue";
-import SearchBox from "@/components/SearchBox.vue";
-import ContestList from "@/components/ContestList.vue";
+import NotificationBoard from "../components/NotificationBoard.vue";
+import ProblemList from "../components/ProblemList.vue";
+import RankList from "../components/RankList.vue";
+import SearchBox from "../components/SearchBox.vue";
+import ContestList from "../components/ContestList.vue";
 
 export default {
   name: "HomeView",

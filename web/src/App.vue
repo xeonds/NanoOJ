@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import FooterBox from "@/components/FooterBox.vue";
+import FooterBox from "./components/FooterBox.vue";
 
 export default {
   components: {
