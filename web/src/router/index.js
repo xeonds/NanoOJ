@@ -1,5 +1,15 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+
+const HomeView = () => import("../views/HomeView.vue");
+const ProblemsetView = () => import("../views/ProblemsetView.vue");
+const ContestView = () => import("../views/ContestView.vue");
+const StatusView = () => import("../views/StatusView.vue");
+const RanklistView = () => import("../views/RanklistView.vue");
+const AboutView = () => import("../views/AboutView.vue");
+const LoginView = () => import("../views/LoginView.vue");
+const ProblemView = () => import("../views/ProblemView.vue");
+const AdminView = () => import("../views/AdminView.vue");
+const ProfileView = () => import("../views/ProfileView.vue");
 
 const routes = [
   {
@@ -10,56 +20,52 @@ const routes = [
   {
     path: "/problemset",
     name: "problemset",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/ProblemsetView.vue"),
+    component: ProblemsetView,
   },
   {
     path: "/contest",
     name: "contest",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/ContestView.vue"),
+    component: ContestView,
   },
   {
     path: "/status",
     name: "status",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/StatusView.vue"),
+    component: StatusView,
   },
   {
     path: "/ranklist",
     name: "ranklist",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/RanklistView.vue"),
+    component: RanklistView,
   },
   {
     path: "/about",
     name: "about",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+    component: AboutView,
   },
   {
     path: "/register",
     name: "register",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/LoginView.vue"),
+    component: LoginView,
   },
   {
     path: "/login",
     name: "login",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/LoginView.vue"),
+    component: LoginView,
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    component: ProfileView,
   },
   {
     path: "/problem/:id",
     name: "problem",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/ProblemView.vue"),
+    component: ProblemView,
   },
   {
     path: "/admin",
     name: "admin",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AdminView.vue"),
+    component: AdminView,
   },
 ];
 

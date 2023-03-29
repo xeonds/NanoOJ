@@ -8,5 +8,6 @@ export default {
   ranks: [],
   submissions: [],
   users: [],
+  userInfo: {},
   contests: [],
 };
