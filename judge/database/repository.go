@@ -148,7 +148,7 @@ func GetUserByEmail(email string) (*model.User, error) {
 
 func GetUserByUserID(userid uint32) (*model.User, error) {
 	var user model.User
-	result := NanoDB.Where("userid = ?", userid).First(&user)
+	result := NanoDB.Where("user_id = ?", userid).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}

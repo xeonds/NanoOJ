@@ -61,7 +61,7 @@ func GetUser(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"user": user})
+		c.JSON(http.StatusOK, user)
 		return
 	}
 	users, err := database.GetUsers()
