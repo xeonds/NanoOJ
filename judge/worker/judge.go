@@ -71,9 +71,9 @@ func JudgeWorker() {
 		return
 	}
 	// load input/output files to disk
-	inputFiles := make([]string, len(problem.ProblemInputs))
-	outputFiles := make([]string, len(problem.ExpectedOutputs))
-	for i, inputFile := range problem.ProblemInputs {
+	inputFiles := make([]string, len(problem.Inputs))
+	outputFiles := make([]string, len(problem.Outputs))
+	for i, inputFile := range problem.Inputs {
 		inputFiles[i] = filepath.Join(tempFolder, inputFile)
 		err = os.WriteFile(inputFiles[i], []byte(inputFile), 0644)
 		if err != nil {
@@ -83,7 +83,7 @@ func JudgeWorker() {
 			return
 		}
 	}
-	for i, outputFile := range problem.ExpectedOutputs {
+	for i, outputFile := range problem.Outputs {
 		outputFiles[i] = filepath.Join(tempFolder, outputFile)
 		err = os.WriteFile(outputFiles[i], []byte(outputFile), 0644)
 		if err != nil {

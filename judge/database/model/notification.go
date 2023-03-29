@@ -6,8 +6,8 @@ import (
 
 type Notification struct {
 	gorm.Model
-	NotificationID uint32 `gorm:"primaryKey;autoIncrement"`
-	Title          string
-	Author         string
-	Content        string
+	ID      uint32 `gorm:"primaryKey;autoIncrement"`
+	Title   string
+	Author  string
+	Content string
 }
