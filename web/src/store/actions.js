@@ -1,19 +1,35 @@
 import v_axios from "../axios/index";
+import jwtDecode from "jwt-decode";
 
 export default {
   async init({ dispatch }) {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const data = jwtDecode(token);
+      if (data.exp >= Date.now() / 1000) {
+        dispatch("logout");
+      }
+      dispatch("login", token);
+      dispatch("fetchUserInfo", data.user_id);
+    }
     await dispatch("fetchProblems");
     await dispatch("fetchUsers");
     await dispatch("fetchSubmissions");
     await dispatch("fetchNotifications");
   },
-  //auth
-  async login({ commit }, token) {
+  async login({ commit, dispatch }, token) {
     commit("setToken", token);
+    commit("setLoggedInStatus", true);
     v_axios.defaults.headers.common["Authorization"] = token;
+    localStorage.setItem("token", token);
+    const decode = jwtDecode(token);
+    await dispatch("fetchUserInfo", decode.user_id);
   },
-  async setLoggedInStatus({ commit }, isLoggedIn) {
-    commit("setLoggedInStatus", isLoggedIn);
+  logout({ commit }) {
+    commit("setToken", "");
+    commit("setLoggedInStatus", false);
+    delete v_axios.defaults.headers.common["Authorization"];
+    localStorage.removeItem("token");
   },
   async fetchNotifications({ commit }) {
     const response = await v_axios.get("/notifications");
@@ -35,12 +51,19 @@ export default {
     const response = await v_axios.get("/users");
     commit("setUsers", response.data);
   },
+  async fetchUserInfo({ commit }, userID) {
+    const response = await v_axios.get("/users/" + userID);
+    commit("setUserInfo", response.data);
+  },
   async createProblem({ commit }, problem) {
     const response = await v_axios.post("/problems", problem);
     commit("addProblem", response.data);
   },
   async updateProblem({ commit }, problem) {
-    const response = await v_axios.put(`/problems/${problem.id}`, problem);
+    const response = await v_axios.put(
+      `/problems/${problem.ProblemID}`,
+      problem
+    );
     commit("updateProblem", response.data);
   },
   async deleteProblem({ commit }, problemId) {

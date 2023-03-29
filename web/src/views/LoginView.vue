@@ -15,17 +15,14 @@
               <el-input type="password" v-model="password"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button
-                type="primary"
-                v-if="$route.path === '/login'"
-                @click.prevent="login"
-                >Login</el-button
-              >
-              <el-button type="primary" v-else @click.prevent="register"
-                >Register</el-button
-              >
+              <el-button type="primary" v-if="$route.path === '/login'" @click.prevent="login">Login</el-button>
+              <el-button type="primary" v-else @click.prevent="register">Register</el-button>
             </el-form-item>
           </el-form>
+          <p v-if="$route.path === '/login'">Have no account? Head to <el-link type="primary"
+              @click="this.$router.push('/register')">register</el-link>.</p>
+          <p v-else>Already have an account? Head to <el-link type="primary"
+              @click="this.$router.push('/login')">login</el-link>.</p>
         </el-card>
       </el-col>
       <el-col :span="2"></el-col>
@@ -52,7 +49,7 @@ export default {
     };
   },
   methods: {
-    async login() {
+    login() {
       this.axios
         .post("/user/login", {
           email: this.email,
@@ -61,28 +58,24 @@ export default {
         .then((response) => {
           const data = response.data;
           this.$store.dispatch("login", data.token);
-          this.$store.dispatch("setLoggedInStatus", true);
           this.$router.push("/");
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    async register() {
-      try {
-        const response = await this.axios.post("/user/register", {
-          username: this.username,
-          email: this.email,
-          password: this.password,
-        });
+    register() {
+      this.axios.post("/user/register", {
+        username: this.username,
+        email: this.email,
+        password: this.password,
+      }).then((response) => {
         const data = response.data;
-        if (data.success) {
-          this.$router.push("/login");
-        }
-      } catch (error) {
+        this.$router.push("/login");
+      }).catch((error) => {
         console.error(error);
-      }
-    },
+      })
+    }
   },
 };
 </script>

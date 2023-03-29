@@ -19,8 +19,14 @@ export default {
   getRanks: (state) => {
     return state.ranks;
   },
+  getSubmissions: (state) => {
+    return state.submissions;
+  },
   getSubmissionById: (state) => (id) => {
     return state.submissions.find((submission) => submission.id == id);
+  },
+  getUserInfo: (state) => {
+    return state.userInfo;
   },
   getUserById: (state) => (id) => {
     return state.users.find((user) => user.id == id);

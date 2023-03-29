@@ -1,14 +1,10 @@
 <template>
   <div id="problem">
-    <h1>{{ problemTitle }}</h1>
-    <p>{{ problemNote }}</p>
+    <h1>{{ problem.ProblemTitle }}</h1>
+    <p>{{ problem.ProblemDescription }}</p>
     <el-form>
       <el-form-item>
-        <el-input
-          type="textarea"
-          v-model="code"
-          :autosize="{ minRows: 10, maxRows: 20 }"
-        ></el-input>
+        <el-input type="textarea" v-model="code" :autosize="{ minRows: 10, maxRows: 20 }"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitCode">Commit</el-button>
@@ -30,16 +26,10 @@ export default {
   },
   computed: {
     ...mapGetters({
-      problems: "getProblems",
-      problem: "getProblemById",
+      _problem: "getProblemById",
     }),
-    problemTitle() {
-      const id = this.$route.params.id;
-      return this.problem(id).ProblemDescription;
-    },
-    problemNote() {
-      const id = this.$route.params.id;
-      return this.problem(id).problemNote;
+    problem() {
+      return this._problem(this.$route.params.id)
     },
   },
   methods: {
@@ -57,5 +47,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
