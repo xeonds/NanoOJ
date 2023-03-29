@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type Submission struct {
 	gorm.Model
-	SubmissionID uint32
+	SubmissionID uint32 `gorm:"primaryKey;autoIncrement"`
 	ProblemID    uint32
 	UserID       uint16
 	Language     string
