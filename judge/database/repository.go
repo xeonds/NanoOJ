@@ -12,7 +12,7 @@ func CreateSubmission(submission *model.Submission) error {
 }
 
 func GetSubmissionByID(id uint32) (*model.Submission, error) {
-	submission := &model.Submission{SubmissionID: id}
+	submission := &model.Submission{ID: id}
 	err := NanoDB.First(&submission).Error
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func CreateContest(contest *model.Contest) error {
 }
 
 func GetContestByID(id uint32) (*model.Contest, error) {
-	contest := &model.Contest{ContestID: id}
+	contest := &model.Contest{ID: id}
 	err := NanoDB.First(&contest).Error
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func CreateProblem(problem *model.Problem) error {
 }
 
 func GetProblemByID(id uint32) (*model.Problem, error) {
-	problem := &model.Problem{ProblemID: id}
+	problem := &model.Problem{ID: id}
 	err := NanoDB.First(&problem).Error
 	if err != nil {
 		return nil, err

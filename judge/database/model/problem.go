@@ -4,10 +4,10 @@ import "gorm.io/gorm"
 
 type Problem struct {
 	gorm.Model
-	ProblemID          uint32 `gorm:"primaryKey;autoIncrement"`
-	ProblemTitle       string
-	ProblemDifficulty  int
-	ProblemDescription string
-	ProblemInputs      []string `gorm:"type:text"`
-	ExpectedOutputs    []string `gorm:"type:text"`
+	ID          uint32 `gorm:"primaryKey;autoIncrement"`
+	Title       string
+	Difficulty  int
+	Description string
+	Inputs      []string `gorm:"type:text"`
+	Outputs     []string `gorm:"type:text"`
 }

@@ -8,10 +8,9 @@ import (
 
 type Contest struct {
 	gorm.Model
-	ContestID  uint32   `gorm:"primaryKey;autoIncrement"`
-	ProblemIDs []uint32 `gorm:"type:uint32"`
-	Note       string
-	Release    time.Time
-	StartTime  time.Time
-	EndTime    time.Time
+	ID          uint32   `gorm:"primaryKey;autoIncrement"`
+	ProblemIDs  []uint32 `gorm:"type:uint32"`
+	Description string
+	StartTime   time.Time
+	EndTime     time.Time
 }
