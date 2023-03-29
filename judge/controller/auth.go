@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"xyz.xeonds/nano-oj/database"
@@ -50,7 +51,12 @@ func Register(c *gin.Context) {
 
 func GetUser(c *gin.Context) {
 	if userID := c.Param("user_id"); userID != "" {
-		user, err := database.GetUserByUsername(userID)
+		userID, err := strconv.ParseUint(userID, 10, 32)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
+			return
+		}
+		user, err := database.GetUserByUserID(uint32(userID))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
 			return
