@@ -74,7 +74,7 @@ func JudgeWorker() {
 	inputFiles := make([]string, len(problem.Inputs))
 	outputFiles := make([]string, len(problem.Outputs))
 	for i, inputFile := range problem.Inputs {
-		inputFiles[i] = filepath.Join(tempFolder, inputFile)
+		inputFiles[i] = filepath.Join(tempFolder, fmt.Sprintf("%d.in", i))
 		err = os.WriteFile(inputFiles[i], []byte(inputFile), 0644)
 		if err != nil {
 			submission.Status = "failed"
@@ -84,7 +84,7 @@ func JudgeWorker() {
 		}
 	}
 	for i, outputFile := range problem.Outputs {
-		outputFiles[i] = filepath.Join(tempFolder, outputFile)
+		outputFiles[i] = filepath.Join(tempFolder, fmt.Sprintf("%d.out", i))
 		err = os.WriteFile(outputFiles[i], []byte(outputFile), 0644)
 		if err != nil {
 			fmt.Println("failed to load file", err)

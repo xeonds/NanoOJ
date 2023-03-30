@@ -22,7 +22,7 @@ func GetSubmissionByID(id uint32) (*model.Submission, error) {
 
 func GetSubmissionsByProblemID(problemID uint32) ([]model.Submission, error) {
 	var submissions []model.Submission
-	err := NanoDB.Where("problem_id = ?", problemID).Find(&submissions).Error
+	err := NanoDB.Where("id = ?", problemID).Find(&submissions).Error
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func GetSubmissionsByProblemID(problemID uint32) ([]model.Submission, error) {
 
 func GetSubmissionsByUserID(userID uint32) ([]model.Submission, error) {
 	var submissions []model.Submission
-	err := NanoDB.Where("user_id = ?", userID).Find(&submissions).Error
+	err := NanoDB.Where("id = ?", userID).Find(&submissions).Error
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func UpdateSubmission(submission *model.Submission) error {
 }
 
 func DeleteSubmission(submissionID uint32) error {
-	result := NanoDB.Where("submission_id = ?", submissionID).Delete(&model.Submission{})
+	result := NanoDB.Where("id = ?", submissionID).Delete(&model.Submission{})
 	return result.Error
 }
 
@@ -88,7 +88,7 @@ func UpdateContest(contest *model.Contest) error {
 }
 
 func DeleteContest(contestID uint32) error {
-	result := NanoDB.Where("contest_id = ?", contestID).Delete(&model.Contest{})
+	result := NanoDB.Where("id = ?", contestID).Delete(&model.Contest{})
 	return result.Error
 }
 
@@ -148,7 +148,7 @@ func GetUserByEmail(email string) (*model.User, error) {
 
 func GetUserByUserID(userid uint32) (*model.User, error) {
 	var user model.User
-	result := NanoDB.Where("user_id = ?", userid).First(&user)
+	result := NanoDB.Where("id = ?", userid).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}

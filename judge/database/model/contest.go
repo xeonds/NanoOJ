@@ -8,9 +8,9 @@ import (
 
 type Contest struct {
 	gorm.Model
-	ID          uint32   `gorm:"primaryKey;autoIncrement"`
-	ProblemIDs  []uint32 `gorm:"type:uint32"`
-	Description string
-	StartTime   time.Time
-	EndTime     time.Time
+	ID          uint32    `json:"id" gorm:"primaryKey;autoIncrement"`
+	Problems    []Problem `json:"problems" gorm:"many2many:contest_problems"`
+	Description string    `json:"description"`
+	StartTime   time.Time `json:"start_time"`
+	EndTime     time.Time `json:"end_time"`
 }
