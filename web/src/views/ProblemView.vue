@@ -1,7 +1,7 @@
 <template>
   <div id="problem">
-    <h1>{{ problem.ProblemTitle }}</h1>
-    <p>{{ problem.ProblemDescription }}</p>
+    <h1>{{ problem.title }}</h1>
+    <p>{{ problem.description }}</p>
     <el-form>
       <el-form-item>
         <el-input type="textarea" v-model="code" :autosize="{ minRows: 10, maxRows: 20 }"></el-input>
@@ -15,10 +15,10 @@
 
 <script>
 import { mapGetters } from "vuex";
+import api from '../api';
 
 export default {
   name: "ProblemView",
-  components: {},
   data: function () {
     return {
       code: "",
@@ -34,8 +34,7 @@ export default {
   },
   methods: {
     submitCode: function () {
-      this.axios
-        .post("/submissions", { code: this.code })
+      api.addSubmissions({ code: this.code })
         .then((response) => {
           console.log(response.data);
         })

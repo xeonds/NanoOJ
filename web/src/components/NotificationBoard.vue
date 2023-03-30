@@ -2,8 +2,8 @@
   <div class="block">
     <el-carousel trigger="click" :interval="5000" indicator-position="outside" arrow="never">
       <el-carousel-item v-for="(notification, index) in notifications" :key="index">
-        <h3>{{ notification.Title }}</h3>
-        <p>{{ notification.Content }}</p>
+        <h3>{{ notification.title }}</h3>
+        <p>{{ notification.content }}</p>
         <p>发布时间：{{ notification.CreatedAt }}</p>
         <p>更新时间：{{ notification.UpdateAt }}</p>
       </el-carousel-item>

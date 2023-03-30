@@ -12,10 +12,11 @@
           <!--<el-menu-item index="6" route="/about">常见问答</el-menu-item>-->
           <div class="flex-grow" />
           <el-sub-menu v-if="isLogin" index="6">
-            <template #title>{{ username }}</template>
+            <template #title>{{ username }}, 欢迎。</template>
             <div>
               <el-menu-item index="6-1" route="/profile">个人中心</el-menu-item>
-              <el-menu-item index="6-2" @click="logout">登出</el-menu-item>
+              <el-menu-item index="6-2" route="/" @click="logout">登出</el-menu-item>
+              <el-menu-item v-if="userPermission > 1" index="6-3" route="/admin">管理</el-menu-item>
             </div>
           </el-sub-menu>
           <el-menu-item v-else index="6" route="/login">登录/注册</el-menu-item>
@@ -48,8 +49,11 @@ export default {
       userInfo: "getUserInfo"
     }),
     username: function () {
-      return this.userInfo.Username;
-    }
+      return this.userInfo.username;
+    },
+    userPermission: function () {
+      return this.userInfo.permission;
+    },
   },
   methods: {
     ...mapActions({

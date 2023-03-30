@@ -8,14 +8,14 @@
           </el-col>
         </el-row>
         <el-table :data="problems" style="width: 100%">
-          <el-table-column prop="ProblemID" label="ID"></el-table-column>
-          <el-table-column prop="ProblemTitle" label="Title"></el-table-column>
-          <el-table-column prop="ProblemDifficulty" label="Difficulty"></el-table-column>
+          <el-table-column prop="id" label="ID"></el-table-column>
+          <el-table-column prop="title" label="Title"></el-table-column>
+          <el-table-column prop="difficulty" label="Difficulty"></el-table-column>
           <el-table-column prop="CreatedAt" label="Created At"></el-table-column>
           <el-table-column label="Actions">
             <template #default="{ row }">
               <el-button @click="editProblem(row)">Edit</el-button>
-              <el-button @click="deleteProblem(row)">Delete</el-button>
+              <el-button @click="DeleteProblem(row)">Delete</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -24,11 +24,21 @@
             <el-form-item label="Title">
               <el-input v-model="newProblem.title"></el-input>
             </el-form-item>
+            <el-form-item label="Description">
+              <el-input v-model="newProblem.description" type="textarea"></el-input>
+            </el-form-item>
+            <el-form-item label="Inputs">
+              <el-input v-model="newProblem.inputs" type="textarea" />
+            </el-form-item>
+            <el-form-item label="Outputs">
+              <el-input v-model="newProblem.outputs" type="textarea" />
+            </el-form-item>
             <el-form-item label="Difficulty">
               <el-select v-model="newProblem.difficulty">
-                <el-option label="Easy" value="easy"></el-option>
-                <el-option label="Medium" value="medium"></el-option>
-                <el-option label="Hard" value="hard"></el-option>
+                <el-option label="Easy" value=0></el-option>
+                <el-option label="Normal" value=1></el-option>
+                <el-option label="Hard" value=2></el-option>
+                <el-option label="Lunatic" value=3></el-option>
               </el-select>
             </el-form-item>
           </el-form>
@@ -40,10 +50,10 @@
         <el-dialog v-model="editProblemDialogVisible" title="Edit Problem">
           <el-form :model="selectedProblem" label-width="100px">
             <el-form-item label="Title">
-              <el-input v-model="selectedProblem.ProblemTitle"></el-input>
+              <el-input v-model="selectedProblem.title"></el-input>
             </el-form-item>
             <el-form-item label="Description">
-              <el-input v-model="selectedProblem.ProblemDescription" type="textarea"></el-input>
+              <el-input v-model="selectedProblem.description" type="textarea"></el-input>
             </el-form-item>
             <el-form-item label="Inputs">
               <el-input v-model="selectedProblem.inputs" type="textarea" />
@@ -52,10 +62,11 @@
               <el-input v-model="selectedProblem.outputs" type="textarea" />
             </el-form-item>
             <el-form-item label="Difficulty">
-              <el-select v-model="newProblem.difficulty">
-                <el-option label="Easy" value="easy"></el-option>
-                <el-option label="Medium" value="medium"></el-option>
-                <el-option label="Hard" value="hard"></el-option>
+              <el-select v-model="selectedProblem.difficulty">
+                <el-option label="Easy" value=0></el-option>
+                <el-option label="Normal" value=1></el-option>
+                <el-option label="Hard" value=2></el-option>
+                <el-option label="Lunatic" value=3></el-option>
               </el-select>
             </el-form-item>
           </el-form>
@@ -72,14 +83,14 @@
           </el-col>
         </el-row>
         <el-table :data="notifications" style="width: 100%">
-          <el-table-column prop="ID" label="ID"></el-table-column>
-          <el-table-column prop="Title" label="通知标题"></el-table-column>
-          <el-table-column prop="Author" label="发布者"></el-table-column>
+          <el-table-column prop="id" label="ID"></el-table-column>
+          <el-table-column prop="title" label="通知标题"></el-table-column>
+          <el-table-column prop="author" label="发布者"></el-table-column>
           <el-table-column prop="CreatedAt" label="发布时间"></el-table-column>
           <el-table-column label="Actions">
             <template #default="{ row }">
               <el-button @click="editNotification(row)">Edit</el-button>
-              <el-button @click="deleteNotification(row)">Delete</el-button>
+              <el-button @click="DeleteNotification(row)">Delete</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -89,44 +100,27 @@
               <el-input v-model="newNotification.title"></el-input>
             </el-form-item>
             <el-form-item label="Content">
-              <el-input v-model="newNotification.content"></el-input>
-            </el-form-item>
-            <el-form-item label="Release Time">
-              <el-col :span="11">
-                <el-date-picker v-model="newNotification.release" type="date" placeholder="Pick a date"
-                  style="width: 100%" />
-              </el-col>
-            </el-form-item>
-            <el-form-item label="Update Time">
-              <el-col :span="11">
-                <el-date-picker v-model="newNotification.updateTime" type="date" placeholder="Pick a date"
-                  style="width: 100%" />
-              </el-col>
+              <el-input v-model="newNotification.content" type="textarea"></el-input>
             </el-form-item>
           </el-form>
           <div class="dialog-footer">
             <el-button @click="createNotificationDialogVisible = false">Cancel</el-button>
-            <el-button type="primary" @click="createNotification(newNotification)">Create</el-button>
+            <el-button type="primary"
+              @click="createNotification(newNotification); createNotificationDialogVisible = false">Create</el-button>
           </div>
         </el-dialog>
-        <el-dialog v-model="editNotificationDialogVisible" title="Edit Problem">
-          <el-form :model="newNotification" label-width="100px">
+        <el-dialog v-model="editNotificationDialogVisible" title="Edit Notification">
+          <el-form :model="selectedNotification" label-width="100px">
             <el-form-item label="Title">
-              <el-input v-model="newNotification.title"></el-input>
+              <el-input v-model="selectedNotification.title"></el-input>
             </el-form-item>
             <el-form-item label="Content">
-              <el-input v-model="newNotification.content"></el-input>
-            </el-form-item>
-            <el-form-item label="Release Time">
-              <el-col :span="11">
-                <el-date-picker v-model="newNotification.release" type="date" placeholder="Pick a date"
-                  style="width: 100%" />
-              </el-col>
+              <el-input v-model="selectedNotification.content" type="textarea"></el-input>
             </el-form-item>
           </el-form>
           <div class="dialog-footer">
-            <el-button @click="createNotificationDialogVisible = false">Cancel</el-button>
-            <el-button type="primary" @click="updateNotification(newNotification)">Create</el-button>
+            <el-button @click="editNotificationDialogVisible = false">Cancel</el-button>
+            <el-button type="primary" @click="UpdateNotification">Create</el-button>
           </div>
         </el-dialog>
       </el-tab-pane>
@@ -146,7 +140,10 @@ export default {
       editNotificationDialogVisible: false,
       newProblem: {
         title: "",
-        difficulty: "easy",
+        description: "",
+        difficulty: "",
+        inputs: "",
+        outputs: ""
       },
       selectedProblem: {
         id: "",
@@ -182,6 +179,8 @@ export default {
       "createNotification",
       "updateNotification",
       "deleteNotification",
+      "fetchProblems",
+      "fetchNotifications",
     ]),
     editProblem(problem) {
       this.selectedProblem = { ...problem };
@@ -191,11 +190,11 @@ export default {
       this.newProblem.inputs = this.newProblem.inputs.split("\n---\n");
       this.newProblem.outputs = this.newProblem.outputs.split("\n---\n");
       this.createProblem(this.newProblem);
-      this.createProblemDialogVisible = false;
+      this.editProblemDialogVisible = false;
     },
     UpdateProblem() {
-      this.selectedProblem.inputs = this.selectedProblem.inputs.split("\n---\n");
-      this.selectedProblem.outputs = this.selectedProblem.outputs.split("\n---\n");
+      this.selectedProblem.Inputs = this.selectedProblem.Inputs.split("\n---\n");
+      this.selectedProblem.Outputs = this.selectedProblem.Outputs.split("\n---\n");
       this.updateProblem(this.selectedProblem);
       this.editProblemDialogVisible = false;
     },
@@ -203,7 +202,11 @@ export default {
       this.selectedNotification = { ...notification };
       this.editNotificationDialogVisible = true;
     },
-    deleteProblem(problem) {
+    UpdateNotification() {
+      this.updateNotification(this.selectedNotification);
+      this.editNotificationDialogVisible = false;
+    },
+    DeleteProblem(problem) {
       this.$confirm("This will permanently delete the problem. Continue?", "Warning", {
         confirmButtonText: "OK",
         cancelButtonText: "Cancel",
@@ -211,6 +214,26 @@ export default {
       })
         .then(() => {
           this.deleteProblem(problem.ID);
+          this.$message({
+            type: "success",
+            message: "Delete successfully!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "Delete canceled",
+          });
+        });
+    },
+    DeleteNotification(notification) {
+      this.$confirm("This will permanently delete the notification. Continue?", "Warning", {
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancel",
+        type: "warning",
+      })
+        .then(() => {
+          this.deleteNotification(notification.ID);
           this.$message({
             type: "success",
             message: "Delete successfully!",

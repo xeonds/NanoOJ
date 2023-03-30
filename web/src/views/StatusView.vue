@@ -29,7 +29,6 @@ export default {
   methods: {
     ...mapActions({ fetchSubmissions: "fetchSubmissions", getUserById: "fetchUserInfo" }),
     Username: function (id) {
-      console.log(id);
       return this.getUserById(id).Username;
     }
   },

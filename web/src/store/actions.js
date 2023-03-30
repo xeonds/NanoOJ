@@ -57,7 +57,7 @@ export default {
     commit("addProblem", response.data);
   },
   async updateProblem({ commit }, problem) {
-    const response = await api.updateProblem(problem);
+    const response = await api.updateProblem(problem, problem.id);
     commit("updateProblem", response.data);
   },
   async deleteProblem({ commit }, problemId) {
@@ -69,7 +69,10 @@ export default {
     commit("addNotification", response.data);
   },
   async updateNotification({ commit }, notification) {
-    const response = await api.updateNotification(notification);
+    const response = await api.updateNotification(
+      notification,
+      notification.id
+    );
     commit("updateNotification", response.data);
   },
   async deleteNotification({ commit }, notificationId) {

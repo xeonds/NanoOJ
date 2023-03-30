@@ -8,7 +8,7 @@ export default {
     return state.notifications;
   },
   getProblemById: (state) => (id) => {
-    return state.problems.find((problem) => problem.ProblemID == id);
+    return state.problems.find((problem) => problem.id == id);
   },
   getProblems: (state) => {
     return state.problems;

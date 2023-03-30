@@ -6,7 +6,6 @@ const v_axios = axios.create({
 });
 v_axios.interceptors.request.use(
   (req) => {
-    console.log("configuring");
     if (!req.needToken) return req;
 
     const token = localStorage.getItem("token");
@@ -18,7 +17,6 @@ v_axios.interceptors.request.use(
     return req;
   },
   (err) => {
-    console.log("error");
     return Promise.reject(err);
   }
 );
@@ -27,7 +25,6 @@ v_axios.interceptors.response.use(
     return req;
   },
   (err) => {
-    console.log("error");
     return Promise.reject(err);
   }
 );

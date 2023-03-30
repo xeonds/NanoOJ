@@ -40,6 +40,8 @@
 </template>
 
 <script>
+import api from '../api';
+
 export default {
   data() {
     return {
@@ -50,11 +52,7 @@ export default {
   },
   methods: {
     login() {
-      this.axios
-        .post("/user/login", {
-          email: this.email,
-          password: this.password,
-        })
+      api.login({ email: this.email, password: this.password, })
         .then((response) => {
           const data = response.data;
           this.$store.dispatch("login", data.token);
@@ -65,16 +63,13 @@ export default {
         });
     },
     register() {
-      this.axios.post("/user/register", {
-        username: this.username,
-        email: this.email,
-        password: this.password,
-      }).then((response) => {
-        const data = response.data;
-        this.$router.push("/login");
-      }).catch((error) => {
-        console.error(error);
-      })
+      api.register({ username: this.username, email: this.email, password: this.password, })
+        .then((response) => {
+          const data = response.data;
+          this.$router.push("/login");
+        }).catch((error) => {
+          console.error(error);
+        })
     }
   },
 };
