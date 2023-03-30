@@ -38,7 +38,7 @@ func GetSubmissionsByUserID(userID uint32) ([]model.Submission, error) {
 	return submissions, nil
 }
 
-func GetSubmissionsByStatus(status string) ([]model.Submission, error) {
+func GetSubmissionsByStatus(status model.Status) ([]model.Submission, error) {
 	var submissions []model.Submission
 	err := NanoDB.Where("status = ?", status).Find(&submissions).Error
 	if err != nil {

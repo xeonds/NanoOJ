@@ -5,16 +5,19 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"xyz.xeonds/nano-oj/database/model"
 )
 
-func (s *task) cJudger() string {
+func (s *task) cJudger() (model.Status, string) {
 	compileCommand := "g++ -o " + s.Workdir + "/program " + s.SourceFile
 	compileResult, _ := exec.Command("bash", "-c", compileCommand).Output()
 	if len(compileResult) != 0 {
 		// TODO: return detailed info
-		return "Compilation failed"
+		return model.CompilationError, "Compilation failed"
 	}
 	var result string
+	var passed = true
 	for i := 0; i < len(s.InputFiles); i++ {
 		expectOutput, _ := os.ReadFile(s.ExpectFiles[i])
 		// Run the program with the given input
@@ -30,7 +33,12 @@ func (s *task) cJudger() string {
 			result += fmt.Sprintf("Test case %d passed\n", i+1)
 		} else {
 			result += fmt.Sprintf("Test case %d failed\n", i+1)
+			passed = false
 		}
 	}
-	return result
+	if passed {
+		return model.Accepted, result
+	} else {
+		return model.WrongAnswer, result
+	}
 }

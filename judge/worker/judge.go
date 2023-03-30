@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"xyz.xeonds/nano-oj/database"
@@ -22,14 +23,15 @@ type task struct {
 	TimeLimit   int
 }
 
-func (s *task) judge() (string, error) {
+func (s *task) judge() (model.Status, string, error) {
 	switch s.Lang {
 	case "c", "cpp":
-		return s.cJudger(), nil
+		res, info := s.cJudger()
+		return res, info, nil
 	// case "python":
-	// return judgement.pyJudger(), nil
+	// return s.pyJudger(), nil
 	default:
-		return "", fmt.Errorf("unsupported language: %s", s.Lang)
+		return model.CompilationError, "", fmt.Errorf("unsupported language: %s", s.Lang)
 	}
 }
 
@@ -40,22 +42,24 @@ func IsEmpty() bool {
 func JudgeWorker() {
 	// read a submission from judgeQueue
 	submission := <-JudgeQueue
-	submission.Status = "processing"
+	submission.Status = model.Pending
 	database.NanoDB.Save(&submission)
 	problemID := strconv.Itoa(int(submission.ProblemID))
 	sourceCode := submission.Code
 	id, err := strconv.ParseUint(problemID, 10, 32)
 	if err != nil {
-		submission.Status = "failed"
+		submission.Status = 0
 		fmt.Println("failed to parse", err)
+		// submission.Information = append(submission.Information, "Failed to parse problem id")
 		database.NanoDB.Save(&submission)
 		return
 	}
 	// get the problem
 	problem, err := database.GetProblemByID(uint32(id))
 	if err != nil {
-		submission.Status = "failed"
+		submission.Status = 0
 		fmt.Println("failed to fetch problem", err)
+		// submission.Information = append(submission.Information, "Failed to fetch problem")
 		database.NanoDB.Save(&submission)
 		return
 	}
@@ -65,7 +69,7 @@ func JudgeWorker() {
 	programFile := filepath.Join(tempFolder, "program.cc")
 	err = os.WriteFile(programFile, []byte(sourceCode), 0644)
 	if err != nil {
-		submission.Status = "failed"
+		submission.Status = 0
 		fmt.Println("failed to create workdir", err)
 		database.NanoDB.Save(&submission)
 		return
@@ -77,7 +81,7 @@ func JudgeWorker() {
 		inputFiles[i] = filepath.Join(tempFolder, fmt.Sprintf("%d.in", i))
 		err = os.WriteFile(inputFiles[i], []byte(inputFile), 0644)
 		if err != nil {
-			submission.Status = "failed"
+			submission.Status = 0
 			fmt.Println("failed to load file", err)
 			database.NanoDB.Save(&submission)
 			return
@@ -87,6 +91,7 @@ func JudgeWorker() {
 		outputFiles[i] = filepath.Join(tempFolder, fmt.Sprintf("%d.out", i))
 		err = os.WriteFile(outputFiles[i], []byte(outputFile), 0644)
 		if err != nil {
+			submission.Status = 0
 			fmt.Println("failed to load file", err)
 			database.NanoDB.Save(&submission)
 			return
@@ -101,20 +106,22 @@ func JudgeWorker() {
 		ExpectFiles: outputFiles,
 		TimeLimit:   1000,
 	}
-	result, err := t.judge()
+	result, info, err := t.judge()
 	if err != nil {
-		submission.Status = "failed"
+		submission.Status = model.CompilationError
 		fmt.Println("language not supported", err)
+		submission.Information = append(submission.Information, "Language not supported")
 		database.NanoDB.Save(&submission)
 		return
 	}
 	submission.Status = result
+	submission.Information = append(submission.Information, strings.Split(info, "\n")...)
 	fmt.Println(result)
 	database.NanoDB.Save(&submission)
 }
 
 func JudgeEnqueue() {
-	submissions, err := database.GetSubmissionsByStatus("waiting")
+	submissions, err := database.GetSubmissionsByStatus(model.Pending)
 	if err != nil {
 		fmt.Println(err)
 		return
