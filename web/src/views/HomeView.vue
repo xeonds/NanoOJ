@@ -20,10 +20,6 @@
           <RankList :ranks="ranks"></RankList>
         </el-card>
         <el-card>
-          <h3>搜索</h3>
-          <SearchBox></SearchBox>
-        </el-card>
-        <el-card>
           <h3>近期测试</h3>
           <ContestList :contests="contests"></ContestList>
         </el-card>
@@ -37,7 +33,6 @@ import { mapGetters } from "vuex";
 import NotificationBoard from "../components/NotificationBoard.vue";
 import ProblemList from "../components/ProblemList.vue";
 import RankList from "../components/RankList.vue";
-import SearchBox from "../components/SearchBox.vue";
 import ContestList from "../components/ContestList.vue";
 
 export default {
@@ -46,7 +41,6 @@ export default {
     NotificationBoard,
     ProblemList,
     RankList,
-    SearchBox,
     ContestList,
   },
   computed: {

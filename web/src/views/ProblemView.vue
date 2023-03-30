@@ -34,9 +34,11 @@ export default {
   },
   methods: {
     submitCode: function () {
-      api.addSubmissions({ code: this.code })
+      api.addSubmissions({ code: this.code, language: 'c', state: 'waiting', problem_id: parseInt(this.$route.params.id) })
         .then((response) => {
-          console.log(response.data);
+          if (response.status === 200) {
+            this.$router.push({ name: 'SubmissionView', params: { id: response.data.id } });
+          }
         })
         .catch((error) => {
           console.log(error);

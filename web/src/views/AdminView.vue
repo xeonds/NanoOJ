@@ -10,12 +10,16 @@
         <el-table :data="problems" style="width: 100%">
           <el-table-column prop="id" label="ID"></el-table-column>
           <el-table-column prop="title" label="Title"></el-table-column>
-          <el-table-column prop="difficulty" label="Difficulty"></el-table-column>
+          <el-table-column label="Difficulty">
+            <template #default="{ row }">
+              <el-rate v-model="row.difficulty" :colors="colors" disabled />
+            </template>
+          </el-table-column>
           <el-table-column prop="CreatedAt" label="Created At"></el-table-column>
           <el-table-column label="Actions">
             <template #default="{ row }">
               <el-button @click="editProblem(row)">Edit</el-button>
-              <el-button @click="DeleteProblem(row)">Delete</el-button>
+              <el-button @click="DeleteProblem(row.id)">Delete</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -34,17 +38,12 @@
               <el-input v-model="newProblem.outputs" type="textarea" />
             </el-form-item>
             <el-form-item label="Difficulty">
-              <el-select v-model="newProblem.difficulty">
-                <el-option label="Easy" value=0></el-option>
-                <el-option label="Normal" value=1></el-option>
-                <el-option label="Hard" value=2></el-option>
-                <el-option label="Lunatic" value=3></el-option>
-              </el-select>
+              <el-rate v-model="newProblem.difficulty" :colors="colors" />
             </el-form-item>
           </el-form>
           <div class="dialog-footer">
             <el-button @click="createProblemDialogVisible = false">Cancel</el-button>
-            <el-button type="primary" @click="createProblem(newProblem)">Create</el-button>
+            <el-button type="primary" @click="CreateProblem">Create</el-button>
           </div>
         </el-dialog>
         <el-dialog v-model="editProblemDialogVisible" title="Edit Problem">
@@ -62,12 +61,7 @@
               <el-input v-model="selectedProblem.outputs" type="textarea" />
             </el-form-item>
             <el-form-item label="Difficulty">
-              <el-select v-model="selectedProblem.difficulty">
-                <el-option label="Easy" value=0></el-option>
-                <el-option label="Normal" value=1></el-option>
-                <el-option label="Hard" value=2></el-option>
-                <el-option label="Lunatic" value=3></el-option>
-              </el-select>
+              <el-rate v-model="selectedProblem.difficulty" :colors="colors" />
             </el-form-item>
           </el-form>
           <div class="dialog-footer">
@@ -90,7 +84,7 @@
           <el-table-column label="Actions">
             <template #default="{ row }">
               <el-button @click="editNotification(row)">Edit</el-button>
-              <el-button @click="DeleteNotification(row)">Delete</el-button>
+              <el-button @click="DeleteNotification(row.id)">Delete</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -131,9 +125,12 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 
+
+
 export default {
   data() {
     return {
+      colors: { 2: '#01D842', 4: '#66CCFF', 5: '#FF4040' },
       createProblemDialogVisible: false,
       editProblemDialogVisible: false,
       createNotificationDialogVisible: false,
@@ -141,17 +138,17 @@ export default {
       newProblem: {
         title: "",
         description: "",
-        difficulty: "",
-        inputs: "",
-        outputs: ""
+        difficulty: 0,
+        inputs: '',
+        outputs: ''
       },
       selectedProblem: {
         id: "",
         title: "",
         description: "",
-        difficulty: "",
-        inputs: "",
-        outputs: ""
+        difficulty: 0,
+        inputs: '',
+        outputs: ''
       },
       newNotification: {
         author: "xeonds",
@@ -184,17 +181,19 @@ export default {
     ]),
     editProblem(problem) {
       this.selectedProblem = { ...problem };
+      this.selectedProblem.inputs = this.selectedProblem.inputs.join('\n---\n');
+      this.selectedProblem.outputs = this.selectedProblem.outputs.join('\n---\n');
       this.editProblemDialogVisible = true;
     },
     CreateProblem() {
-      this.newProblem.inputs = this.newProblem.inputs.split("\n---\n");
-      this.newProblem.outputs = this.newProblem.outputs.split("\n---\n");
+      this.newProblem.inputs = this.newProblem.inputs.split('\n---\n');
+      this.newProblem.outputs = this.newProblem.outputs.split('\n---\n');
       this.createProblem(this.newProblem);
-      this.editProblemDialogVisible = false;
+      this.createProblemDialogVisible = false;
     },
     UpdateProblem() {
-      this.selectedProblem.Inputs = this.selectedProblem.Inputs.split("\n---\n");
-      this.selectedProblem.Outputs = this.selectedProblem.Outputs.split("\n---\n");
+      this.selectedProblem.inputs = this.selectedProblem.inputs.split("\n---\n");
+      this.selectedProblem.outputs = this.selectedProblem.outputs.split("\n---\n");
       this.updateProblem(this.selectedProblem);
       this.editProblemDialogVisible = false;
     },
@@ -206,14 +205,14 @@ export default {
       this.updateNotification(this.selectedNotification);
       this.editNotificationDialogVisible = false;
     },
-    DeleteProblem(problem) {
+    DeleteProblem(id) {
       this.$confirm("This will permanently delete the problem. Continue?", "Warning", {
         confirmButtonText: "OK",
         cancelButtonText: "Cancel",
         type: "warning",
       })
         .then(() => {
-          this.deleteProblem(problem.ID);
+          this.deleteProblem(id);
           this.$message({
             type: "success",
             message: "Delete successfully!",
@@ -226,14 +225,14 @@ export default {
           });
         });
     },
-    DeleteNotification(notification) {
+    DeleteNotification(id) {
       this.$confirm("This will permanently delete the notification. Continue?", "Warning", {
         confirmButtonText: "OK",
         cancelButtonText: "Cancel",
         type: "warning",
       })
         .then(() => {
-          this.deleteNotification(notification.ID);
+          this.deleteNotification(id);
           this.$message({
             type: "success",
             message: "Delete successfully!",
