@@ -1,4 +1,4 @@
-import v_axios from "../axios/index";
+import api from "../api";
 import jwtDecode from "jwt-decode";
 
 export default {
@@ -20,7 +20,6 @@ export default {
   async login({ commit, dispatch }, token) {
     commit("setToken", token);
     commit("setLoggedInStatus", true);
-    v_axios.defaults.headers.common["Authorization"] = token;
     localStorage.setItem("token", token);
     const decode = jwtDecode(token);
     await dispatch("fetchUserInfo", decode.user_id);
@@ -28,61 +27,53 @@ export default {
   logout({ commit }) {
     commit("setToken", "");
     commit("setLoggedInStatus", false);
-    delete v_axios.defaults.headers.common["Authorization"];
     localStorage.removeItem("token");
   },
   async fetchNotifications({ commit }) {
-    const response = await v_axios.get("/notifications");
+    const response = await api.getNotifications();
     commit("setNotifications", response.data);
   },
   async fetchProblems({ commit }) {
-    const response = await v_axios.get("/problems");
+    const response = await api.getProblems();
     commit("setProblems", response.data);
   },
   async fetchRanks({ commit }) {
-    const response = await v_axios.get("/ranks");
-    commit("setRanks", response.data);
+    // TODO:use info from store.users, order users by rank
   },
   async fetchSubmissions({ commit }) {
-    const response = await v_axios.get("/submissions");
+    const response = await api.getSubmissions();
     commit("setSubmissions", response.data);
   },
   async fetchUsers({ commit }) {
-    const response = await v_axios.get("/users");
+    const response = await api.getUsers();
     commit("setUsers", response.data);
   },
   async fetchUserInfo({ commit }, userID) {
-    const response = await v_axios.get("/users/" + userID);
+    const response = await api.getUserInfo(userID);
     commit("setUserInfo", response.data);
   },
   async createProblem({ commit }, problem) {
-    const response = await v_axios.post("/problems", problem);
+    const response = await api.addProblems(problem);
     commit("addProblem", response.data);
   },
   async updateProblem({ commit }, problem) {
-    const response = await v_axios.put(
-      `/problems/${problem.ProblemID}`,
-      problem
-    );
+    const response = await api.updateProblem(problem);
     commit("updateProblem", response.data);
   },
   async deleteProblem({ commit }, problemId) {
-    await v_axios.delete(`/problems/${problemId}`);
+    await api.deleteProblem(problemId);
     commit("deleteProblem", problemId);
   },
   async createNotification({ commit }, notification) {
-    const response = await v_axios.post("/notifications", notification);
+    const response = await api.addNotifications(notification);
     commit("addNotification", response.data);
   },
   async updateNotification({ commit }, notification) {
-    const response = await v_axios.put(
-      `/notifications/${notification.id}`,
-      notification
-    );
+    const response = await api.updateNotification(notification);
     commit("updateNotification", response.data);
   },
   async deleteNotification({ commit }, notificationId) {
-    await v_axios.delete(`/notifications/${notificationId}`);
+    await api.deleteNotification(notificationId);
     commit("deleteNotification", notificationId);
   },
 };
