@@ -9,7 +9,6 @@
           <el-menu-item class="hidden-lg-and-up" index="3" @click="this.$router.push('/contest')">竞赛/作业</el-menu-item>
           <el-menu-item class="hidden-lg-and-up" index="4" @click="this.$router.push('/status')">状态</el-menu-item>
           <el-menu-item class="hidden-lg-and-up" index="5" @click="this.$router.push('/ranklist')">排名</el-menu-item>
-          <el-menu-item class="hidden-lg-and-up" index="6" @click="this.$router.push('/about')">关于</el-menu-item>
           <div class="flex-grow" />
           <el-sub-menu v-if="isLogin" index="1">
             <template #title>{{ username }}, 欢迎。</template>
@@ -30,7 +29,6 @@
             <el-menu-item index="3" route="/contest">竞赛/作业</el-menu-item>
             <el-menu-item index="4" route="/status">状态</el-menu-item>
             <el-menu-item index="5" route="/ranklist">排名</el-menu-item>
-            <el-menu-item index="6" route="/about">关于</el-menu-item>
           </el-menu>
         </el-affix>
       </el-col>
