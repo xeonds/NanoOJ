@@ -1,49 +1,63 @@
 <template>
-  <div id="app">
-    <el-container>
-      <el-header>
-        <el-menu default-active="1" mode="horizontal" :router="true" :ellipsis="false">
-          <el-menu-item id="logo" index="0" route="/">X-OJ</el-menu-item>
-          <el-menu-item index="1" route="/">主页</el-menu-item>
-          <el-menu-item index="2" route="/problemset">问题</el-menu-item>
-          <el-menu-item index="3" route="/contest">竞赛/作业</el-menu-item>
-          <el-menu-item index="4" route="/status">状态</el-menu-item>
-          <el-menu-item index="5" route="/ranklist">排名</el-menu-item>
-          <!--<el-menu-item index="6" route="/about">常见问答</el-menu-item>-->
+  <el-scrollbar height="100vh" id="app">
+    <el-row>
+      <el-col :span="24">
+        <el-menu mode="horizontal" :ellipsis="false">
+          <p id="logo">X-OJ</p>
+          <el-menu-item class="hidden-lg-and-up" index="1" @click="this.$router.push('/')">主页</el-menu-item>
+          <el-menu-item class="hidden-lg-and-up" index="2" @click="this.$router.push('/problemset')">问题</el-menu-item>
+          <el-menu-item class="hidden-lg-and-up" index="3" @click="this.$router.push('/contest')">竞赛/作业</el-menu-item>
+          <el-menu-item class="hidden-lg-and-up" index="4" @click="this.$router.push('/status')">状态</el-menu-item>
+          <el-menu-item class="hidden-lg-and-up" index="5" @click="this.$router.push('/ranklist')">排名</el-menu-item>
+          <el-menu-item class="hidden-lg-and-up" index="6" @click="this.$router.push('/about')">关于</el-menu-item>
           <div class="flex-grow" />
-          <el-sub-menu v-if="isLogin" index="6">
+          <el-sub-menu v-if="isLogin" index="1">
             <template #title>{{ username }}, 欢迎。</template>
-            <div>
-              <el-menu-item index="6-1" route="/profile">个人中心</el-menu-item>
-              <el-menu-item index="6-2" route="/" @click="logout">登出</el-menu-item>
-              <el-menu-item v-if="userPermission > 1" index="6-3" route="/admin">管理</el-menu-item>
-            </div>
+            <el-menu-item index="1-1" @click="this.$router.push('/profile')">个人中心</el-menu-item>
+            <el-menu-item index="1-2" @click="logout(); this.$router.push('/')">登出</el-menu-item>
+            <el-menu-item v-if="userPermission > 1" index="1-3" @click="this.$router.push('/admin')">管理</el-menu-item>
           </el-sub-menu>
-          <el-menu-item v-else index="6" route="/login">登录/注册</el-menu-item>
+          <el-menu-item v-else index="1" @click="this.$router.push('/login')">登录/注册</el-menu-item>
         </el-menu>
-      </el-header>
-      <el-main>
-        <router-view> </router-view>
-      </el-main>
-      <el-footer>
-        <FooterBox msg="X-OJ"></FooterBox>
-      </el-footer>
-      <div class="wrapper">
-        <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-          viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
-          <defs>
-            <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-          </defs>
-          <g class="parallax">
-            <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(64,158,255,0.9)" />
-            <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(64,158,255,0.5)" />
-            <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(64,158,255,0.3)" />
-            <use xlink:href="#gentle-wave" x="48" y="7" fill="rgba(64,158,255,0.1)" />
-          </g>
-        </svg>
-      </div>
-    </el-container>
-  </div>
+      </el-col>
+    </el-row>
+    <el-row justify="center">
+      <el-col :lg="4" class="hidden-md-and-down">
+        <el-affix>
+          <el-menu id="vertical-menu" default-active="1" :router="true">
+            <el-menu-item index="1" route="/">主页</el-menu-item>
+            <el-menu-item index="2" route="/problemset">问题</el-menu-item>
+            <el-menu-item index="3" route="/contest">竞赛/作业</el-menu-item>
+            <el-menu-item index="4" route="/status">状态</el-menu-item>
+            <el-menu-item index="5" route="/ranklist">排名</el-menu-item>
+            <el-menu-item index="6" route="/about">关于</el-menu-item>
+          </el-menu>
+        </el-affix>
+      </el-col>
+      <el-col :md="24" :lg="20">
+        <!-- < height="800px"> -->
+        <router-view id="router-view"></router-view>
+        <!-- </> -->
+      </el-col>
+    </el-row>
+    <el-footer>
+      <FooterBox msg="X-OJ"></FooterBox>
+    </el-footer>
+    <div class="wrapper">
+      <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+        <defs>
+          <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+        </defs>
+        <g class="parallax">
+          <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(64,158,255,0.9)" />
+          <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(64,158,255,0.5)" />
+          <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(64,158,255,0.3)" />
+          <use xlink:href="#gentle-wave" x="48" y="7" fill="rgba(64,158,255,0.1)" />
+        </g>
+      </svg>
+    </div>
+  </el-scrollbar>
 </template>
 
 <script>
@@ -82,31 +96,28 @@ export default {
 </script>
  
 <style>
+#vertical-menu {
+  min-width: 12rem;
+  min-height: calc(100vh - 14rem);
+}
+
 #logo {
-  padding-inline: 2rem;
   color: #409eff;
   align-self: center;
   font-family: Exo 2;
   font-size: 1.5em;
   font-weight: 600;
-  min-width: fit-content;
+  padding-inline: 2rem;
+  margin: 0;
 }
 
 body {
   margin: 0px;
 }
 
-.el-main>* {
-  max-width: 1300px;
-  width: calc(100% - 4rem);
-}
-
-.el-main {
-  display: flex !important;
-  flex-flow: column;
-  align-items: center;
-  margin-top: 2rem !important;
-  margin-bottom: 2rem !important;
+#router-view {
+  padding: 2rem;
+  min-height: calc(100vh - 14rem);
 }
 
 .flex-grow {
