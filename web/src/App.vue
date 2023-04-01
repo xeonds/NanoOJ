@@ -1,5 +1,5 @@
 <template>
-  <el-scrollbar height="100vh" id="app">
+  <el-scrollbar height="100vh" id="app" class="dark">
     <el-row>
       <el-col :span="24">
         <el-menu mode="horizontal" :ellipsis="false">
@@ -61,6 +61,8 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import FooterBox from "./components/FooterBox.vue";
+import { useDark, useToggle } from "@vueuse/core";
+
 
 export default {
   components: {
@@ -96,7 +98,7 @@ export default {
 <style>
 #vertical-menu {
   min-width: 12rem;
-  min-height: calc(100vh - 14rem);
+  min-height: calc(100vh);
 }
 
 #logo {
@@ -107,6 +109,7 @@ export default {
   font-weight: 600;
   padding-inline: 2rem;
   margin: 0;
+  white-space: nowrap;
 }
 
 body {
@@ -128,6 +131,7 @@ body {
   padding: 0px !important;
 }
 
+/* Animation */
 .wrapper {
   width: 100%;
   height: 100%;
@@ -137,6 +141,7 @@ body {
 }
 
 .waves {
+  z-index: 100;
   position: relative;
   width: 100%;
   margin-bottom: -7px;
@@ -144,8 +149,6 @@ body {
   min-height: 100px;
   max-height: 150px;
 }
-
-/* Animation */
 
 .parallax>use {
   animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;

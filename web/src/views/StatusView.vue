@@ -2,7 +2,11 @@
   <div>
     <h1>提交记录</h1>
     <el-table :data="submissions">
-      <el-table-column prop="CreatedAt" label="提交时间"></el-table-column>
+      <el-table-column label="提交时间">
+		<template #default="{ row }">
+		  <span type="info">{{ formatDate(row.CreatedAt) }}</span>
+		</template>
+	  </el-table-column>
       <el-table-column prop="id" label="提交ID"></el-table-column>
       <el-table-column prop="problem_id" label="题目id"></el-table-column>
       <el-table-column label="状态">
@@ -20,6 +24,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import utils from '../utils';
 
 export default {
   created: function () {
@@ -60,7 +65,10 @@ export default {
         default:
           return "info";
       }
-    }
+    },
+	formatDate: function (date) {
+	  return utils.formatDate(date);
+	},
   },
 };
 </script>

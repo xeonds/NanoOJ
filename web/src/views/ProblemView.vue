@@ -56,11 +56,14 @@ export default {
       api.addSubmissions({ code: this.code, language: 'c', state: 'waiting', problem_id: parseInt(this.$route.params.id) })
         .then((response) => {
           if (response.status === 200) {
-            this.$router.push({ name: 'SubmissionView', params: { id: response.data.id } });
+		  	this.$message({
+			  message: 'Code submitted successfully',
+			  type: 'success'
+			});
+            this.$router.push('/status');
           }
         })
         .catch((error) => {
-          console.log(error);
         });
     },
   },
