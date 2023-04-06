@@ -22,20 +22,23 @@ export default {
   setUsers(state, users) {
     state.users = users;
   },
+  setUserInfo(state, userInfo) {
+    state.userInfo = userInfo;
+  },
   addProblem(state, problem) {
-    state.problems.data.push(problem);
+    state.problems.push(problem);
   },
   updateProblem(state, updatedProblem) {
-    const index = state.problems.data.findIndex(
-      (problem) => problem.id === updatedProblem.id
+    const index = state.problems.findIndex(
+      (problem) => problem.id == updatedProblem.id
     );
     if (index !== -1) {
-      state.problems.data.splice(index, 1, updatedProblem);
+      state.problems.splice(index, 1, updatedProblem);
     }
   },
   deleteProblem(state, problemId) {
-    state.problems.data = state.problems.data.filter(
-      (problem) => problem.id !== problemId
+    state.problems = state.problems.filter(
+      (problem) => problem.ProblemID != problemId
     );
   },
   addNotification(state, notification) {

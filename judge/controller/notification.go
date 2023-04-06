@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"xyz.xeonds/nano-oj/database"
@@ -37,7 +38,7 @@ func CreateNotification(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	input.CreatedAt = time.Now().UTC()
 	if err := database.NanoDB.Create(&input).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create notification"})
 		return
@@ -52,19 +53,17 @@ func UpdateNotification(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid notification ID"})
 		return
 	}
-
 	var notification model.Notification
 	if err := database.NanoDB.First(&notification, id).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Notification not found"})
 		return
 	}
-
 	var input model.Notification
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	input.UpdatedAt = time.Now().UTC()
 	if err := database.NanoDB.Model(&notification).Updates(&input).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update notification"})
 		return

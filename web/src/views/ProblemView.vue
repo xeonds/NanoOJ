@@ -1,15 +1,18 @@
 <template>
   <div id="problem">
-    <h1>{{ problemTitle }}</h1>
-    <p>{{ problemNote }}</p>
+    <h1>{{ problem.title }}</h1>
+    <p v-html="description"></p>
     <el-form>
-      <el-form-item>
-        <el-input
-          type="textarea"
-          v-model="code"
-          :autosize="{ minRows: 10, maxRows: 20 }"
-        ></el-input>
+      <el-form-item label="Code">
       </el-form-item>
+      <codemirror
+        v-model="code"
+        placeholder="Code goes here..."
+        :style="{ height: '400px' }"
+        :indent-with-tab="true"
+        :tab-size="4"
+        :extensions="extensions"
+      /><br />
       <el-form-item>
         <el-button type="primary" @click="submitCode">Commit</el-button>
       </el-form-item>
@@ -18,44 +21,53 @@
 </template>
 
 <script>
+import { Codemirror } from 'vue-codemirror'
+import { javascript } from '@codemirror/lang-javascript'
+import { oneDark } from '@codemirror/theme-one-dark'
 import { mapGetters } from "vuex";
+import { marked } from "marked";
+import api from '../api';
 
 export default {
   name: "ProblemView",
-  components: {},
-  data: function () {
-    return {
-      code: "",
-    };
+  components: {
+    Codemirror
   },
+  data: () => ({
+    code: '',
+    extensions: [
+      javascript(),
+      oneDark
+    ]
+  }),
   computed: {
     ...mapGetters({
-      problems: "getProblems",
-      problem: "getProblemById",
+      _problem: "getProblemById",
     }),
-    problemTitle() {
-      const id = this.$route.params.id;
-      return this.problem(id).ProblemDescription;
+    problem() {
+      return this._problem(this.$route.params.id);
     },
-    problemNote() {
-      const id = this.$route.params.id;
-      return this.problem(id).problemNote;
-    },
+  	description() {
+  		return marked(this.problem.description);
+  	},
   },
   methods: {
     submitCode: function () {
-      this.axios
-        .post("/submissions", { code: this.code })
+      api.addSubmissions({ code: this.code, language: 'c', state: 'waiting', problem_id: parseInt(this.$route.params.id) })
         .then((response) => {
-          console.log(response.data);
+          if (response.status === 200) {
+		  	this.$message({
+			  message: 'Code submitted successfully',
+			  type: 'success'
+			});
+            this.$router.push('/status');
+          }
         })
         .catch((error) => {
-          console.log(error);
         });
     },
   },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

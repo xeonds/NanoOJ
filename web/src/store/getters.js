@@ -8,7 +8,7 @@ export default {
     return state.notifications;
   },
   getProblemById: (state) => (id) => {
-    return state.problems.find((problem) => problem.ProblemID == id);
+    return state.problems.find((problem) => problem.id == id);
   },
   getProblems: (state) => {
     return state.problems;
@@ -19,8 +19,14 @@ export default {
   getRanks: (state) => {
     return state.ranks;
   },
+  getSubmissions: (state) => {
+    return state.submissions;
+  },
   getSubmissionById: (state) => (id) => {
     return state.submissions.find((submission) => submission.id == id);
+  },
+  getUserInfo: (state) => {
+    return state.userInfo;
   },
   getUserById: (state) => (id) => {
     return state.users.find((user) => user.id == id);

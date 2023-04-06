@@ -12,7 +12,7 @@ func CreateSubmission(submission *model.Submission) error {
 }
 
 func GetSubmissionByID(id uint32) (*model.Submission, error) {
-	submission := &model.Submission{SubmissionID: id}
+	submission := &model.Submission{ID: id}
 	err := NanoDB.First(&submission).Error
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func GetSubmissionByID(id uint32) (*model.Submission, error) {
 
 func GetSubmissionsByProblemID(problemID uint32) ([]model.Submission, error) {
 	var submissions []model.Submission
-	err := NanoDB.Where("problem_id = ?", problemID).Find(&submissions).Error
+	err := NanoDB.Where("id = ?", problemID).Find(&submissions).Error
 	if err != nil {
 		return nil, err
 	}
@@ -31,14 +31,14 @@ func GetSubmissionsByProblemID(problemID uint32) ([]model.Submission, error) {
 
 func GetSubmissionsByUserID(userID uint32) ([]model.Submission, error) {
 	var submissions []model.Submission
-	err := NanoDB.Where("user_id = ?", userID).Find(&submissions).Error
+	err := NanoDB.Where("id = ?", userID).Find(&submissions).Error
 	if err != nil {
 		return nil, err
 	}
 	return submissions, nil
 }
 
-func GetSubmissionsByStatus(status string) ([]model.Submission, error) {
+func GetSubmissionsByStatus(status model.Status) ([]model.Submission, error) {
 	var submissions []model.Submission
 	err := NanoDB.Where("status = ?", status).Find(&submissions).Error
 	if err != nil {
@@ -53,7 +53,7 @@ func UpdateSubmission(submission *model.Submission) error {
 }
 
 func DeleteSubmission(submissionID uint32) error {
-	result := NanoDB.Where("submission_id = ?", submissionID).Delete(&model.Submission{})
+	result := NanoDB.Where("id = ?", submissionID).Delete(&model.Submission{})
 	return result.Error
 }
 
@@ -64,7 +64,7 @@ func CreateContest(contest *model.Contest) error {
 }
 
 func GetContestByID(id uint32) (*model.Contest, error) {
-	contest := &model.Contest{ContestID: id}
+	contest := &model.Contest{ID: id}
 	err := NanoDB.First(&contest).Error
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func UpdateContest(contest *model.Contest) error {
 }
 
 func DeleteContest(contestID uint32) error {
-	result := NanoDB.Where("contest_id = ?", contestID).Delete(&model.Contest{})
+	result := NanoDB.Where("id = ?", contestID).Delete(&model.Contest{})
 	return result.Error
 }
 
@@ -99,7 +99,7 @@ func CreateProblem(problem *model.Problem) error {
 }
 
 func GetProblemByID(id uint32) (*model.Problem, error) {
-	problem := &model.Problem{ProblemID: id}
+	problem := &model.Problem{ID: id}
 	err := NanoDB.First(&problem).Error
 	if err != nil {
 		return nil, err
@@ -148,7 +148,7 @@ func GetUserByEmail(email string) (*model.User, error) {
 
 func GetUserByUserID(userid uint32) (*model.User, error) {
 	var user model.User
-	result := NanoDB.Where("userid = ?", userid).First(&user)
+	result := NanoDB.Where("id = ?", userid).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
