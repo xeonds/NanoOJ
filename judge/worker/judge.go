@@ -104,7 +104,7 @@ func JudgeWorker() {
 		SourceFile:  programFile,
 		InputFiles:  inputFiles,
 		ExpectFiles: outputFiles,
-		TimeLimit:   1000,
+		TimeLimit:   5,
 	}
 	result, info, err := t.judge()
 	if err != nil {
