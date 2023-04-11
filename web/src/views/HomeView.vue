@@ -45,11 +45,15 @@ export default {
   },
   computed: {
     ...mapGetters({
-      problems: "getProblems",
+      _problems: "getProblems",
       notifications: "getNotifications",
       ranks: "getRanks",
       contests: "getContests",
     }),
+    problems() {
+      //return the latest 10 problems, ordered by time desc
+      return this._problems.slice(0, 10);
+    },
   },
 };
 </script>

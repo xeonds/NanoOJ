@@ -22,8 +22,14 @@ export default {
   setUsers(state, users) {
     state.users = users;
   },
+  setContests(state, contests) {
+    state.contests = contests;
+  },
   setUserInfo(state, userInfo) {
     state.userInfo = userInfo;
+  },
+  deleteUser(state, userID) {
+    state.users = state.users.filter((user) => user.id !== userID);
   },
   addProblem(state, problem) {
     state.problems.push(problem);
@@ -55,6 +61,22 @@ export default {
   deleteNotification(state, notificationId) {
     state.notifications = state.notifications.filter(
       (notification) => notification.id !== notificationId
+    );
+  },
+  addContest(state, contest) {
+    state.contests.push(contest);
+  },
+  updateContest(state, updatedContest) {
+    const index = state.contests.findIndex(
+      (contest) => contest.id === updatedContest.id
+    );
+    if (index !== -1) {
+      state.contests.splice(index, 1, updatedContest);
+    }
+  },
+  deleteContest(state, contestId) {
+    state.contests = state.contests.filter(
+      (contest) => contest.id !== contestId
     );
   },
 };

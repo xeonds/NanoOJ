@@ -12,8 +12,9 @@ export default {
       dispatch("login", token);
       dispatch("fetchUserInfo", data.user_id);
     }
-    await dispatch("fetchProblems");
     await dispatch("fetchUsers");
+    await dispatch("fetchContests");
+    await dispatch("fetchProblems");
     await dispatch("fetchSubmissions");
     await dispatch("fetchNotifications");
   },
@@ -37,6 +38,10 @@ export default {
     const response = await api.getProblems();
     commit("setProblems", response.data);
   },
+  async fetchContests({ commit }) {
+    const response = await api.getContests();
+    commit("setContests", response.data);
+  },
   async fetchRanks({ commit }) {
     // TODO:use info from store.users, order users by rank
   },
@@ -51,6 +56,10 @@ export default {
   async fetchUserInfo({ commit }, userID) {
     const response = await api.getUserInfo(userID);
     commit("setUserInfo", response.data);
+  },
+  async deleteUser({ commit }, userID) {
+    await api.deleteUser(userID);
+    commit("deleteUser", userID);
   },
   async createProblem({ commit }, problem) {
     const response = await api.addProblems(problem);
@@ -78,5 +87,17 @@ export default {
   async deleteNotification({ commit }, notificationId) {
     await api.deleteNotification(notificationId);
     commit("deleteNotification", notificationId);
+  },
+  async createContest({ commit }, contest) {
+    const response = await api.addContests(contest);
+    commit("addContest", response.data);
+  },
+  async updateContest({ commit }, contest) {
+    const response = await api.updateContest(contest, contest.id);
+    commit("updateContest", response.data);
+  },
+  async deleteContest({ commit }, contestId) {
+    await api.deleteContest(contestId);
+    commit("deleteContest", contestId);
   },
 };

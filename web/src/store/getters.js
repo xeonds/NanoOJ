@@ -25,6 +25,9 @@ export default {
   getSubmissionById: (state) => (id) => {
     return state.submissions.find((submission) => submission.id == id);
   },
+  getUsers: (state) => {
+    return state.users;
+  },
   getUserInfo: (state) => {
     return state.userInfo;
   },
