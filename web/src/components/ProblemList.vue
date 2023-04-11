@@ -1,10 +1,6 @@
 <template>
-  <el-table :data="problems">
-    <el-table-column label="问题ID">
-      <template v-slot="{ row }">
-        <router-link :to="'/problem/' + row.id">{{ row.id }}</router-link>
-      </template>
-    </el-table-column>
+  <el-table :data="problems" @row-click="(row) => { this.$router.push(`/problem/${row.id}`) }">
+    <el-table-column prop="id" label="问题ID"></el-table-column>
     <el-table-column prop="title" label="问题标题"></el-table-column>
     <el-table-column label="题目难度">
       <template v-slot="{ row }">
