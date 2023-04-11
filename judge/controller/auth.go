@@ -69,7 +69,7 @@ func GetUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get users"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"users": users})
+	c.JSON(http.StatusOK, users)
 }
 
 func DeleteUser(c *gin.Context) {
