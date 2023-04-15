@@ -25,7 +25,7 @@
         <el-affix>
           <el-menu id="vertical-menu" default-active="1" :router="true">
             <el-menu-item index="1" route="/">主页</el-menu-item>
-            <el-menu-item index="2" route="/problemset">问题</el-menu-item>
+            <el-menu-item index="2" route="/problem">问题</el-menu-item>
             <el-menu-item index="3" route="/contest">竞赛/作业</el-menu-item>
             <el-menu-item index="4" route="/status">状态</el-menu-item>
             <el-menu-item index="5" route="/ranklist">排名</el-menu-item>

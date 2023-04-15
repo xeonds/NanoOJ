@@ -18,13 +18,18 @@ const routes = [
     component: HomeView,
   },
   {
-    path: "/problemset",
+    path: "/problem",
     name: "problemset",
     component: ProblemsetView,
   },
   {
     path: "/contest",
     name: "contest",
+    component: () => import("../views/ContestsetView.vue"),
+  },
+  {
+    path: "/contest/:id",
+    name: "contest_item",
     component: ContestView,
   },
   {
