@@ -37,4 +37,7 @@ export default {
   getContests: (state) => {
     return state.contests;
   },
+  getContestById: (state) => (id) => {
+    return state.contests.find((contest) => contest.id == id);
+  },
 };

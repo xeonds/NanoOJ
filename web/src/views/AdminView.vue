@@ -254,6 +254,11 @@
           </el-col>
         </el-row>
       </el-tab-pane>
+      <el-tab-pane label="Manual">
+        <h2>Manual</h2>
+        <p>问题创建：用例之间使用---分割，且输入用例和输出用例数量务必保持一致。</p>
+        <p>通知&问题/测试描述：都支持Markdown语法。</p>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -367,7 +372,6 @@ export default {
       this.editNotificationDialogVisible = false;
     },
     CreateContest() {
-      this.newContest.problems = this.newContest.problems.map((p) => p.id);
       this.newContest.start_time = new Date(this.newContest.time[0]).toISOString();
       this.newContest.end_time = new Date(this.newContest.time[1]).toISOString();
       this.newContest.time = undefined;
