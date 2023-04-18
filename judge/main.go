@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"xyz.xeonds/nano-oj/config"
 	"xyz.xeonds/nano-oj/router"
 	"xyz.xeonds/nano-oj/worker"
 )
@@ -12,11 +14,19 @@ import (
 func main() {
 	r := gin.Default()
 	router.InitRouter(r)
+	conf, err := config.LoadConfig()
+	if err != nil {
+		log.Println("Failed to load config file, using default config")
+		conf = config.DefaultConfig()
+	}
+	if conf.Server.Side == "web-judge" {
+		worker.InitJudgerImage()
+	}
 
 	go judgeEnqueuer()
 	go judgeWorker()
 
-	if err := r.Run(":8080"); err != nil {
+	if err := r.Run(fmt.Sprintf(":%d", conf.Server.Port)); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }

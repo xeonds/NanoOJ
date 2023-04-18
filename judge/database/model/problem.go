@@ -15,6 +15,7 @@ type Problem struct {
 	Description string  `json:"description"`
 	Inputs      Inputs  `json:"inputs"`
 	Outputs     Outputs `json:"outputs"`
+	TimeLimit   int     `json:"time_limit"`
 }
 
 type Inputs []string
