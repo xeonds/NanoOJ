@@ -4,17 +4,6 @@
 #include <vector>
 
 using namespace std;
-namespace fs = std::filesystem;
-
-int main(int argc, string argv[]) {
-	if (argc != 5) {
-		cout << "Usage: judge <time_limit> <lang>" << endl;
-		return 1;
-	}
-	Judge judge("/code/", argv[1], argv[2]);
-
-	return 0;
-}
 
 class Judge {
    public:
@@ -28,7 +17,8 @@ class Judge {
 	Judge(string workdir, string time_limit, string lang)
 		: workdir(workdir), time_limit(time_limit), lang(lang) {
 		res.total_case = res.passed_case = 0;
-		for (int i = 0; fs::exists(workdir + to_string(i) + ".in"); i++) {
+		for (int i = 0; std::filesystem::exists(workdir + to_string(i) + ".in");
+			 i++) {
 			string output, error;
 			string cmd;
 			if (lang == "c" || lang == "cpp" || lang == "go") {
@@ -38,7 +28,7 @@ class Judge {
 			} else if (lang == "python") {
 				cmd = "python3 main.py";
 			}
-			run(cmd, workdir + itoa(i) + ".in", output, error);
+			run(cmd, workdir + to_string(i) + ".in", output, error);
 			if (output.empty()) {
 				res.info.push_back("Info: " + to_string(i) + " " + "0.1s" +
 								   " " + "0.1MB" + " " + "passed");
@@ -98,3 +88,13 @@ class Judge {
 			cout << i << endl;
 	}
 };
+
+int main(int argc, char* argv[]) {
+	if (argc != 5) {
+		cout << "Usage: judge <time_limit> <lang>" << endl;
+		return 1;
+	}
+	Judge judge("/code/", argv[1], argv[2]);
+
+	return 0;
+}
