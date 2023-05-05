@@ -7,7 +7,8 @@ export default defineConfig({
   server: {
     proxy: {
       "/api/v1": {
-        target: "http://www.jiujiuer.xyz:808",
+        //target: "http://www.jiujiuer.xyz:808",
+        target: "http://localhost:8080",
         changeOrigin: true,
         pathRewrite: {
           "^/api/v1": "",
