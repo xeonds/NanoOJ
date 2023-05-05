@@ -20,7 +20,7 @@ func main() {
 		conf = config.DefaultConfig()
 	}
 	if conf.Server.Side == "web-judge" {
-		worker.InitJudgerImage()
+		worker.InitJudgerPool()
 	}
 
 	go judgeEnqueuer()
