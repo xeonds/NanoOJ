@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/spf13/viper"
 	"xyz.xeonds/nano-oj/database/model"
 )
 
@@ -26,4 +27,12 @@ func ParseResult(out io.Reader) (model.Status, string, error) {
 		return model.CompilationError, "Failed to read container logs", err
 	}
 	return result, info, nil
+}
+
+// get judgers from config
+func GetJudgers() []string {
+	judgers := make([]string, 0)
+	judgers = append(judgers, viper.GetString("judger.daemons"))
+
+	return judgers
 }
