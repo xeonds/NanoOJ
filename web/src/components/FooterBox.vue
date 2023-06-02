@@ -1,11 +1,7 @@
 <template>
   <div class="footer">
     &copy;2022 {{ msg }} | Powered by
-    <el-link
-      type="primary"
-      target="_blank"
-      href="http://www.jiujiuer.xyz:3000/xeonds/NanoOJ"
-      >NanoOJ</el-link>
+    <el-link type="primary" target="_blank" href="https://github.com/xeonds/NanoOJ">NanoOJ</el-link>
   </div>
 </template>
 

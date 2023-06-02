@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import ContestList from "../components/ContestList.vue";
+import ContestList from "../../components/ContestList.vue";
 import { mapGetters } from "vuex";
 
 export default {
