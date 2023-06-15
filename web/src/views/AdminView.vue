@@ -1,11 +1,13 @@
 <template>
   <div class="admin-view">
-    <el-page-header @back="goBack">
-      <template #content>
-        <span class="text-large font-600 mr-3"> Admin Center </span>
-      </template>
-    </el-page-header>
-    <el-tabs tab-position="right">
+    <el-affix>
+      <el-page-header @back="goBack">
+        <template #content>
+          <el-text type="primary" id="title">X-OJ</el-text><el-text id="subtitle"> | Admin Center</el-text>
+        </template>
+      </el-page-header>
+    </el-affix>
+    <el-tabs tab-position="left">
       <el-tab-pane label="Problems">
         <h2>Problems</h2>
         <el-card>
@@ -561,11 +563,27 @@ export default {
 
 <style scoped>
 .el-page-header {
-  padding-bottom: 2rem;
+  padding: 1rem;
+  border-bottom: 1px solid #ebeef5;
+  text-align: center;
 }
 
-.el-card {
-  margin: 1rem;
+#title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+#subtitle {
+  font-size: 1.2rem;
+  font-weight: 100;
+}
+
+.el-tabs {
+  padding: 2rem;
+}
+
+.el-tab-pane {
+  padding: 2rem;
 }
 
 .card-header {

@@ -10,6 +10,9 @@
           <el-menu-item class="hidden-lg-and-up" index="4" route="/status">状态</el-menu-item>
           <el-menu-item class="hidden-lg-and-up" index="5" route="/ranklist">排名</el-menu-item>
           <div class="flex-grow" />
+          <el-menu-item index="0" @click="this.$router.push('/editor')"><el-icon>
+              <EditPen />
+            </el-icon>在线代码编辑器</el-menu-item>
           <el-sub-menu v-if="isLogin" index="1">
             <template #title>{{ username }}, 欢迎。</template>
             <el-menu-item index="1-1" @click="this.$router.push('/profile')">个人中心</el-menu-item>
@@ -24,11 +27,21 @@
       <el-col :lg="4" class="hidden-md-and-down">
         <el-affix>
           <el-menu id="vertical-menu" default-active="1" router>
-            <el-menu-item index="1" route="/">主页</el-menu-item>
-            <el-menu-item index="2" route="/problem">问题</el-menu-item>
-            <el-menu-item index="3" route="/contest">竞赛/作业</el-menu-item>
-            <el-menu-item index="4" route="/status">状态</el-menu-item>
-            <el-menu-item index="5" route="/ranklist">排名</el-menu-item>
+            <el-menu-item index="1" route="/"><el-icon>
+                <HomeFilled />
+              </el-icon>主页</el-menu-item>
+            <el-menu-item index="2" route="/problem"><el-icon>
+                <List />
+              </el-icon>问题</el-menu-item>
+            <el-menu-item index="3" route="/contest"><el-icon>
+                <Flag />
+              </el-icon>竞赛/作业</el-menu-item>
+            <el-menu-item index="4" route="/status"><el-icon>
+                <HelpFilled />
+              </el-icon>状态</el-menu-item>
+            <el-menu-item index="5" route="/ranklist"><el-icon>
+                <Histogram />
+              </el-icon>排名</el-menu-item>
           </el-menu>
         </el-affix>
       </el-col>

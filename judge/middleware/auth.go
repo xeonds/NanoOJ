@@ -7,6 +7,12 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
+// permission: 0-6
+// 0: banned user
+// 1: normal user
+// 2: problem manager
+// 3: system manager
+
 func AuthMiddleware(requiredPermissionLevel int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")

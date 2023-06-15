@@ -52,6 +52,7 @@ const routes = [
         path: "/problem/:id",
         name: "problem",
         component: () => import("../views/home/ProblemView.vue"),
+        props: true,
       },
     ],
   },
@@ -69,6 +70,11 @@ const routes = [
     path: "/login",
     name: "login",
     component: () => import("../views/LoginView.vue"),
+  },
+  {
+    path: "/editor",
+    name: "editor",
+    component: () => import("../views/EditorView.vue"),
   },
 ];
 

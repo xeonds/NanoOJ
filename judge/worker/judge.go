@@ -26,8 +26,8 @@ type result struct {
 	Info   string
 }
 
-func JudgeWorker() {
-	submission := <-judgeQueue // read a submission from judgeQueue
+func JudgeWorker() {			// Create task & enqueue it
+	submission := <-judgeQueue 	// read a submission from judgeQueue
 	CommitStatus(submission, model.InProgress, "Judging...")
 
 	sourceCode := submission.Code //fetch all required files for judge
