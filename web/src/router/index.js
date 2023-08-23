@@ -1,71 +1,80 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
 const HomeView = () => import("../views/HomeView.vue");
-const ProblemsetView = () => import("../views/ProblemsetView.vue");
-const ContestView = () => import("../views/ContestView.vue");
-const StatusView = () => import("../views/StatusView.vue");
-const RanklistView = () => import("../views/RanklistView.vue");
-const AboutView = () => import("../views/AboutView.vue");
-const LoginView = () => import("../views/LoginView.vue");
-const ProblemView = () => import("../views/ProblemView.vue");
-const AdminView = () => import("../views/AdminView.vue");
-const ProfileView = () => import("../views/ProfileView.vue");
 
 const routes = [
   {
     path: "/",
     name: "home",
     component: HomeView,
-  },
-  {
-    path: "/problemset",
-    name: "problemset",
-    component: ProblemsetView,
-  },
-  {
-    path: "/contest",
-    name: "contest",
-    component: ContestView,
-  },
-  {
-    path: "/status",
-    name: "status",
-    component: StatusView,
-  },
-  {
-    path: "/ranklist",
-    name: "ranklist",
-    component: RanklistView,
-  },
-  {
-    path: "/about",
-    name: "about",
-    component: AboutView,
-  },
-  {
-    path: "/register",
-    name: "register",
-    component: LoginView,
-  },
-  {
-    path: "/login",
-    name: "login",
-    component: LoginView,
-  },
-  {
-    path: "/profile",
-    name: "profile",
-    component: ProfileView,
-  },
-  {
-    path: "/problem/:id",
-    name: "problem",
-    component: ProblemView,
+    children: [
+      {
+        path: "/",
+        name: "homeview",
+        component: () => import("../views/home/HomeView.vue"),
+      },
+      {
+        path: "/problem",
+        name: "problemset",
+        component: () => import("../views/home/ProblemsetView.vue"),
+      },
+      {
+        path: "/contest",
+        name: "contest",
+        component: () => import("../views/home/ContestsetView.vue"),
+      },
+      {
+        path: "/contest/:id",
+        name: "contest_item",
+        component: () => import("../views/home/ContestView.vue"),
+      },
+      {
+        path: "/status",
+        name: "status",
+        component: () => import("../views/home/StatusView.vue"),
+      },
+      {
+        path: "/ranklist",
+        name: "ranklist",
+        component: () => import("../views/home/RanklistView.vue"),
+      },
+      {
+        path: "/about",
+        name: "about",
+        component: () => import("../views/home/AboutView.vue"),
+      },
+      {
+        path: "/profile",
+        name: "profile",
+        component: () => import("../views/home/ProfileView.vue"),
+      },
+      {
+        path: "/problem/:id",
+        name: "problem",
+        component: () => import("../views/home/ProblemView.vue"),
+        props: true,
+      },
+    ],
   },
   {
     path: "/admin",
     name: "admin",
-    component: AdminView,
+    component: () => import("../views/AdminView.vue"),
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: () => import("../views/LoginView.vue"),
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("../views/LoginView.vue"),
+  },
+  {
+    path: "/editor",
+    name: "editor",
+    component: () => import("../views/EditorView.vue"),
   },
 ];
 
