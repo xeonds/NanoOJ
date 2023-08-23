@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"xyz.xeonds/nano-oj/database"
@@ -32,13 +33,37 @@ func GetContestByID(c *gin.Context) {
 }
 
 func CreateContest(c *gin.Context) {
-	var input model.Contest
+	var input struct {
+		Title       string    `json:"title"`
+		Description string    `json:"description"`
+		StartTime   time.Time `json:"start_time"`
+		EndTime     time.Time `json:"end_time"`
+		Problems    []uint32  `json:"problems"`
+	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := database.NanoDB.Create(&input).Error; err != nil {
+	var problems []model.Problem
+	for _, id := range input.Problems {
+		problem, err := database.GetProblemByID(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		problems = append(problems, *problem)
+	}
+
+	contest := model.Contest{
+		Title:       input.Title,
+		Description: input.Description,
+		StartTime:   input.StartTime,
+		EndTime:     input.EndTime,
+		Problems:    problems,
+	}
+
+	if err := database.NanoDB.Create(&contest).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create contest"})
 		return
 	}

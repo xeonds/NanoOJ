@@ -2,19 +2,17 @@ package worker
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
-	"strconv"
-	"strings"
 	"time"
 
 	"xyz.xeonds/nano-oj/database"
 	"xyz.xeonds/nano-oj/database/model"
 )
 
-var JudgeQueue = make(chan model.Submission, 100)
-
 type task struct {
+	Submission  model.Submission
 	Workdir     string
 	Lang        string
 	SourceFile  string
@@ -23,110 +21,75 @@ type task struct {
 	TimeLimit   int
 }
 
-func (s *task) judge() (model.Status, string, error) {
-	switch s.Lang {
-	case "c", "cpp":
-		res, info := s.cJudger()
-		return res, info, nil
-	// case "python":
-	// return s.pyJudger(), nil
-	default:
-		return model.CompilationError, "", fmt.Errorf("unsupported language: %s", s.Lang)
-	}
+type result struct {
+	Status model.Status
+	Info   string
 }
 
-func IsEmpty() bool {
-	return len(JudgeQueue) == 0
-}
+func JudgeWorker() {			// Create task & enqueue it
+	submission := <-judgeQueue 	// read a submission from judgeQueue
+	CommitStatus(submission, model.InProgress, "Judging...")
 
-func JudgeWorker() {
-	// read a submission from judgeQueue
-	submission := <-JudgeQueue
-	submission.Status = model.Pending
-	database.NanoDB.Save(&submission)
-	problemID := strconv.Itoa(int(submission.ProblemID))
-	sourceCode := submission.Code
-	id, err := strconv.ParseUint(problemID, 10, 32)
-	if err != nil {
-		submission.Status = 0
-		fmt.Println("failed to parse", err)
-		// submission.Information = append(submission.Information, "Failed to parse problem id")
-		database.NanoDB.Save(&submission)
+	sourceCode := submission.Code //fetch all required files for judge
+	problem, err := database.GetProblemByID(submission.ProblemID)
+	if errorHandler(err, submission, "Failed to fetch problem") {
 		return
 	}
-	// get the problem
-	problem, err := database.GetProblemByID(uint32(id))
-	if err != nil {
-		submission.Status = 0
-		fmt.Println("failed to fetch problem", err)
-		// submission.Information = append(submission.Information, "Failed to fetch problem")
-		database.NanoDB.Save(&submission)
+	tempFolder, programFile, inputFiles, outputFiles, shouldReturn := initWorkDir(sourceCode, submission, problem)
+	if shouldReturn {
+		log.Println("Failed to initialize workdir")
 		return
 	}
-	// create workdir
-	tempFolder := filepath.Join("tmp", fmt.Sprintf("temp_%d", time.Now().UnixNano()))
-	_ = os.MkdirAll(tempFolder, 0755)
-	programFile := filepath.Join(tempFolder, "program.cc")
-	err = os.WriteFile(programFile, []byte(sourceCode), 0644)
-	if err != nil {
-		submission.Status = 0
-		fmt.Println("failed to create workdir", err)
-		database.NanoDB.Save(&submission)
-		return
-	}
-	// load input/output files to disk
-	inputFiles := make([]string, len(problem.Inputs))
-	outputFiles := make([]string, len(problem.Outputs))
-	for i, inputFile := range problem.Inputs {
-		inputFiles[i] = filepath.Join(tempFolder, fmt.Sprintf("%d.in", i))
-		err = os.WriteFile(inputFiles[i], []byte(inputFile), 0644)
-		if err != nil {
-			submission.Status = 0
-			fmt.Println("failed to load file", err)
-			database.NanoDB.Save(&submission)
-			return
-		}
-	}
-	for i, outputFile := range problem.Outputs {
-		outputFiles[i] = filepath.Join(tempFolder, fmt.Sprintf("%d.out", i))
-		err = os.WriteFile(outputFiles[i], []byte(outputFile), 0644)
-		if err != nil {
-			submission.Status = 0
-			fmt.Println("failed to load file", err)
-			database.NanoDB.Save(&submission)
-			return
-		}
-	}
-	// build a new task and run
-	t := task{
+
+	GetAvailableJudger().AddTask(task{ // build a new task and run
+		Submission:  submission,
 		Workdir:     tempFolder,
 		Lang:        submission.Language,
 		SourceFile:  programFile,
 		InputFiles:  inputFiles,
 		ExpectFiles: outputFiles,
-		TimeLimit:   5,
-	}
-	result, info, err := t.judge()
-	if err != nil {
-		submission.Status = model.CompilationError
-		fmt.Println("language not supported", err)
-		submission.Information = append(submission.Information, "Language not supported")
-		database.NanoDB.Save(&submission)
-		return
-	}
-	submission.Status = result
-	submission.Information = append(submission.Information, strings.Split(info, "\n")...)
-	fmt.Println(result)
-	database.NanoDB.Save(&submission)
+		TimeLimit:   problem.TimeLimit,
+	})
 }
 
-func JudgeEnqueue() {
-	submissions, err := database.GetSubmissionsByStatus(model.Pending)
+func initWorkDir(sourceCode string, submission model.Submission, problem *model.Problem) (string, string, []string, []string, bool) {
+	tempFolder := filepath.Join("tmp", fmt.Sprintf("temp_%d", time.Now().UnixNano()))
+	_ = os.MkdirAll(tempFolder, 0755)
+	programFile := filepath.Join(tempFolder, "program.cc")
+	err := os.WriteFile(programFile, []byte(sourceCode), 0644)
+	if errorHandler(err, submission, "Failed to load source code") {
+		return "", "", nil, nil, true
+	}
+	inputFiles := make([]string, len(problem.Inputs))
+	outputFiles := make([]string, len(problem.Outputs))
+	for i, inputFile := range problem.Inputs {
+		inputFiles[i] = filepath.Join(tempFolder, fmt.Sprintf("%d.in", i))
+		err = os.WriteFile(inputFiles[i], []byte(inputFile), 0644)
+		if errorHandler(err, submission, "Failed to load files") {
+			return "", "", nil, nil, true
+		}
+	}
+	for i, outputFile := range problem.Outputs {
+		outputFiles[i] = filepath.Join(tempFolder, fmt.Sprintf("%d.out", i))
+		err = os.WriteFile(outputFiles[i], []byte(outputFile), 0644)
+		if errorHandler(err, submission, "Failed to load files") {
+			return "", "", nil, nil, true
+		}
+	}
+	return tempFolder, programFile, inputFiles, outputFiles, false
+}
+
+func errorHandler(err error, submission model.Submission, info string) bool {
 	if err != nil {
-		fmt.Println(err)
-		return
+		CommitStatus(submission, model.CompilationError, "Internal error, please contact admin")
+		log.Println(info, err)
+		return true
 	}
-	for _, submission := range submissions {
-		JudgeQueue <- submission
-	}
+	return false
+}
+
+func CommitStatus(submission model.Submission, stat model.Status, info ...string) {
+	submission.Status = stat
+	submission.Information = append(submission.Information, info...)
+	database.NanoDB.Save(&submission)
 }
