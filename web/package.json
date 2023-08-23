@@ -11,13 +11,18 @@
   "dependencies": {
     "@codemirror/lang-javascript": "^6.1.4",
     "@codemirror/theme-one-dark": "^6.1.1",
+    "@element-plus/icons": "^0.0.11",
+    "@element-plus/icons-vue": "^2.1.0",
     "core-js": "^3.29.1",
     "element-plus": "^2.3.1",
     "jwt-decode": "^3.1.2",
     "marked": "^4.3.0",
+    "monaco-editor": "^0.39.0",
+    "monaco-editor-locales-plugin": "^0.0.3",
     "vue": "^3.2.47",
     "vue-axios": "^3.5.2",
     "vue-codemirror": "^6.1.1",
+    "vue-monaco": "^1.2.2",
     "vue-router": "^4.1.6",
     "vuex": "^4.0.0"
   },

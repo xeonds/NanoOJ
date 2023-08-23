@@ -46,6 +46,13 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create user"})
 		return
 	}
+	if user.ID == 1 { // if it is the first user, set it as admin
+		user.AccountInfo.Permission = 0
+		if err := database.UpdateUser(&user); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
+			return
+		}
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "user created successfully"})
 }
 

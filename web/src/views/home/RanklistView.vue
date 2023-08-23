@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import RankList from '../components/RankList.vue';
+import RankList from '../../components/RankList.vue';
 import { mapGetters } from 'vuex';
 
 export default {

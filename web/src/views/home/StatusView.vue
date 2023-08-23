@@ -29,7 +29,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import utils from '../utils';
+import utils from '../../utils';
 
 export default {
   created: function () {

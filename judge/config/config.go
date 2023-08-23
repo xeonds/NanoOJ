@@ -5,6 +5,12 @@ import (
 )
 
 type Config struct {
+	Server struct {
+		Host string
+		Port int
+		Side string
+	}
+
 	Database struct {
 		Host     string
 		Port     int
@@ -12,9 +18,14 @@ type Config struct {
 		Password string
 		Name     string
 	}
-	Judge struct {
-		Endpoint string
-		Token    string
+
+	Admin []struct {
+		Username string
+		Password string
+	}
+
+	Judger struct {
+		Daemons []string
 	}
 }
 
@@ -42,3 +53,42 @@ func SaveConfig(config *Config) error {
 	return nil
 }
 
+func DefaultConfig() *Config {
+	return &Config{
+		Server: struct {
+			Host string
+			Port int
+			Side string
+		}{
+			Host: "	",
+			Port: 8080,
+			Side: "web-judge",
+		},
+		Database: struct {
+			Host     string
+			Port     int
+			User     string
+			Password string
+			Name     string
+		}{
+			Host:     "localhost",
+			Port:     3306,
+			User:     "root",
+			Password: "root",
+			Name:     "nano-oj",
+		},
+		Admin: []struct {
+			Username string
+			Password string
+		}{
+			{
+				Username: "admin",
+				Password: "admin",
+			},
+		}, Judger: struct {
+			Daemons []string
+		}{
+			Daemons: []string{"localhost"},
+		},
+	}
+}

@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import ProblemList from "../components/ProblemList.vue";
+import ProblemList from "../../components/ProblemList.vue";
 import { mapGetters } from "vuex";
 
 export default {
