@@ -49,4 +49,5 @@ export default createStore({
 		contest,
 		notification,
 		submission
-	});
+	}
+});

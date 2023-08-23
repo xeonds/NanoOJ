@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api/v1": {
-        target: "http://localhost:8080",
+        target: "http://www.jiujiuer.xyz:808",
         changeOrigin: true,
         pathRewrite: {
           "^/api/v1": "",
@@ -15,13 +15,7 @@ export default defineConfig({
       },
     },
   },
-  optimizeDeps: {
-    include: [
-      `monaco-editor/esm/vs/language/json/json.worker`,
-      `monaco-editor/esm/vs/language/css/css.worker`,
-      `monaco-editor/esm/vs/language/html/html.worker`,
-      `monaco-editor/esm/vs/language/typescript/ts.worker`,
-      `monaco-editor/esm/vs/editor/editor.worker`,
-    ],
+  build: {
+	outDir: "../public",
   },
 });
