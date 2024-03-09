@@ -1,4 +1,6 @@
-all: web server
+.PHONY: web
+
+build: web server
 
 web: 
 	cd web && pnpm i && vite build --outDir ../build/static
