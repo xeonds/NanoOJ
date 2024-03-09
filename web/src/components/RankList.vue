@@ -6,16 +6,13 @@
   </el-table>
 </template>
 
-<script>
-export default {
-  name: "RankList",
-  props: {
-    ranks: {
-      type: Array,
-      default: () => []
-    }
+<script lang="ts" setup>
+const props = defineProps({
+  ranks: {
+    type: Array,
+    default: () => []
   }
-};
+});
 </script>
 
 <style scoped></style>

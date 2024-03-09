@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-
 export default {
     props: {
         userInfo: {
@@ -15,10 +13,6 @@ export default {
                 return {};
             }
         }
-    },
-    computed: {
-        ...mapGetters({
-        }),
     },
     created: function () {
         console.log("ProfileView created");

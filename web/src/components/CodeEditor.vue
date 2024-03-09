@@ -19,9 +19,11 @@
                 </el-form-item>
             </el-form>
             <template #reference>
-                <el-button type="primary" icon="el-icon-setting" text><el-icon>
+                <el-button type="primary" icon="el-icon-setting" text>
+                    <el-icon>
                         <Setting />
-                    </el-icon>编辑器设置</el-button>
+                    </el-icon>编辑器设置
+                </el-button>
             </template>
         </el-popover>
     </el-row>
@@ -30,85 +32,76 @@
     </el-row>
 </template>
 
-<script>
-import * as monaco from 'monaco-editor'
+<script lang="ts" setup>
+import { reactive, onMounted, watch } from 'vue';
+import * as monaco from 'monaco-editor';
+const props = defineProps<{
+    language: string,
+    callback: Function,
+    height: string,
+}>();
+const visible = ref(false);
+const theme = ref('vs-dark');
+const options = reactive({
+    minimap: {
+        enabled: false,
+    },
+    fontSize: 14,
+    vimMode: true,
+    theme: theme.value,
+});
 
-export default {
-    props: {
-        language: {
-            type: String,
-            default: "cpp",
-        },
-        callback: {
-            type: Function,
-            required: true,
-        },
-        height: {
-            type: String,
-            default: "42rem",
-        },
-    },
-    data() {
-        return {
-            editor: null,
-            code: "",
-            theme: "vs-dark",
-            options: {
-                minimap: {
-                    enabled: false,
-                },
-                fontSize: 14,
-                vimMode: true,
-            },
-        }
-    },
-    watch: {
-        fontSize(newValue) {
-            this.options.fontSize = newValue;
-        },
-        vimMode(newValue) {
-            this.options.vimMode = newValue === "true";
-        },
-    },
-    methods: {
-        initEditor() {
-            // 初始化编辑器，确保dom已经渲染
-            this.editor = monaco.editor.create(document.getElementById('editor'), {
-                value: '',//编辑器初始显示文字
-                language: this.language,//语言支持自行查阅demo
-                automaticLayout: true,//自动布局
-                theme: this.theme //官方自带三种主题vs, hc-black, or vs-dark
-            });
-        },
-        getValue() {
-            this.editor.getValue(); //获取编辑器中的文本
-        },
-        toggleTheme() {
-            this.theme = this.theme === "vs-dark" ? "vs" : "vs-dark";
-            this.options.theme = this.theme;
-        },
-        handleChangeLanguage(newLanguage) {
-            this.language = newLanguage;
-            this.callback(this.language, this.code);
-        },
-    },
-    mounted() {
-        this.initEditor();
-    },
-}
+let editor: monaco.editor.IStandaloneCodeEditor | null = null;
+const code = ref('');
+
+const initEditor = () => {
+    // Initialize the editor after the DOM has been rendered
+    editor = monaco.editor.create(document.getElementById('editor')!, {
+        value: code.value, // Initial text to display in the editor
+        language: props.language, // Language support, refer to the documentation for available options
+        automaticLayout: true, // Automatic layout
+        theme: theme.value, // Officially supported themes: vs, hc-black, or vs-dark
+    });
+};
+
+const getValue = () => {
+    editor!.getValue(); // Get the text in the editor
+};
+
+const toggleTheme = () => {
+    theme.value = theme.value === 'vs-dark' ? 'vs' : 'vs-dark';
+};
+
+onMounted(() => {
+    initEditor();
+});
+
+watch(
+    () => options.fontSize,
+    (newValue) => {
+        options.fontSize = newValue;
+    }
+);
+
+watch(
+    () => options.vimMode,
+    (newValue) => {
+        options.vimMode = newValue;
+    }
+);
 </script>
 
 <style scoped>
 #row-1 {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+display: flex;
+flex-flow: row nowrap;
+justify-content: space-between;
+padding-top: 1rem;
+padding-bottom: 1rem;
 }
 
 #editor {
-    width: 100%;
-    height: 100%;
+width: 100%;
+height: 100%;
 }
 </style>

@@ -1,13 +1,13 @@
 <template>
   <div class="block">
     <el-carousel trigger="click" :interval="5000" indicator-position="outside" arrow="never">
-      <el-carousel-item v-for="(notification, index) in Notifications" :key="index">
+      <el-carousel-item v-for="item in notifications" :key="item.id">
         <div class="notification-content">
-          <h3>{{ notification.title }} </h3>
-          <p v-html="notification.content"></p>
+          <h3>{{ item.title }} </h3>
+          <p v-html="item.content"></p>
           <el-divider></el-divider>
-          <el-tag>创建于：{{ formatDate(notification.CreatedAt) }}</el-tag>
-          <el-tag v-if="notification.UpdateAt">修改于：{{ formatDate(notification.UpdateAt) }}</el-tag>
+          <el-tag>创建于：{{ formatDate(item.CreatedAt) }}</el-tag>
+          <el-tag v-if="item.UpdatedAt">修改于：{{ formatDate(item.UpdatedAt) }}</el-tag>
         </div>
       </el-carousel-item>
     </el-carousel>
@@ -15,35 +15,32 @@
   </div>
 </template>
 
-<script>
-import utils from "../utils";
+<script lang="ts" setup>
+import { formatDate } from "@/utils/date.ts";
 import { marked } from "marked";
-export default {
-  name: "NotificationBoard",
-  props: {
-    notifications: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  computed: {
-	Notifications() {
-	  return this.notifications.map((notification) => {
-		notification.content = marked(notification.content);
-		return notification;
-	  });
-	},
-  },
-  methods: {
-	formatDate(date) {
-	  return utils.formatDate(date);
-	},
-  },
+import { Notification } from "@/assets/types";
+import { http } from "@/utils/http";
+
+const notifications: Ref<Notification[]> = ref([]);
+
+const getNotifications = async (): Promise<Notification[]> => {
+  const { data, err } = await http.get("/notifications");
+  if (err) {
+    console.error(err);
+    return [];
+  }
+  return (data as Ref<Notification[]>).value.map((notification: any) => {
+    notification.content = marked(notification.content);
+    return notification;
+  });
 };
+
+onMounted(async () => {
+  notifications.value = await getNotifications();
+});
 </script>
 
 <style scoped>
-
 .notification-content {
   margin-bottom: 10px;
 }
@@ -53,5 +50,4 @@ export default {
   font-size: 12px;
   color: #999;
 }
-
 </style>

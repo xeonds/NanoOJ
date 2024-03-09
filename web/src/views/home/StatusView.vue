@@ -28,8 +28,6 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import utils from '../../utils';
 
 export default {
   created: function () {
@@ -44,11 +42,7 @@ export default {
       background: false,
     };
   },
-  computed: {
-    ...mapGetters({ submissions: "getSubmissions" }),
-  },
   methods: {
-    ...mapActions({ fetchSubmissions: "fetchSubmissions", getUserById: "fetchUserInfo" }),
     Username: function (id) {
       return this.getUserById(id).Username;
     },
@@ -99,3 +93,4 @@ export default {
   padding-top: 1rem;
 }
 </style>
+../../utils/router

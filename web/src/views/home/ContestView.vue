@@ -32,22 +32,10 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import { marked } from "marked";
 
 export default {
   name: "ContestView",
-  computed: {
-    ...mapGetters({
-      _contest: "getContestById"
-    }),
-    contest() {
-      return this._contest(this.$route.params.id);
-    },
-    description() {
-      return marked(this.contest.description);
-    },
-  },
 };
 </script>
 

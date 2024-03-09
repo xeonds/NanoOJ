@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="24">
         <el-card>
-          <NotificationBoard :notifications="notifications"></NotificationBoard>
+          <NotificationBoard></NotificationBoard>
         </el-card>
       </el-col>
     </el-row>
@@ -11,51 +11,29 @@
       <el-col :span="16">
         <el-card>
           <h3>最新问题</h3>
-          <ProblemList :problems="problems"></ProblemList>
+          <ProblemList></ProblemList>
         </el-card>
       </el-col>
       <el-col :span="8">
         <el-card>
           <h3>排行榜</h3>
-          <RankList :ranks="ranks"></RankList>
+          <RankList></RankList>
         </el-card>
         <el-card>
           <h3>近期测试</h3>
-          <ContestList :contests="contests"></ContestList>
+          <ContestList></ContestList>
         </el-card>
       </el-col>
     </el-row>
   </div>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
+<script lang="ts" setup>
 import NotificationBoard from "../../components/NotificationBoard.vue";
 import ProblemList from "../../components/ProblemList.vue";
 import RankList from "../../components/RankList.vue";
 import ContestList from "../../components/ContestList.vue";
 
-export default {
-  name: "HomeView",
-  components: {
-    NotificationBoard,
-    ProblemList,
-    RankList,
-    ContestList,
-  },
-  computed: {
-    ...mapGetters({
-      _problems: "getProblems",
-      notifications: "getNotifications",
-      ranks: "getRanks",
-      contests: "getContests",
-    }),
-    problems() {
-      //return the latest 10 problems, ordered by time desc
-      return this._problems.slice(0, 10);
-    },
-  },
-};
 </script>
 
 <style scoped>

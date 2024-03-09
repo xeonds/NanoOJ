@@ -5,15 +5,8 @@
   </el-scrollbar>
 </template>
  
-<script>
-import FooterBox from "./components/FooterBox.vue";
-
-export default {
-  name: "App",
-  components: {
-    FooterBox,
-  },
-};
+<script setup lang="ts">
+import FooterBox from "@/components/FooterBox.vue";
 </script>
 
 <style>

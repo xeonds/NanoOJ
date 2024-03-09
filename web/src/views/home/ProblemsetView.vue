@@ -7,13 +7,9 @@
 
 <script>
 import ProblemList from "../../components/ProblemList.vue";
-import { mapGetters } from "vuex";
 
 export default {
   name: "ProblemsetView",
-  computed: {
-    ...mapGetters({ problems: "getProblems" }),
-  },
   components: {
     ProblemList,
   },
