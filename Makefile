@@ -7,3 +7,6 @@ web:
 
 server:
 	cd judge && go build -o ../build/nano-oj
+
+web-dev:
+	cd web && pnpm i && vite dev
