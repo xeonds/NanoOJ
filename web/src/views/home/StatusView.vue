@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getDataArr } from "@/utils/http" 
+import { getDataArr } from "@/utils/http"
 
 const currentPage = ref(1);
 const pageSize = ref(10);
@@ -36,120 +36,21 @@ const small = ref(false);
 const disabled = ref(false);
 const background = ref(false);
 
-const submissions = ref([]);
+const { data: submissions, get } = getDataArr<Submission>("submissions");
 
-const formatDate = (date) => {
-  return utils.formatDate(date);
-};
-
-const decodeStatus = (status) => {
-  switch (status) {
-    case 0: return "Pending";
-    case 1: return "InProgress";
-    case 2: return "Accepted";
-    case 3: return "WrongAnswer";
-    case 4: return "TimeLimitExceeded";
-    case 5: return "MemoryLimitExceeded";
-    case 6: return "RuntimeError";
-    case 7: return "CompilationError";
-    default:
-      return "Unknown";
-  }
-};
-
-const statusTag = (status) => {
-  switch (status) {
-    case 0: return "info";
-    case 1: return "info";
-    case 2: return "success";
-    case 3: return "danger";
-    case 4: return "warning";
-    case 5: return "warning";
-    case 6: return "danger";
-    case 7: return "danger";
-    default:
-      return "info";
-  }
-};
+const status = (status) => ["Pending", "InProgress", "Accepted", "WrongAnswer", "TimeLimitExceeded", "MemoryLimitExceeded", "RuntimeError", "CompilationError"][status] || "Unknown";
+const statusTag = (status) => ["info", "info", "success", "danger", "warning", "warning", "danger", "danger"][status] || "info";
 
 const showInfo = (row) => {
-  this.$message({
+  ElMessage({
     message: row.information.join("\n"),
     type: 'info',
     showClose: true,
   });
 };
 
-const fetchSubmissions = () => {
-  // Fetch submissions logic here
-};
 
-fetchSubmissions();
-
-const formattedSubmissions = computed(() => {
-  return submissions.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
-});
-</script>
-
-<script>
-
-export default {
-  created: function () {
-    this.fetchSubmissions();
-  },
-  data: function () {
-    return {
-      currentPage: 1,
-      pageSize: 10,
-      small: false,
-      disabled: false,
-      background: false,
-    };
-  },
-  methods: {
-    Username: function (id) {
-      return this.getUserById(id).Username;
-    },
-    decodeStatus: function (status) {
-      switch (status) {
-        case 0: return "Pending";
-        case 1: return "InProgress"
-        case 2: return "Accepted"
-        case 3: return "WrongAnswer"
-        case 4: return "TimeLimitExceeded"
-        case 5: return "MemoryLimitExceeded"
-        case 6: return "RuntimeError"
-        case 7: return "CompilationError"
-        default:
-          return "Unknown";
-      }
-    },
-    statusTag: function (status) {
-      switch (status) {
-        case 0: return "info";
-        case 1: return "info"
-        case 2: return "success"
-        case 3: return "danger"
-        case 4: return "warning"
-        case 5: return "warning"
-        case 6: return "danger"
-        case 7: return "danger"
-        default:
-          return "info";
-      }
-    },
-    formatDate: function (date) {
-      return utils.formatDate(date);
-    },
-    showInfo: function (row) {
-      this.$message({
-        message: row.information.join("\n"),
-        type: 'info',
-        showClose: true,
-      });
-    },
-  },
-};
+const formattedSubmissions = () => submissions.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
 </script>
 
 <style scoped>
@@ -157,4 +58,3 @@ export default {
   padding-top: 1rem;
 }
 </style>
-../../utils/router
