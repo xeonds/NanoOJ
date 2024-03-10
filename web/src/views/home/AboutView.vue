@@ -75,13 +75,3 @@ int main(){
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: "AboutView",
-  components: {},
-};
-</script>
-
-<style scoped>
-</style>

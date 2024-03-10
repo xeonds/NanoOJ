@@ -7,8 +7,6 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Inspect from 'vite-plugin-inspect'
 
 const pathSrc = path.resolve(__dirname, 'src')
-
-// https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
         Vue(),
@@ -22,7 +20,7 @@ export default defineConfig({
             resolvers: [ElementPlusResolver()],
             dts: path.resolve(pathSrc, 'typings', 'components.d.ts'),
         }),
-        Inspect()
+        Inspect(),
     ],
     resolve: {
         alias: {

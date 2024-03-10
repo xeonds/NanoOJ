@@ -13,12 +13,13 @@
 
 <script lang="ts" setup>
 const router = useRouter();
-const props = defineProps({
-  problems: {
-    type: Array,
-    default: () => []
-  }
-});
-
 const colors = { 2: '#01D842', 4: '#66CCFF', 5: '#FF4040' };
+import { Problem } from '@/model';
+import { getDataArr } from '@/utils/http';
+
+const { data: problems, get } = getDataArr<Problem>('/problems');
+
+onMounted(async () => {
+  problems.value = await get();
+});
 </script>

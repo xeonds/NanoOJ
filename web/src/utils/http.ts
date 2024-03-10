@@ -1,5 +1,6 @@
 import { ElMessage } from "element-plus"
 import { getToken } from "./login"
+import { Pagination } from "@/model"
 
 // TODO: validate & update token when fetch
 export const useFetch = async (url: string, init?: RequestInit | undefined) => {
@@ -88,4 +89,30 @@ export const deleteData = (token: string) => async (api: string, id: number, dat
     ElMessage.success('删除成功')
     fetchData(token)(api, dataSrc)
   }
+}
+
+export const getDataArr = <T>(api: string, _pagination = <Pagination>{ pageNum: 1, pageSize: 25, total: 25 }) => {
+  const data: Ref<T[]> = ref([]);
+  const get = async (): Promise<T[]> => {
+    const { data, err } = await http.get(api);
+    if (err) {
+      console.error(err);
+      return [];
+    }
+    return (data as Ref<T[]>).value;
+  };
+  return { data, get };
+}
+
+export const getData = <T>(api: string, _pagination = <Pagination>{ pageNum: 1, pageSize: 25, total: 25 }) => {
+  const data = ref<T>();
+  const get = async (): Promise<T> => {
+    const { data, err } = await http.get(api);
+    if (err) {
+      console.error(err);
+      return {} as T;
+    }
+    return (data as Ref<T>).value;
+  };
+  return { data, get };
 }

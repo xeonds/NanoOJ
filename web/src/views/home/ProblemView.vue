@@ -4,15 +4,15 @@
       <el-col :span="16">
         <el-card>
           <template #header>
-            <el-text type="primary" size="large">#{{ problem.id }}.{{ problem.title }}</el-text>
+            <el-text type="primary" size="large">#{{ problem!.id }}.{{ problem!.title }}</el-text>
           </template>
           <h4 type="primary" size="large">Problem Description</h4>
           <p v-html="description"></p><br>
           <el-divider>Code here</el-divider>
-          <CodeEditor language="c" :callback="submitCode">
+          <CodeEditor :language="'c'" :height="'24rem'">
             <template #editor-options>
               <div id="buttons">
-                <el-select v-model="problem.language" placeholder="Select Language">
+                <el-select v-model="language" placeholder="Select Language">
                   <el-option label="C" value="c"></el-option>
                   <el-option label="C++" value="cpp"></el-option>
                   <el-option label="Java" value="java"></el-option>
@@ -44,52 +44,43 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { marked } from "marked";
-import CodeEditor from '../../components/CodeEditor.vue';
-import api from '../../api';
+import { onMounted } from "vue";
+import CodeEditor from '@/components/CodeEditor.vue';
+import { getData, http } from "@/utils/http";
+import { Problem } from "@/model";
+import { ElMessage } from "element-plus";
 
-export default {
-  name: "ProblemView",
-  components: {
-    CodeEditor,
-  },
-  data() {
-    return {
-      problem: { description: '' },
-    }
-  },
-  created() {
-    api.getProblemInfo(this.$route.params.id).then((response) => {
-      if (response.status === 200) {
-        this.problem = response.data;
+const route = useRoute();
+const router = useRouter();
+const id = parseInt(route.params.id as string);
+const language = ref('c');
+const code = ref('');
+const { data: problem, get: getProblemInfo } = getData<Problem>(`/problems/${id}`);
+
+onMounted(async () => {
+  problem.value = await getProblemInfo();
+});
+
+const description = () => marked(problem.value!.description);
+
+const submitCode = async () => {
+  http.post('/submissions', { code: code.value, language: language.value, state: 'waiting', problem_id: id })
+    .then(({ data, err }) => {
+      if (err) {
+        console.error(err);
+        return;
       }
-    }).catch((error) => {
-      this.$message({ type: 'error', message: 'Failed to get problem info: ' + error });
-    });
-  },
-  computed: {
-    description() {
-      return marked(this.problem.description);
-    },
-  },
-  methods: {
-    submitCode: function (language, code) {
-      api.addSubmissions({ code: code, language: 'c', state: 'waiting', problem_id: parseInt(this.$route.params.id) })
-        .then((response) => {
-          if (response.status === 200) {
-            this.$message({
-              message: 'Code submitted successfully',
-              type: 'success'
-            });
-            this.$router.push('/status');
-          }
-        })
-        .catch((error) => {
+      if (data.value.status === 200) {
+        ElMessage({
+          message: 'Code submitted successfully',
+          type: 'success'
         });
-    },
-  }
-};
+        router.push('/status');
+      }
+    })
+}
 </script>
 
 <style scoped>

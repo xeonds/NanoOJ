@@ -37,14 +37,13 @@ import { reactive, onMounted, watch } from 'vue';
 import * as monaco from 'monaco-editor';
 const props = defineProps<{
     language: string,
-    callback: Function,
     height: string,
 }>();
 const visible = ref(false);
 const theme = ref('vs-dark');
 const options = reactive({
     minimap: {
-        enabled: false,
+        enabled: true,
     },
     fontSize: 14,
     vimMode: true,
@@ -55,7 +54,6 @@ let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 const code = ref('');
 
 const initEditor = () => {
-    // Initialize the editor after the DOM has been rendered
     editor = monaco.editor.create(document.getElementById('editor')!, {
         value: code.value, // Initial text to display in the editor
         language: props.language, // Language support, refer to the documentation for available options
@@ -63,32 +61,16 @@ const initEditor = () => {
         theme: theme.value, // Officially supported themes: vs, hc-black, or vs-dark
     });
 };
-
-const getValue = () => {
-    editor!.getValue(); // Get the text in the editor
-};
-
-const toggleTheme = () => {
-    theme.value = theme.value === 'vs-dark' ? 'vs' : 'vs-dark';
-};
-
 onMounted(() => {
     initEditor();
 });
 
 watch(
-    () => options.fontSize,
+    () => editor!.getValue(),
     (newValue) => {
-        options.fontSize = newValue;
+        code.value = newValue;
     }
-);
-
-watch(
-    () => options.vimMode,
-    (newValue) => {
-        options.vimMode = newValue;
-    }
-);
+)
 </script>
 
 <style scoped>

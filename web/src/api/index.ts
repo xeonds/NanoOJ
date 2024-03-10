@@ -16,20 +16,16 @@ export default {
     getNotificationInfo: (id: number) => http.get(`/notifications/${id}`),
 
     // need token
-    addProblems: (data: any) => http.post("/problems", data, { needToken: true } as RequestConfig),
-    addContests: (data: any) => http.post("/contests", data, { needToken: true } as RequestConfig),
-    addSubmissions: (data: any) => http.post("/submissions", data, { needToken: true } as RequestConfig),
-    addNotifications: (data: any) => http.post("/notifications", data, { needToken: true } as RequestConfig),
-    updateUser: (data: any, id: number) => http.put(`/users/${id}`, data, { needToken: true } as RequestConfig),
-    updateProblem: (data: any, id: number) => http.put(`/problems/${id}`, data, { needToken: true } as RequestConfig),
-    updateContests: (data: any, id: number) => http.put(`/contests/${id}`, data, { needToken: true } as RequestConfig),
-    updateNotification: (data: any, id: number) => http.put(`/notifications/${id}`, data, { needToken: true } as RequestConfig),
-    deleteUser: (id: number) => http.delete(`/users/${id}`, { needToken: true } as RequestConfig),
-    deleteProblem: (id: number) => http.delete(`/problems/${id}`, { needToken: true } as RequestConfig),
-    deleteContest: (id: number) => http.delete(`/contests/${id}`, { needToken: true } as RequestConfig),
-    deleteNotification: (id: number) => http.delete(`/notifications/${id}`, { needToken: true } as RequestConfig),
-}
-
-interface RequestConfig extends AxiosRequestConfig {
-    needToken?: boolean
+    addProblems: (data: any) => http.post("/problems", data),
+    addContests: (data: any) => http.post("/contests", data),
+    addSubmissions: (data: any) => http.post("/submissions", data),
+    addNotifications: (data: any) => http.post("/notifications", data),
+    updateUser: (data: any, id: number) => http.put(`/users/${id}`, data),
+    updateProblem: (data: any, id: number) => http.put(`/problems/${id}`, data),
+    updateContests: (data: any, id: number) => http.put(`/contests/${id}`, data),
+    updateNotification: (data: any, id: number) => http.put(`/notifications/${id}`, data),
+    deleteUser: (id: number) => http.del('/users/', id),
+    deleteProblem: (id: number) => http.del('/problems/', id),
+    deleteContest: (id: number) => http.del('/contests/', id),
+    deleteNotification: (id: number) => http.del('/notifications/', id),
 }

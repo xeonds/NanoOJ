@@ -16,27 +16,18 @@
 </template>
 
 <script lang="ts" setup>
-import { formatDate } from "@/utils/date.ts";
+import { formatDate } from "@/utils/datetime";
 import { marked } from "marked";
-import { Notification } from "@/assets/types";
-import { http } from "@/utils/http";
+import { Notification } from "@/model";
+import { getDataArr } from "@/utils/http";
 
-const notifications: Ref<Notification[]> = ref([]);
-
-const getNotifications = async (): Promise<Notification[]> => {
-  const { data, err } = await http.get("/notifications");
-  if (err) {
-    console.error(err);
-    return [];
-  }
-  return (data as Ref<Notification[]>).value.map((notification: any) => {
-    notification.content = marked(notification.content);
-    return notification;
-  });
-};
+const { data: notifications , get } = getDataArr<Notification>('/notifications');
 
 onMounted(async () => {
-  notifications.value = await getNotifications();
+  notifications.value = (await get()).map((item) => {
+    item.content = marked(item.content) as string;
+    return item;
+  });
 });
 </script>
 
@@ -50,4 +41,4 @@ onMounted(async () => {
   font-size: 12px;
   color: #999;
 }
-</style>
+</style>@/utils/datetime

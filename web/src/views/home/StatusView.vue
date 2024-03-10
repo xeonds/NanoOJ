@@ -27,6 +27,70 @@
   </div>
 </template>
 
+<script lang="ts" setup>
+import { getDataArr } from "@/utils/http" 
+
+const currentPage = ref(1);
+const pageSize = ref(10);
+const small = ref(false);
+const disabled = ref(false);
+const background = ref(false);
+
+const submissions = ref([]);
+
+const formatDate = (date) => {
+  return utils.formatDate(date);
+};
+
+const decodeStatus = (status) => {
+  switch (status) {
+    case 0: return "Pending";
+    case 1: return "InProgress";
+    case 2: return "Accepted";
+    case 3: return "WrongAnswer";
+    case 4: return "TimeLimitExceeded";
+    case 5: return "MemoryLimitExceeded";
+    case 6: return "RuntimeError";
+    case 7: return "CompilationError";
+    default:
+      return "Unknown";
+  }
+};
+
+const statusTag = (status) => {
+  switch (status) {
+    case 0: return "info";
+    case 1: return "info";
+    case 2: return "success";
+    case 3: return "danger";
+    case 4: return "warning";
+    case 5: return "warning";
+    case 6: return "danger";
+    case 7: return "danger";
+    default:
+      return "info";
+  }
+};
+
+const showInfo = (row) => {
+  this.$message({
+    message: row.information.join("\n"),
+    type: 'info',
+    showClose: true,
+  });
+};
+
+const fetchSubmissions = () => {
+  // Fetch submissions logic here
+};
+
+fetchSubmissions();
+
+const formattedSubmissions = computed(() => {
+  return submissions.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
+});
+</script>
+
 <script>
 
 export default {

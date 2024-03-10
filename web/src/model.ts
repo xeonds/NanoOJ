@@ -96,3 +96,9 @@ export interface Rank {
     class_rank: number;
     total_users: number;
 }
+
+export interface Pagination {
+    pageNum: number;
+    pageSize: number;
+    total: number;
+}

@@ -7,11 +7,10 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps({
-  ranks: {
-    type: Array,
-    default: () => []
-  }
+import { getDataArr } from '@/utils/http';
+const { data: ranks, get } = getDataArr('/ranks');
+onMounted(async () => {
+  ranks.value = await get();
 });
 </script>
 
