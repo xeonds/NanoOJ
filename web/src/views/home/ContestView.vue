@@ -35,5 +35,7 @@
 <script lang="ts" setup>
 import { marked } from "marked";
 import { time } from "@/utils/datetime";
+import { Contest } from "@/model";
 const props = defineProps<{ contest: Contest }>();
+const description = marked(props.contest.description);
 </script>

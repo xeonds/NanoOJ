@@ -17,7 +17,7 @@
         logout();
       router.push('/');
       ">登出</el-menu-item>
-            <el-menu-item v-if="userPermission > 1" index="1-3" @click="router.push('/admin')">管理</el-menu-item>
+            <el-menu-item v-if="role > 1" index="1-3" @click="router.push('/admin')">管理</el-menu-item>
           </el-sub-menu>
           <el-menu-item v-else index="1" @click="router.push('/login')">登录/注册</el-menu-item>
         </el-menu>
@@ -53,7 +53,10 @@
 </template>
 
 <script lang="ts" setup>
+import { getRole, getUsername, isLogin, logout } from "@/utils/login";
 const router = useRouter();
+const username = getUsername();
+const role = parseInt(getRole());
 const menu = [
   { index: "1", label: "主页", route: "/" },
   { index: "2", label: "问题", route: "/problem" },

@@ -58,11 +58,6 @@ const id = parseInt(route.params.id as string);
 const language = ref('c');
 const code = ref('');
 const { data: problem, get: getProblemInfo } = getData<Problem>(`/problems/${id}`);
-
-onMounted(async () => {
-  problem.value = await getProblemInfo();
-});
-
 const description = () => marked(problem.value!.description);
 
 const submitCode = async () => {
@@ -73,14 +68,15 @@ const submitCode = async () => {
         return;
       }
       if (data.value.status === 200) {
-        ElMessage({
-          message: 'Code submitted successfully',
-          type: 'success'
-        });
+        ElMessage({ message: 'Code submitted successfully', type: 'success' });
         router.push('/status');
       }
     })
 }
+
+onMounted(async () => {
+  problem.value = await getProblemInfo();
+});
 </script>
 
 <style scoped>

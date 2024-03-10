@@ -10,8 +10,9 @@
 </template>
 
 <script lang="ts" setup>
+import { Rank } from '@/model';
 import { getDataArr } from '@/utils/http';
-const { data: ranks, get } = getDataArr('/ranks');
+const { data: ranks, get } = getDataArr<Rank>('/ranks');
 onMounted(async () => {
   ranks.value = await get();
 });

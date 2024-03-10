@@ -48,11 +48,11 @@
 
 <script lang="ts" setup>
 import NotificationBoard from "@/components/NotificationBoard.vue";
-const router = useRouter();
-const colors = { 2: '#01D842', 4: '#66CCFF', 5: '#FF4040' };
 import { Contest, Problem, Rank } from '@/model';
 import { getDataArr } from '@/utils/http';
 
+const router = useRouter();
+const colors = { 2: '#01D842', 4: '#66CCFF', 5: '#FF4040' };
 const { data: problems, get: getProblems } = getDataArr<Problem>('/problems');
 const { data: ranks, get: getRanks } = getDataArr<Rank>('/ranks');
 const { data: contests, get: getContests } = getDataArr<Contest>('/contests');

@@ -1,11 +1,11 @@
 <template>
-    <CodeEditor :language="language" :callback="submitCode" :height="'calc(100vh - 215px)'" id="editor">
+    <CodeEditor :language="language" :height="'calc(100vh - 215px)'" id="editor">
         <template #editor-options>
             <div id="header-items">
                 <el-page-header @back="goBack">
                     <template #content>
-                        <el-text type="primary" class="title">X-OJ</el-text><el-text class="subtitle"> |
-                            Playground</el-text>
+                        <el-text type="primary" class="title">X-OJ</el-text>
+                        <el-text class="subtitle"> | Playground</el-text>
                     </template>
                 </el-page-header>
                 <el-select v-model="language" placeholder="Select Language">
@@ -17,9 +17,10 @@
         </template>
     </CodeEditor>
     <el-drawer v-model="show_output" :show-close="false" direction="btt">
-        <template #header="{ close, titleId, titleClass }">
+        <template #header="">
             <div>
-                <el-text class="title">Running result</el-text><el-text class="subtitle"> | Output</el-text>
+                <el-text class="title">Running result</el-text>
+                <el-text class="subtitle"> | Output</el-text>
             </div>
             <el-button type="success" @click="copyToClipboard(output)" text>
                 <el-icon class="el-icon--left">
@@ -28,69 +29,57 @@
                 Copy Output
             </el-button>
         </template>
-        <div id="console"> <!-- 控制台风格的窗格 -->
-            <pre>{{ output }}</pre> <!-- 输出结果 -->
+        <div id="console">
+            <!-- 控制台风格的窗格 -->
+            <pre>{{ output }}</pre>
+            <!-- 输出结果 -->
         </div>
     </el-drawer>
 </template>
 
-<script>
-import CodeEditor from '../components/CodeEditor.vue';
-import * as monaco from 'monaco-editor'
-import api from '../api';
+<script lang="ts" setup>
+import { onMounted } from 'vue';
+import CodeEditor from '@/components/CodeEditor.vue';
+import * as monaco from 'monaco-editor';
+import api from '@/api';
 
-export default {
-    components: {
-        CodeEditor,
-    },
-    data() {
-        return {
-            problem: { description: '' },
-            languages: [],
-            language: 'c',
-            show_output: false,
-            output: 'Hello, World!',
-        }
-    },
-    created() {
-        this.languages = monaco.languages.getLanguages().map(function (lang) { return lang.id; });
-        console.log(this.languages);
-    },
-    methods: {
-        submitCode: function (language, code) {
-            api.addSubmissions({ code: code, language: 'c', state: 'waiting', mode: 'playground' })
-                .then((response) => {
-                    if (response.status === 200) {
-                        this.$message({
-                            message: 'Code submitted successfully',
-                            type: 'success'
-                        });
-                    }
-                })
-                .catch((error) => {
-                    this.$message({ type: 'error', message: 'Failed to submit code: ' + error });
-                });
-        },
-        goBack() {
-            this.$router.go(-1);
-        },
-        async copyToClipboard(text) {
-            try {
-                await navigator.clipboard.writeText(text);
-                this.$message({
-                    message: 'Copied to clipboard',
-                    type: 'success'
-                });
-            } catch (err) {
-                this.$message({
-                    message: 'Failed to copy to clipboard',
-                    type: 'error'
-                });
+const code = ref('Hello, World');
+const language = ref('c');
+const show_output = ref(false);
+const output = ref('Hello, World!');
+const languages: Ref<string[]> = ref([]);
+const router = useRouter();
+
+const submitCode = () => {
+    api
+        .addSubmissions({ code: code.value, language: language.value, state: 'waiting', mode: 'playground' })
+        .then((response: any) => {
+            if (response.status === 200) {
+                console.log('Code submitted successfully');
             }
-        }
-
-    },
+        })
+        .catch((error) => {
+            console.error('Failed to submit code:', error);
+        });
 };
+const goBack = () => { router.go(-1) };
+const copyToClipboard = async (text: string) => {
+    try {
+        await navigator.clipboard.writeText(text);
+        console.log('Copied to clipboard');
+    } catch (err) {
+        console.error('Failed to copy to clipboard');
+    }
+};
+
+onMounted(() => {
+    languages.value = monaco.languages.getLanguages().map((lang) => lang.id);
+    console.log(languages.value);
+});
+
+// pass ref:code to CodeEditor component
+// thus the code in CodeEditor component can be passed back to here
+provide('code', code)
 </script>
 
 <style scoped>

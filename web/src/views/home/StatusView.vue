@@ -4,14 +4,14 @@
     <el-table :data="submissions.slice((currentPage - 1) * pageSize, currentPage * pageSize)">
       <el-table-column label="提交时间">
         <template #default="{ row }">
-          <span type="info">{{ formatDate(row.CreatedAt) }}</span>
+          <span type="info">{{ time.fromString(row.CreatedAt) }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="id" label="提交ID"></el-table-column>
       <el-table-column prop="problem_id" label="题目id"></el-table-column>
       <el-table-column label="状态">
         <template #default="{ row }">
-          <el-tag class="ml-2" :type="statusTag(row.status)">{{ decodeStatus(row.status) }}</el-tag>
+          <el-tag class="ml-2" :type="statusTag(row.status)">{{ status(row.status) }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="信息">
@@ -29,6 +29,9 @@
 
 <script lang="ts" setup>
 import { getDataArr } from "@/utils/http"
+import { time } from "@/utils/datetime";
+import { Submission } from "@/model";
+import { EpPropMergeType } from "element-plus/es/utils/index.mjs";
 
 const currentPage = ref(1);
 const pageSize = ref(10);
@@ -38,19 +41,15 @@ const background = ref(false);
 
 const { data: submissions, get } = getDataArr<Submission>("submissions");
 
-const status = (status) => ["Pending", "InProgress", "Accepted", "WrongAnswer", "TimeLimitExceeded", "MemoryLimitExceeded", "RuntimeError", "CompilationError"][status] || "Unknown";
-const statusTag = (status) => ["info", "info", "success", "danger", "warning", "warning", "danger", "danger"][status] || "info";
+const status = (status: number) => ["Pending", "InProgress", "Accepted", "WrongAnswer", "TimeLimitExceeded", "MemoryLimitExceeded", "RuntimeError", "CompilationError"][status] || "Unknown";
+const statusTag = (status: number): EpPropMergeType<StringConstructor, "success" | "warning" | "info" | "primary" | "danger", unknown> => ["info", "info", "success", "danger", "warning", "warning", "danger", "danger"][status] as EpPropMergeType<StringConstructor, "success" | "warning" | "info" | "primary" | "danger", unknown>;
 
-const showInfo = (row) => {
-  ElMessage({
-    message: row.information.join("\n"),
-    type: 'info',
-    showClose: true,
-  });
+const showInfo = (row: { information: any[] }) => {
+  ElMessage({ message: row.information.join("\n"), type: 'info', showClose: true });
 };
-
-
-const formattedSubmissions = () => submissions.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
+onMounted(async () => {
+  submissions.value = await get();
+});
 </script>
 
 <style scoped>

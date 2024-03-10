@@ -15,11 +15,11 @@
 </template>
 
 <script lang="ts" setup>
-const router = useRouter();
-const colors = { 2: '#01D842', 4: '#66CCFF', 5: '#FF4040' };
 import { Problem } from '@/model';
 import { getDataArr } from '@/utils/http';
 
+const router = useRouter();
+const colors = { 2: '#01D842', 4: '#66CCFF', 5: '#FF4040' };
 const { data: problems, get } = getDataArr<Problem>('/problems');
 
 onMounted(async () => {

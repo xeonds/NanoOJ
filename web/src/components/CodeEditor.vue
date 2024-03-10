@@ -33,12 +33,13 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, onMounted, watch } from 'vue';
+import { reactive, onMounted } from 'vue';
 import * as monaco from 'monaco-editor';
 const props = defineProps<{
     language: string,
     height: string,
 }>();
+const code = inject('code') as Ref<string>;
 const visible = ref(false);
 const theme = ref('vs-dark');
 const options = reactive({
@@ -49,41 +50,35 @@ const options = reactive({
     vimMode: true,
     theme: theme.value,
 });
+let editorInstance: monaco.editor.IStandaloneCodeEditor;
 
-let editor: monaco.editor.IStandaloneCodeEditor | null = null;
-const code = ref('');
-
-const initEditor = () => {
-    editor = monaco.editor.create(document.getElementById('editor')!, {
+onMounted(() => {
+    editorInstance = monaco.editor.create(document.getElementById("editor")!, {
         value: code.value, // Initial text to display in the editor
         language: props.language, // Language support, refer to the documentation for available options
         automaticLayout: true, // Automatic layout
         theme: theme.value, // Officially supported themes: vs, hc-black, or vs-dark
     });
-};
-onMounted(() => {
-    initEditor();
+
+    //bind value of editor to ref:code from parent
+    editorInstance.onDidChangeModelContent(() => {
+        code.value = editorInstance.getValue();
+    });
 });
 
-watch(
-    () => editor!.getValue(),
-    (newValue) => {
-        code.value = newValue;
-    }
-)
 </script>
 
 <style scoped>
 #row-1 {
-display: flex;
-flex-flow: row nowrap;
-justify-content: space-between;
-padding-top: 1rem;
-padding-bottom: 1rem;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 #editor {
-width: 100%;
-height: 100%;
+    width: 100%;
+    height: 100%;
 }
 </style>
