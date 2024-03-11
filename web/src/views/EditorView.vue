@@ -8,9 +8,12 @@
                         <el-text class="subtitle"> | Playground</el-text>
                     </template>
                 </el-page-header>
-                <el-select v-model="language" placeholder="Select Language">
-                    <el-option v-for="lang in languages" :key="lang" :label="lang" :value="lang"></el-option>
-                </el-select>
+                <div style="flex-grow: 1;"></div>
+                <el-form-item label="language">
+                    <el-select v-model="language" placeholder="Select Language" style="width: 100px">
+                        <el-option v-for="lang in languages" :key="lang" :label="lang" :value="lang"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-button type="primary" @click="submitCode" text>Commit</el-button>
                 <el-button type="primary" @click="show_output = true" text>Show Output</el-button>
             </div>

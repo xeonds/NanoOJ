@@ -1,8 +1,6 @@
 <template>
     <el-row id="row-1">
-        <div>
-            <slot name="editor-options"></slot>
-        </div>
+        <slot name="editor-options"></slot>
         <el-popover placement="bottom" width="256" trigger="click" v-model:visible="visible">
             <el-form label-position="left" label-width="80px">
                 <el-form-item label="主题">
@@ -70,9 +68,9 @@ onMounted(() => {
 
 <style scoped>
 #row-1 {
+    width: 100%;
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
     padding-top: 1rem;
     padding-bottom: 1rem;
 }

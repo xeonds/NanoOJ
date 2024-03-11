@@ -75,5 +75,7 @@ const register = async () => {
 </script>
 
 <style scoped>
-#register {}
+#register {
+  height: calc(100vh - 10rem);
+}
 </style>
