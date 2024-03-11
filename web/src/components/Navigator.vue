@@ -7,7 +7,7 @@
         <el-menu-item class="hidden-lg-and-up" index="4" @click="router.push('/status')">状态</el-menu-item>
         <el-menu-item class="hidden-lg-and-up" index="5" @click="router.push('/ranklist')">排名</el-menu-item>
         <div class="flex-grow" />
-        <el-sub-menu v-if="isLogin" index="1">
+        <el-sub-menu v-if="isLogin()" index="1">
             <template #title>{{ username }}, 欢迎。</template>
             <el-menu-item index="1-1" @click="router.push('/profile')">个人中心</el-menu-item>
             <el-menu-item index="1-2" @click="logout(); router.push('/')">登出</el-menu-item>
