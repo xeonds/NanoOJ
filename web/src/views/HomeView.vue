@@ -10,7 +10,7 @@
           <el-menu-item index="0" @click="router.push('/editor')"><el-icon>
               <EditPen />
             </el-icon>在线代码编辑器</el-menu-item>
-          <el-sub-menu v-if="isLogin" index="1">
+          <el-sub-menu v-if="isLogin()" index="1">
             <template #title>{{ username }}, 欢迎。</template>
             <el-menu-item index="1-1" @click="router.push('/profile')">个人中心</el-menu-item>
             <el-menu-item index="1-2" @click="
@@ -49,11 +49,13 @@
         <router-view id="router"></router-view>
       </el-col>
     </el-row>
+    <FooterBox :msg="'X-OJ'" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { getRole, getUsername, isLogin, logout } from "@/utils/login";
+import FooterBox from "@/components/FooterBox.vue";
 const router = useRouter();
 const username = getUsername();
 const role = parseInt(getRole());

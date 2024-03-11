@@ -35,18 +35,20 @@
             <!-- 输出结果 -->
         </div>
     </el-drawer>
+    <FooterBox :msg="'X-OJ'" />
 </template>
 
 <script lang="ts" setup>
 import { onMounted } from 'vue';
 import CodeEditor from '@/components/CodeEditor.vue';
+import FooterBox from '@/components/FooterBox.vue';
 import * as monaco from 'monaco-editor';
 import api from '@/api';
 
 const code = ref('Hello, World');
 const language = ref('c');
 const show_output = ref(false);
-const output = ref('Hello, World!');
+const output = ref('');
 const languages: Ref<string[]> = ref([]);
 const router = useRouter();
 
