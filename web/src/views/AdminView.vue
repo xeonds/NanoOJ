@@ -72,7 +72,9 @@ const goBack = () => {
 .el-tab-pane {
   padding: 2rem;
 }
+</style>
 
+<style>
 .card-header {
   display: flex;
   justify-content: space-between;
