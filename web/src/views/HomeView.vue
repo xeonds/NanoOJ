@@ -4,22 +4,22 @@
       <el-col :span="24">
         <el-menu mode="horizontal" :ellipsis="false" :default-active="'1'" router>
           <p id="logo">X-OJ</p>
-          <el-menu-item class="hidden-lg-and-up" index="1" route="/">主页</el-menu-item>
-          <el-menu-item class="hidden-lg-and-up" index="2" route="/problem">问题</el-menu-item>
-          <el-menu-item class="hidden-lg-and-up" index="3" route="/contest">竞赛/作业</el-menu-item>
-          <el-menu-item class="hidden-lg-and-up" index="4" route="/status">状态</el-menu-item>
-          <el-menu-item class="hidden-lg-and-up" index="5" route="/ranklist">排名</el-menu-item>
+          <el-menu-item class="hidden-lg-and-up" v-for="item in menu" :index="item.index" :route="item.route">{{
+        item.label }}</el-menu-item>
           <div class="flex-grow" />
-          <el-menu-item index="0" @click="this.$router.push('/editor')"><el-icon>
+          <el-menu-item index="0" @click="router.push('/editor')"><el-icon>
               <EditPen />
             </el-icon>在线代码编辑器</el-menu-item>
-          <el-sub-menu v-if="isLogin" index="1">
+          <el-sub-menu v-if="isLogin()" index="1">
             <template #title>{{ username }}, 欢迎。</template>
-            <el-menu-item index="1-1" @click="this.$router.push('/profile')">个人中心</el-menu-item>
-            <el-menu-item index="1-2" @click="logout(); this.$router.push('/')">登出</el-menu-item>
-            <el-menu-item v-if="userPermission > 1" index="1-3" @click="this.$router.push('/admin')">管理</el-menu-item>
+            <el-menu-item index="1-1" @click="router.push('/profile')">个人中心</el-menu-item>
+            <el-menu-item index="1-2" @click="
+        logout();
+      router.push('/');
+      ">登出</el-menu-item>
+            <el-menu-item v-if="role > 1" index="1-3" @click="router.push('/admin')">管理</el-menu-item>
           </el-sub-menu>
-          <el-menu-item v-else index="1" @click="this.$router.push('/login')">登录/注册</el-menu-item>
+          <el-menu-item v-else index="1" @click="router.push('/login')">登录/注册</el-menu-item>
         </el-menu>
       </el-col>
     </el-row>
@@ -49,42 +49,25 @@
         <router-view id="router"></router-view>
       </el-col>
     </el-row>
+    <FooterBox :msg="'X-OJ'" />
   </div>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex";
-import { useDark, useToggle } from "@vueuse/core";
-
-
-export default {
-  created() {
-    this.$store.dispatch("init");
-  },
-  computed: {
-    ...mapGetters({
-      isLogin: "getLoggedInStatus",
-      userInfo: "getUserInfo"
-    }),
-    username: function () {
-      return this.userInfo.username;
-    },
-    userPermission: function () {
-      return this.userInfo.permission;
-    },
-  },
-  methods: {
-    ...mapActions({
-      _logout: "logout"
-    })
-    , logout: function () {
-      this._logout();
-      this.$router.push("/");
-    }
-  }
-};
+<script lang="ts" setup>
+import { getRole, getUsername, isLogin, logout } from "@/utils/login";
+import FooterBox from "@/components/FooterBox.vue";
+const router = useRouter();
+const username = getUsername();
+const role = parseInt(getRole());
+const menu = [
+  { index: "1", label: "主页", route: "/" },
+  { index: "2", label: "问题", route: "/problem" },
+  { index: "3", label: "竞赛/作业", route: "/contest" },
+  { index: "4", label: "状态", route: "/status" },
+  { index: "5", label: "排名", route: "/ranklist" },
+];
 </script>
- 
+
 <style>
 #vertical-menu {
   min-width: 12rem;
@@ -120,4 +103,3 @@ body {
   padding: 0px !important;
 }
 </style>
-
