@@ -1,9 +1,21 @@
 <template>
   <div id="home">
+    <h2>主页</h2>
     <el-row>
       <el-col :span="24">
         <el-card>
-          <NotificationBoard></NotificationBoard>
+          <div v-if="notifications.length === 0">暂无公告</div>
+          <el-carousel v-else trigger="click" :interval="5000" indicator-position="outside" arrow="always">
+            <el-carousel-item v-for="item in notifications" :key="item.id">
+              <div class="notification-content">
+                <h3>{{ item.title }} </h3>
+                <p v-html="item.content"></p>
+                <el-divider></el-divider>
+                <el-tag>创建于：{{ formatDate(item.CreatedAt) }}</el-tag>
+                <el-tag v-if="item.UpdatedAt">修改于：{{ formatDate(item.UpdatedAt) }}</el-tag>
+              </div>
+            </el-carousel-item>
+          </el-carousel>
         </el-card>
       </el-col>
     </el-row>
@@ -47,17 +59,23 @@
 </template>
 
 <script lang="ts" setup>
-import NotificationBoard from "@/components/NotificationBoard.vue";
-import { Contest, Problem, Rank } from '@/model';
+import { Notification, Contest, Problem, Rank } from '@/model';
+import { marked } from "marked";
 import { getDataArr } from '@/utils/http';
+import { formatDate } from "@/utils/datetime";
 
 const router = useRouter();
 const colors = { 2: '#01D842', 4: '#66CCFF', 5: '#FF4040' };
+const { data: notifications, get } = getDataArr<Notification>('/notifications');
 const { data: problems, get: getProblems } = getDataArr<Problem>('/problems');
 const { data: ranks, get: getRanks } = getDataArr<Rank>('/ranks');
 const { data: contests, get: getContests } = getDataArr<Contest>('/contests');
 
 onMounted(async () => {
+  notifications.value = (await get()).map((item) => {
+    item.content = marked(item.content) as string;
+    return item;
+  });
   problems.value = await getProblems();
   ranks.value = await getRanks();
   contests.value = await getContests();
@@ -73,5 +91,15 @@ onMounted(async () => {
 
 el-card {
   width: 100%;
+}
+
+.notification-content {
+  margin-bottom: 10px;
+}
+
+.notification-time {
+  text-align: right;
+  font-size: 12px;
+  color: #999;
 }
 </style>

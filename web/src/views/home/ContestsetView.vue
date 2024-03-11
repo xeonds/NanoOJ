@@ -1,6 +1,6 @@
 <template>
   <div id="contests">
-    <h1>测试</h1>
+    <h2>测试</h2>
     <el-table :data="contests" @row-click="(row: any) => { router.push(`/contest/${row.id}`) }">
       <el-table-column prop="id" label="ID"></el-table-column>
       <el-table-column prop="title" label="标题"></el-table-column>

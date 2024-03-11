@@ -1,6 +1,6 @@
 <template>
   <div class="problem">
-    <h1>问题</h1>
+    <h2>问题</h2>
     <el-table :data="problems" @row-click="(row) => { router.push(`/problem/${row.id}`) }">
       <el-table-column prop="id" label="问题ID"></el-table-column>
       <el-table-column prop="title" label="问题标题"></el-table-column>

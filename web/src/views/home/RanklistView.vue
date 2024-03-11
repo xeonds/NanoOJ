@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>排行榜</h1>
+    <h2>排行榜</h2>
     <el-table :data="ranks">
       <el-table-column prop="index" label="Rank"></el-table-column>
       <el-table-column prop="username" label="用户名"></el-table-column>

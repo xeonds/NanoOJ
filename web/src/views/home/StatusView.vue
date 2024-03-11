@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>提交记录</h1>
+    <h2>提交记录</h2>
     <el-table :data="submissions.slice((currentPage - 1) * pageSize, currentPage * pageSize)">
       <el-table-column label="提交时间">
         <template #default="{ row }">
@@ -33,6 +33,8 @@ import { time } from "@/utils/datetime";
 import { Submission } from "@/model";
 import { EpPropMergeType } from "element-plus/es/utils/index.mjs";
 
+type _EpPropMergeType = EpPropMergeType<StringConstructor, "success" | "warning" | "info" | "primary" | "danger", unknown>;
+
 const currentPage = ref(1);
 const pageSize = ref(10);
 const small = ref(false);
@@ -42,7 +44,7 @@ const background = ref(false);
 const { data: submissions, get } = getDataArr<Submission>("submissions");
 
 const status = (status: number) => ["Pending", "InProgress", "Accepted", "WrongAnswer", "TimeLimitExceeded", "MemoryLimitExceeded", "RuntimeError", "CompilationError"][status] || "Unknown";
-const statusTag = (status: number): EpPropMergeType<StringConstructor, "success" | "warning" | "info" | "primary" | "danger", unknown> => ["info", "info", "success", "danger", "warning", "warning", "danger", "danger"][status] as EpPropMergeType<StringConstructor, "success" | "warning" | "info" | "primary" | "danger", unknown>;
+const statusTag = (status: number): _EpPropMergeType => ["info", "info", "success", "danger", "warning", "warning", "danger", "danger"][status] as _EpPropMergeType;
 
 const showInfo = (row: { information: any[] }) => {
   ElMessage({ message: row.information.join("\n"), type: 'info', showClose: true });
