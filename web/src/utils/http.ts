@@ -59,35 +59,35 @@ const _http = useHttp(baseUrl)
 
 export const http = _http(getToken())
 
-export const dialogPost = (token: string) => async (
+export const dialogPost = async (
   api: string,
   _data: any,
   visibleRef: any,
   dataSrc: any
 ) => {
-  const { post } = _http(token)
+  const { post } = http
   const { err } = await post(api, _data)
   if (err.value != null) ElMessage.error(err.value)
   else ElMessage.success('添加成功')
   visibleRef.value = false // 关闭弹窗
-  await fetchData(token)(api, dataSrc)
+  await fetchData(api, dataSrc)
   return err
 }
 
-export const fetchData = (token: string) => async (api: string, dataSrc: any) => {
-  const { get } = _http(token)
+export const fetchData = async (api: string, dataSrc: any) => {
+  const { get } = http
   const { data, err } = await get(api)
   if (err.value != null) ElMessage.warning(err.value)
   dataSrc.value = data.value as any
 }
 
-export const deleteData = (token: string) => async (api: string, id: number, dataSrc: any) => {
-  const { del } = _http(token)
+export const deleteData = async (api: string, id: number, dataSrc: any) => {
+  const { del } = http
   const { err } = await del(api, id)
   if (err.value != null) ElMessage.error(err.value)
   else {
     ElMessage.success('删除成功')
-    fetchData(token)(api, dataSrc)
+    fetchData(api, dataSrc)
   }
 }
 
@@ -96,7 +96,7 @@ export const getDataArr = <T>(api: string, _pagination = <Pagination>{ pageNum: 
   const get = async (): Promise<T[]> => {
     const { data, err } = await http.get(api);
     if (err) {
-      console.error(err);
+      ElMessage({ message: `数据拉取失败：${err}`, type: 'error' });
       return [];
     }
     return (data as Ref<T[]>).value;
@@ -109,7 +109,7 @@ export const getData = <T>(api: string, _pagination = <Pagination>{ pageNum: 1, 
   const get = async (): Promise<T> => {
     const { data, err } = await http.get(api);
     if (err) {
-      console.error(err);
+      ElMessage({ message: `数据拉取失败：${err}`, type: 'error' });
       return {} as T;
     }
     return (data as Ref<T>).value;

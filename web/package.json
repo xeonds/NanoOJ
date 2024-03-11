@@ -13,6 +13,7 @@
     "@vueuse/core": "^10.9.0",
     "element-plus": "^2.6.1",
     "jwt-decode": "^4.0.0",
+    "less": "^4.2.0",
     "marked": "^12.0.1",
     "monaco-editor": "^0.47.0",
     "monaco-editor-locales-plugin": "^0.0.3",
