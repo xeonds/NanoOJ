@@ -1,17 +1,17 @@
 <template>
   <div>
-    <h1>提交记录</h1>
+    <h2>提交记录</h2>
     <el-table :data="submissions.slice((currentPage - 1) * pageSize, currentPage * pageSize)">
       <el-table-column label="提交时间">
         <template #default="{ row }">
-          <span type="info">{{ formatDate(row.CreatedAt) }}</span>
+          <span type="info">{{ time.fromString(row.CreatedAt) }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="id" label="提交ID"></el-table-column>
       <el-table-column prop="problem_id" label="题目id"></el-table-column>
       <el-table-column label="状态">
         <template #default="{ row }">
-          <el-tag class="ml-2" :type="statusTag(row.status)">{{ decodeStatus(row.status) }}</el-tag>
+          <el-tag class="ml-2" :type="statusTag(row.status)">{{ status(row.status) }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="信息">
@@ -27,71 +27,31 @@
   </div>
 </template>
 
-<script>
-import { mapGetters, mapActions } from 'vuex';
-import utils from '../../utils';
+<script lang="ts" setup>
+import { getDataArr } from "@/utils/http"
+import { time } from "@/utils/datetime";
+import { Submission } from "@/model";
+import { EpPropMergeType } from "element-plus/es/utils/index.mjs";
 
-export default {
-  created: function () {
-    this.fetchSubmissions();
-  },
-  data: function () {
-    return {
-      currentPage: 1,
-      pageSize: 10,
-      small: false,
-      disabled: false,
-      background: false,
-    };
-  },
-  computed: {
-    ...mapGetters({ submissions: "getSubmissions" }),
-  },
-  methods: {
-    ...mapActions({ fetchSubmissions: "fetchSubmissions", getUserById: "fetchUserInfo" }),
-    Username: function (id) {
-      return this.getUserById(id).Username;
-    },
-    decodeStatus: function (status) {
-      switch (status) {
-        case 0: return "Pending";
-        case 1: return "InProgress"
-        case 2: return "Accepted"
-        case 3: return "WrongAnswer"
-        case 4: return "TimeLimitExceeded"
-        case 5: return "MemoryLimitExceeded"
-        case 6: return "RuntimeError"
-        case 7: return "CompilationError"
-        default:
-          return "Unknown";
-      }
-    },
-    statusTag: function (status) {
-      switch (status) {
-        case 0: return "info";
-        case 1: return "info"
-        case 2: return "success"
-        case 3: return "danger"
-        case 4: return "warning"
-        case 5: return "warning"
-        case 6: return "danger"
-        case 7: return "danger"
-        default:
-          return "info";
-      }
-    },
-    formatDate: function (date) {
-      return utils.formatDate(date);
-    },
-    showInfo: function (row) {
-      this.$message({
-        message: row.information.join("\n"),
-        type: 'info',
-        showClose: true,
-      });
-    },
-  },
+type _EpPropMergeType = EpPropMergeType<StringConstructor, "success" | "warning" | "info" | "primary" | "danger", unknown>;
+
+const currentPage = ref(1);
+const pageSize = ref(10);
+const small = ref(false);
+const disabled = ref(false);
+const background = ref(false);
+
+const { data: submissions, get } = getDataArr<Submission>("submissions");
+
+const status = (status: number) => ["Pending", "InProgress", "Accepted", "WrongAnswer", "TimeLimitExceeded", "MemoryLimitExceeded", "RuntimeError", "CompilationError"][status] || "Unknown";
+const statusTag = (status: number): _EpPropMergeType => ["info", "info", "success", "danger", "warning", "warning", "danger", "danger"][status] as _EpPropMergeType;
+
+const showInfo = (row: { information: any[] }) => {
+  ElMessage({ message: row.information.join("\n"), type: 'info', showClose: true });
 };
+onMounted(async () => {
+  submissions.value = await get();
+});
 </script>
 
 <style scoped>

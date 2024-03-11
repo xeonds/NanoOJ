@@ -1,7 +1,7 @@
 <template>
   <div class="footer">
     <div id="footer-main">
-      &copy;2022 {{ msg }} | Powered by
+      &copy;2024 {{ props.msg }} | Powered by
       <el-link type="primary" target="_blank" href="https://github.com/xeonds/NanoOJ">NanoOJ</el-link>
     </div>
     <div class="wrapper">
@@ -21,16 +21,8 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "FooterBox",
-  props: {
-    msg: String,
-  },
-  data() {
-    return {};
-  },
-};
+<script lang="ts" setup>
+const props = defineProps<{msg: string}>();
 </script>
 
 <style scoped>

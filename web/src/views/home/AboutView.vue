@@ -1,19 +1,15 @@
 <template>
   <div class="about">
-    <h1>关于NanoOJ</h1>
+    <h2>关于NanoOJ</h2>
     <div>
       <h2>评测</h2>
       <p>
         C++ 使用 <code>g++ 9.3.0</code> 编译，命令为 &nbsp;
-        <code
-          >g++ -fno-asm -Wall -lm --static -std=c++11 -DONLINE_JUDGE -o Main
-          Main.cc</code
-        >； <br />
+        <code>g++ -fno-asm -Wall -lm --static -std=c++11 -DONLINE_JUDGE -o Main
+          Main.cc</code>； <br />
         C 使用 <code>gcc 9.3.0</code> 编译，命令为 &nbsp;
-        <code
-          >gcc Main.c -o Main -fno-asm -Wall -lm --static -std=c99
-          -DONLINE_JUDGE</code
-        ><br />
+        <code>gcc Main.c -o Main -fno-asm -Wall -lm --static -std=c99
+          -DONLINE_JUDGE</code><br />
       </p>
       <p>请使用<strong>标准输入输出</strong>。</p>
       <h2 class="ui header">返回结果说明<br /></h2>
@@ -43,9 +39,7 @@
 
       <h2>程序样例</h2>
       <p>
-        以下样例程序可用于解决这道简单的题目：<strong
-          >读入2个整数A和B，然后输出它们的和。</strong
-        >
+        以下样例程序可用于解决这道简单的题目：<strong>读入2个整数A和B，然后输出它们的和。</strong>
       </p>
       <p><strong>gcc (.c)</strong></p>
       <div class="ui existing segment">
@@ -75,13 +69,3 @@ int main(){
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: "AboutView",
-  components: {},
-};
-</script>
-
-<style scoped>
-</style>
