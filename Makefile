@@ -21,7 +21,7 @@ web:
 	$(FRONTBUILD)
 
 web-dev:
-	cd web && pnpm i && vite dev
+	cd web && pnpm i && vite dev --host
 
 linux-amd64: 
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@-$(VERSION)
