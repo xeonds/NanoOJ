@@ -9,6 +9,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
+	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/database/model"
 	"xyz.xeonds/nano-oj/utils"
 )
@@ -17,6 +18,7 @@ import (
 var JudgerPool = make(map[string]JudgeServer)
 
 type JudgeServer struct {
+	db    *gorm.DB
 	cli   *client.Client
 	ctx   context.Context
 	Works chan task
@@ -171,6 +173,6 @@ func (c JudgeServer) Process() {
 			log.Println("failed to run task", err)
 		}
 		// update the result to the database
-		CommitStatus(t.Submission, res.Status, res.Info)
+		CommitStatus(c.db, t.Submission, res.Status, res.Info)
 	}
 }

@@ -6,13 +6,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"xyz.xeonds/nano-oj/database"
 	"xyz.xeonds/nano-oj/database/model"
 )
 
 func GetContests(c *gin.Context) {
 	var contests []model.Contest
-	database.NanoDB.Find(&contests)
+	db.Find(&contests)
 	c.JSON(http.StatusOK, contests)
 }
 
@@ -24,7 +23,7 @@ func GetContestByID(c *gin.Context) {
 	}
 
 	var contest model.Contest
-	if err := database.NanoDB.First(&contest, id).Error; err != nil {
+	if err := db.First(&contest, id).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Contest not found"})
 		return
 	}
@@ -47,7 +46,7 @@ func CreateContest(c *gin.Context) {
 
 	var problems []model.Problem
 	for _, id := range input.Problems {
-		problem, err := database.GetProblemByID(id)
+		problem, err := repo.GetProblemByID(id)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -63,7 +62,7 @@ func CreateContest(c *gin.Context) {
 		Problems:    problems,
 	}
 
-	if err := database.NanoDB.Create(&contest).Error; err != nil {
+	if err := db.Create(&contest).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create contest"})
 		return
 	}
@@ -79,7 +78,7 @@ func UpdateContest(c *gin.Context) {
 	}
 
 	var contest model.Contest
-	if err := database.NanoDB.First(&contest, id).Error; err != nil {
+	if err := db.First(&contest, id).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Contest not found"})
 		return
 	}
@@ -90,7 +89,7 @@ func UpdateContest(c *gin.Context) {
 		return
 	}
 
-	if err := database.NanoDB.Model(&contest).Updates(&input).Error; err != nil {
+	if err := db.Model(&contest).Updates(&input).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update contest"})
 		return
 	}
@@ -106,12 +105,12 @@ func DeleteContest(c *gin.Context) {
 	}
 
 	var contest model.Contest
-	if err := database.NanoDB.First(&contest, id).Error; err != nil {
+	if err := db.First(&contest, id).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Contest not found"})
 		return
 	}
 
-	if err := database.NanoDB.Delete(&contest).Error; err != nil {
+	if err := db.Delete(&contest).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete contest"})
 		return
 	}

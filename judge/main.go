@@ -7,35 +7,28 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"xyz.xeonds/nano-oj/config"
 	"xyz.xeonds/nano-oj/controller"
 	"xyz.xeonds/nano-oj/database/model"
 	"xyz.xeonds/nano-oj/lib"
 	"xyz.xeonds/nano-oj/worker"
 )
 
-type Config struct {
-	lib.ServerConfig
-	lib.DatabaseConfig `json:"-"`
-	lib.RedisConfig
-	lib.CaptchaConfig
-	lib.MailConfig
-	ServerType string `json:"server_type"`
-}
-
 func main() {
-	config, err := lib.LoadConfig[Config]()
+	config, err := lib.LoadConfig[config.Config]()
 	if err != nil {
 		log.Fatal("Failed to load config file")
 	}
+	migrator := func(db *gorm.DB) error {
+		return db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{}, &model.Contest{}, &model.Notification{})
+	}
+	db := lib.NewDB(&config.DatabaseConfig, migrator)
 	if config.ServerType == "web-judge" {
 		worker.InitJudgerPool()
-		go judgeEnqueuer()
-		go judgeWorker()
+		go judgeEnqueuer(db)
+		go judgeWorker(db)
 	}
 	redis := lib.NewRedis(&config.RedisConfig)
-	db := lib.NewDB(&config.DatabaseConfig, func(db *gorm.DB) error {
-		return db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{}, &model.Contest{}, &model.Notification{})
-	})
 	router := gin.Default()
 	apiRouter := router.Group("/api/v1")
 	apiRouter.Use(lib.AuthMiddleware(0, 0))
@@ -54,19 +47,19 @@ func main() {
 	}
 }
 
-func judgeEnqueuer() {
+func judgeEnqueuer(db *gorm.DB) {
 	log.Println("Judge enqueuer process starting...")
 	for {
-		worker.JudgeEnqueue()
+		worker.JudgeEnqueue(db)
 		time.Sleep(5 * time.Second)
 	}
 }
 
-func judgeWorker() {
+func judgeWorker(db *gorm.DB) {
 	log.Println("Judge worker processes starting...")
 	for {
 		if !worker.IsEmpty() {
-			go worker.JudgeWorker()
+			go worker.JudgeWorker(db)
 		}
 		time.Sleep(1 * time.Second)
 	}

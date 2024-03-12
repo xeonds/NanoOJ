@@ -4,13 +4,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"xyz.xeonds/nano-oj/database"
 	"xyz.xeonds/nano-oj/database/model"
 )
 
 func GetProblems(c *gin.Context) {
 	var problems []model.Problem
-	if err := database.NanoDB.Find(&problems).Error; err != nil {
+	if err := db.Find(&problems).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch problems"})
 		return
 	}
@@ -23,7 +22,7 @@ func CreateProblem(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := database.NanoDB.Create(&problem).Error; err != nil {
+	if err := db.Create(&problem).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create problem"})
 		return
 	}
@@ -32,7 +31,7 @@ func CreateProblem(c *gin.Context) {
 
 func GetProblemByID(c *gin.Context) {
 	var problem model.Problem
-	if err := database.NanoDB.Where("id = ?", c.Param("id")).First(&problem).Error; err != nil {
+	if err := db.Where("id = ?", c.Param("id")).First(&problem).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Problem not found"})
 		return
 	}
@@ -41,7 +40,7 @@ func GetProblemByID(c *gin.Context) {
 
 func UpdateProblem(c *gin.Context) {
 	var problem model.Problem
-	if err := database.NanoDB.Where("id = ?", c.Param("id")).First(&problem).Error; err != nil {
+	if err := db.Where("id = ?", c.Param("id")).First(&problem).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Problem not found"})
 		return
 	}
@@ -49,7 +48,7 @@ func UpdateProblem(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := database.NanoDB.Save(&problem).Error; err != nil {
+	if err := db.Save(&problem).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to update problem"})
 		return
 	}
@@ -58,11 +57,11 @@ func UpdateProblem(c *gin.Context) {
 
 func DeleteProblem(c *gin.Context) {
 	var problem model.Problem
-	if err := database.NanoDB.Where("id = ?", c.Param("id")).First(&problem).Error; err != nil {
+	if err := db.Where("id = ?", c.Param("id")).First(&problem).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Problem not found"})
 		return
 	}
-	if err := database.NanoDB.Delete(&problem).Error; err != nil {
+	if err := db.Delete(&problem).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete problem"})
 		return
 	}

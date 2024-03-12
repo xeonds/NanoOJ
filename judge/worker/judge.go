@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/database"
 	"xyz.xeonds/nano-oj/database/model"
 )
@@ -26,16 +27,16 @@ type result struct {
 	Info   string
 }
 
-func JudgeWorker() {			// Create task & enqueue it
-	submission := <-judgeQueue 	// read a submission from judgeQueue
-	CommitStatus(submission, model.InProgress, "Judging...")
-
+func JudgeWorker(db *gorm.DB) { // Create task & enqueue it
+	submission := <-judgeQueue // read a submission from judgeQueue
+	CommitStatus(db, submission, model.InProgress, "Judging...")
+	repo := database.Repository{DB: db}
 	sourceCode := submission.Code //fetch all required files for judge
-	problem, err := database.GetProblemByID(submission.ProblemID)
-	if errorHandler(err, submission, "Failed to fetch problem") {
+	problem, err := repo.GetProblemByID(submission.ProblemID)
+	if errorHandler(err, submission, "Failed to fetch problem", db) {
 		return
 	}
-	tempFolder, programFile, inputFiles, outputFiles, shouldReturn := initWorkDir(sourceCode, submission, problem)
+	tempFolder, programFile, inputFiles, outputFiles, shouldReturn := initWorkDir(sourceCode, submission, problem, db)
 	if shouldReturn {
 		log.Println("Failed to initialize workdir")
 		return
@@ -52,12 +53,12 @@ func JudgeWorker() {			// Create task & enqueue it
 	})
 }
 
-func initWorkDir(sourceCode string, submission model.Submission, problem *model.Problem) (string, string, []string, []string, bool) {
+func initWorkDir(sourceCode string, submission model.Submission, problem *model.Problem, db *gorm.DB) (string, string, []string, []string, bool) {
 	tempFolder := filepath.Join("tmp", fmt.Sprintf("temp_%d", time.Now().UnixNano()))
 	_ = os.MkdirAll(tempFolder, 0755)
 	programFile := filepath.Join(tempFolder, "program.cc")
 	err := os.WriteFile(programFile, []byte(sourceCode), 0644)
-	if errorHandler(err, submission, "Failed to load source code") {
+	if errorHandler(err, submission, "Failed to load source code", db) {
 		return "", "", nil, nil, true
 	}
 	inputFiles := make([]string, len(problem.Inputs))
@@ -65,31 +66,31 @@ func initWorkDir(sourceCode string, submission model.Submission, problem *model.
 	for i, inputFile := range problem.Inputs {
 		inputFiles[i] = filepath.Join(tempFolder, fmt.Sprintf("%d.in", i))
 		err = os.WriteFile(inputFiles[i], []byte(inputFile), 0644)
-		if errorHandler(err, submission, "Failed to load files") {
+		if errorHandler(err, submission, "Failed to load files", db) {
 			return "", "", nil, nil, true
 		}
 	}
 	for i, outputFile := range problem.Outputs {
 		outputFiles[i] = filepath.Join(tempFolder, fmt.Sprintf("%d.out", i))
 		err = os.WriteFile(outputFiles[i], []byte(outputFile), 0644)
-		if errorHandler(err, submission, "Failed to load files") {
+		if errorHandler(err, submission, "Failed to load files", db) {
 			return "", "", nil, nil, true
 		}
 	}
 	return tempFolder, programFile, inputFiles, outputFiles, false
 }
 
-func errorHandler(err error, submission model.Submission, info string) bool {
+func errorHandler(err error, submission model.Submission, info string, db *gorm.DB) bool {
 	if err != nil {
-		CommitStatus(submission, model.CompilationError, "Internal error, please contact admin")
+		CommitStatus(db, submission, model.CompilationError, "Internal error, please contact admin")
 		log.Println(info, err)
 		return true
 	}
 	return false
 }
 
-func CommitStatus(submission model.Submission, stat model.Status, info ...string) {
+func CommitStatus(db *gorm.DB, submission model.Submission, stat model.Status, info ...string) {
 	submission.Status = stat
 	submission.Information = append(submission.Information, info...)
-	database.NanoDB.Save(&submission)
+	db.Save(&submission)
 }

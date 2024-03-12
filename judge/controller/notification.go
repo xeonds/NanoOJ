@@ -6,13 +6,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"xyz.xeonds/nano-oj/database"
 	"xyz.xeonds/nano-oj/database/model"
 )
 
 func GetNotifications(c *gin.Context) {
 	var notifications []model.Notification
-	database.NanoDB.Find(&notifications)
+	db.Find(&notifications)
 	c.JSON(http.StatusOK, notifications)
 }
 
@@ -24,7 +23,7 @@ func GetNotificationByID(c *gin.Context) {
 	}
 
 	var notification model.Notification
-	if err := database.NanoDB.First(&notification, id).Error; err != nil {
+	if err := db.First(&notification, id).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Notification not found"})
 		return
 	}
@@ -39,7 +38,7 @@ func CreateNotification(c *gin.Context) {
 		return
 	}
 	input.CreatedAt = time.Now().UTC()
-	if err := database.NanoDB.Create(&input).Error; err != nil {
+	if err := db.Create(&input).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create notification"})
 		return
 	}
@@ -54,7 +53,7 @@ func UpdateNotification(c *gin.Context) {
 		return
 	}
 	var notification model.Notification
-	if err := database.NanoDB.First(&notification, id).Error; err != nil {
+	if err := db.First(&notification, id).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Notification not found"})
 		return
 	}
@@ -64,7 +63,7 @@ func UpdateNotification(c *gin.Context) {
 		return
 	}
 	input.UpdatedAt = time.Now().UTC()
-	if err := database.NanoDB.Model(&notification).Updates(&input).Error; err != nil {
+	if err := db.Model(&notification).Updates(&input).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update notification"})
 		return
 	}
@@ -80,12 +79,12 @@ func DeleteNotification(c *gin.Context) {
 	}
 
 	var notification model.Notification
-	if err := database.NanoDB.First(&notification, id).Error; err != nil {
+	if err := db.First(&notification, id).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Notification not found"})
 		return
 	}
 
-	if err := database.NanoDB.Delete(&notification).Error; err != nil {
+	if err := db.Delete(&notification).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete notification"})
 		return
 	}

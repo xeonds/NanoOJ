@@ -4,13 +4,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"xyz.xeonds/nano-oj/database"
 	"xyz.xeonds/nano-oj/database/model"
 )
 
 func GetSubmissions(c *gin.Context) {
 	var submissions []model.Submission
-	if err := database.NanoDB.Find(&submissions).Error; err != nil {
+	if err := db.Find(&submissions).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -23,13 +22,13 @@ func CreateSubmission(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	problem, err := database.GetProblemByID(submission.ProblemID)
+	problem, err := repo.GetProblemByID(submission.ProblemID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	submission.Problem = *problem
-	if err := database.NanoDB.Create(&submission).Error; err != nil {
+	if err := db.Create(&submission).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -38,7 +37,7 @@ func CreateSubmission(c *gin.Context) {
 
 func GetSubmissionByID(c *gin.Context) {
 	var submission model.Submission
-	if err := database.NanoDB.Where("id = ?", c.Param("id")).First(&submission).Error; err != nil {
+	if err := db.Where("id = ?", c.Param("id")).First(&submission).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Record not found!"})
 		return
 	}
@@ -47,7 +46,7 @@ func GetSubmissionByID(c *gin.Context) {
 
 func UpdateSubmission(c *gin.Context) {
 	var submission model.Submission
-	if err := database.NanoDB.Where("id = ?", c.Param("id")).First(&submission).Error; err != nil {
+	if err := db.Where("id = ?", c.Param("id")).First(&submission).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Record not found!"})
 		return
 	}
@@ -55,7 +54,7 @@ func UpdateSubmission(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := database.NanoDB.Save(&submission).Error; err != nil {
+	if err := db.Save(&submission).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

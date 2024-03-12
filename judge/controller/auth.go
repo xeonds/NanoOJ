@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"xyz.xeonds/nano-oj/database"
 	"xyz.xeonds/nano-oj/database/model"
 	"xyz.xeonds/nano-oj/utils"
 )
@@ -19,7 +18,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, err := database.GetUserByEmail(input.Email)
+	user, err := repo.GetUserByEmail(input.Email)
 	if err != nil || !utils.CheckPasswordHash(input.Password, user.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
@@ -38,17 +37,17 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if _, err := database.GetUserByUsername(user.Username); err == nil {
+	if _, err := repo.GetUserByUsername(user.Username); err == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
 		return
 	}
-	if err := database.CreateUser(&user); err != nil {
+	if err := repo.CreateUser(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create user"})
 		return
 	}
 	if user.ID == 1 { // if it is the first user, set it as admin
 		user.AccountInfo.Permission = 0
-		if err := database.UpdateUser(&user); err != nil {
+		if err := repo.UpdateUser(&user); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
 			return
 		}
@@ -63,7 +62,7 @@ func GetUser(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
 			return
 		}
-		user, err := database.GetUserByUserID(uint32(userID))
+		user, err := repo.GetUserByUserID(uint32(userID))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
 			return
@@ -71,7 +70,7 @@ func GetUser(c *gin.Context) {
 		c.JSON(http.StatusOK, user)
 		return
 	}
-	users, err := database.GetUsers()
+	users, err := repo.GetUsers()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get users"})
 		return
@@ -81,11 +80,11 @@ func GetUser(c *gin.Context) {
 
 func DeleteUser(c *gin.Context) {
 	userID := c.Param("id")
-	if _, err := database.GetUserByUsername(userID); err != nil {
+	if _, err := repo.GetUserByUsername(userID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
 		return
 	}
-	if err := database.DeleteUser(userID); err != nil {
+	if err := repo.DeleteUser(userID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete user"})
 		return
 	}
@@ -99,11 +98,11 @@ func UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if _, err := database.GetUserByUsername(userID); err != nil {
+	if _, err := repo.GetUserByUsername(userID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
 		return
 	}
-	if err := database.UpdateUser(&user); err != nil {
+	if err := repo.UpdateUser(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
 		return
 	}
