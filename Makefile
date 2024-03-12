@@ -13,8 +13,7 @@ init:
 	(cd judge && go mod tidy)
 	(cd web && pnpm i)
 
-push: init
-	git push origin --all
+push:
 	git push zero --all
 
 web:
