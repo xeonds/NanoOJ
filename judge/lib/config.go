@@ -8,7 +8,7 @@ import (
 )
 
 // 配置管理
-func LoadConfig() (*Config, error) {
+func LoadConfig[Config any]() (*Config, error) {
 	if _, err := os.Stat("config.yaml"); err != nil {
 		os.WriteFile("config.yaml", []byte(""), 0644)
 		return nil, errors.New("config file not found")
@@ -21,7 +21,7 @@ func LoadConfig() (*Config, error) {
 	}(); err != nil {
 		return nil, errors.New("config file read failed")
 	}
-	if err := viper.Unmarshal(&Config{}); err != nil {
+	if err := viper.Unmarshal(new(Config)); err != nil {
 		return nil, errors.New("config file parse failed")
 	}
 

@@ -136,18 +136,18 @@ func handleFind[T any](mode string, db *gorm.DB) func(c *gin.Context) {
 }
 
 // 验证码服务，使用redis存储
-func handleMailSendCaptcha(config Config, rdb *redis.Client) func(*gin.Context) {
+func handleMailSendCaptcha(mailConfig MailConfig, captchaConfig CaptchaConfig, rdb *redis.Client) func(*gin.Context) {
 	return func(c *gin.Context) {
 		mailTo := c.Query("mail") // TODO: 增加对mail的合法性验证
-		codeId, code := GenerateCaptcha(config.CaptchaLength)
-		rdb.Set(context.Background(), codeId, code, time.Minute*time.Duration(config.CaptchaAlive))
+		codeId, code := GenerateCaptcha(captchaConfig.CaptchaLength)
+		rdb.Set(context.Background(), codeId, code, time.Minute*time.Duration(captchaConfig.CaptchaAlive))
 		e := email.NewEmail()
-		e.From = "Get <" + config.MailUserName + ">"
+		e.From = "Get <" + mailConfig.MailServer + ">"
 		e.To = []string{mailTo}
 		e.Subject = "验证码"
 		e.HTML = []byte("你的验证码为：<h1>" + code + "</h1>")
-		err := e.SendWithTLS(config.MailServer+config.MailServerPort, smtp.PlainAuth("", config.MailUserName, config.MailPassword, config.MailServer),
-			&tls.Config{InsecureSkipVerify: true, ServerName: config.MailServer})
+		err := e.SendWithTLS(mailConfig.MailServer+mailConfig.MailServerPort, smtp.PlainAuth("", mailConfig.MailUserName, mailConfig.MailPassword, mailConfig.MailServer),
+			&tls.Config{InsecureSkipVerify: true, ServerName: mailConfig.MailServer})
 		if err != nil {
 			c.Error(err)
 		} else {
@@ -171,9 +171,9 @@ func handleCaptchaVerify(rdb *redis.Client) func(*gin.Context) {
 		}
 	}
 }
-func AddCaptchaAPI(router gin.IRouter, path string, config Config, rdb *redis.Client) *gin.RouterGroup {
+func AddCaptchaAPI(router gin.IRouter, path string, conf1 MailConfig, conf2 CaptchaConfig, rdb *redis.Client) *gin.RouterGroup {
 	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
-		group.POST("/gen_captcha", handleMailSendCaptcha(config, rdb))
+		group.POST("/gen_captcha", handleMailSendCaptcha(conf1, conf2, rdb))
 		group.POST("/verify_captcha", handleCaptchaVerify(rdb))
 		return group
 	})(router, path)

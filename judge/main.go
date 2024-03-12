@@ -1,32 +1,55 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"xyz.xeonds/nano-oj/config"
-	"xyz.xeonds/nano-oj/router"
+	"gorm.io/gorm"
+	"xyz.xeonds/nano-oj/controller"
+	"xyz.xeonds/nano-oj/database/model"
+	"xyz.xeonds/nano-oj/lib"
 	"xyz.xeonds/nano-oj/worker"
 )
 
+type Config struct {
+	lib.ServerConfig
+	lib.DatabaseConfig `json:"-"`
+	lib.RedisConfig
+	lib.CaptchaConfig
+	lib.MailConfig
+	ServerType string `json:"server_type"`
+}
+
 func main() {
-	r := gin.Default()
-	router.InitRouter(r)
-	conf, err := config.LoadConfig()
+	config, err := lib.LoadConfig[Config]()
 	if err != nil {
-		log.Println("Failed to load config file, using default config")
-		conf = config.DefaultConfig()
+		log.Fatal("Failed to load config file")
 	}
-	if conf.Server.Side == "web-judge" {
+	if config.ServerType == "web-judge" {
 		worker.InitJudgerPool()
+		go judgeEnqueuer()
+		go judgeWorker()
 	}
+	redis := lib.NewRedis(&config.RedisConfig)
+	db := lib.NewDB(&config.DatabaseConfig, func(db *gorm.DB) error {
+		return db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{}, &model.Contest{}, &model.Notification{})
+	})
+	router := gin.Default()
+	apiRouter := router.Group("/api/v1")
+	apiRouter.Use(lib.AuthMiddleware(0, 0))
+	lib.AddCRUD[model.Problem](apiRouter, "/problems", db)
+	lib.AddCRUD[model.Submission](apiRouter, "/submissions", db)
+	lib.AddCRUD[model.Contest](apiRouter, "/contests", db)
+	lib.AddCRUD[model.Notification](apiRouter, "/notifications", db)
+	lib.AddCRUD[model.User](apiRouter, "/users", db)
+	lib.AddCaptchaAPI(apiRouter, "/captcha", config.MailConfig, config.CaptchaConfig, redis)
+	apiRouter.POST("/user/login", controller.Login)
+	apiRouter.POST("/user/register", controller.Register)
+	router.NoRoute(gin.WrapH(http.FileServer(gin.Dir("./dist", false))))
 
-	go judgeEnqueuer()
-	go judgeWorker()
-
-	if err := r.Run(fmt.Sprintf(":%d", conf.Server.Port)); err != nil {
+	if err := router.Run(config.ServerConfig.Port); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }

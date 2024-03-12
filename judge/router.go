@@ -1,4 +1,4 @@
-package router
+package main
 
 import (
 	"net/http"
@@ -45,5 +45,5 @@ func InitRouter(r *gin.Engine) {
 	apiRouter.POST("/user/register", controller.Register)
 
 	// Static files
-	r.NoRoute(gin.WrapH(http.FileServer(gin.Dir("./public", false))))
+	r.NoRoute(gin.WrapH(http.FileServer(gin.Dir("./dist", false))))
 }

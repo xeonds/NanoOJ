@@ -8,19 +8,36 @@ type UserClaim struct {
 	Expire     time.Time `json:"expire"` // token过期时间
 }
 
-// 常量定义
-type serverConfig struct {
+// 通用配置
+type ServerConfig struct {
+	Port string `json:"port"`
+}
+
+type DatabaseConfig struct {
+	Type     string `json:"type"` // 数据库类型
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	DB       string `json:"db"` // 数据库名
+	Migrate  bool   `json:"migrate"`
+}
+
+type MailConfig struct {
 	MailUserName   string `json:"mail_username"`
 	MailServer     string `json:"mail_server"`
 	MailServerPort string `json:"mail_server_port"`
 	MailPassword   string `json:"mail_password"`
-	CaptchaLength  int    `json:"captcha_length"`
-	CaptchaAlive   int    `json:"captcha_alive"`
 }
 
-// 应用配置数据
-type Config struct {
-	serverConfig
+type CaptchaConfig struct {
+	CaptchaLength int `json:"captcha_length"`
+	CaptchaAlive  int `json:"captcha_alive"`
+}
+
+type RedisConfig struct {
+	Addr     string `json:"addr"`
+	Password string `json:"password"`
 }
 
 // 分页数据
