@@ -13,6 +13,10 @@ init:
 	(cd judge && go mod tidy)
 	(cd web && pnpm i)
 
+push: init
+	git push origin --all
+	git push zero --all
+
 web:
 	$(FRONTBUILD)
 
