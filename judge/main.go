@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/config"
-	"xyz.xeonds/nano-oj/controller"
 	"xyz.xeonds/nano-oj/database/model"
 	"xyz.xeonds/nano-oj/lib"
 	"xyz.xeonds/nano-oj/worker"
@@ -38,8 +37,7 @@ func main() {
 	lib.AddCRUD[model.Notification](apiRouter, "/notifications", db)
 	lib.AddCRUD[model.User](apiRouter, "/users", db)
 	lib.AddCaptchaAPI(apiRouter, "/captcha", config.MailConfig, config.CaptchaConfig, redis)
-	apiRouter.POST("/user/login", controller.Login)
-	apiRouter.POST("/user/register", controller.Register)
+	lib.AddLoginAPI(apiRouter, "/user", db)
 	router.NoRoute(gin.WrapH(http.FileServer(gin.Dir("./dist", false))))
 
 	if err := router.Run(config.ServerConfig.Port); err != nil {

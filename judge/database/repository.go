@@ -10,6 +10,10 @@ type Repository struct {
 	DB *gorm.DB
 }
 
+func New(db *gorm.DB) *Repository {
+	return &Repository{DB: db}
+}
+
 // Submissions
 func (r *Repository) CreateSubmission(submission *model.Submission) error {
 	result := r.DB.Create(&submission)

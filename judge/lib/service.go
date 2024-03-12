@@ -14,6 +14,9 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/jordan-wright/email"
 	"gorm.io/gorm"
+	"xyz.xeonds/nano-oj/database"
+	"xyz.xeonds/nano-oj/database/model"
+	"xyz.xeonds/nano-oj/utils"
 )
 
 func AddCRUD[T any](router gin.IRouter, path string, db *gorm.DB) *gin.RouterGroup {
@@ -37,6 +40,13 @@ func AddStaticFS(router *gin.Engine, fs embed.FS) {
 func AddFindAPI[T any](router gin.IRouter, path string, mode string, db *gorm.DB) *gin.RouterGroup {
 	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
 		group.POST("", handleFind[T](mode, db))
+		return group
+	})(router, path)
+}
+func AddLoginAPI(router gin.IRouter, path string, db *gorm.DB) *gin.RouterGroup {
+	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
+		group.POST("/login", handleLogin(db))
+		group.POST("/register", handleRegister(db))
 		return group
 	})(router, path)
 }
@@ -177,4 +187,56 @@ func AddCaptchaAPI(router gin.IRouter, path string, conf1 MailConfig, conf2 Capt
 		group.POST("/verify_captcha", handleCaptchaVerify(rdb))
 		return group
 	})(router, path)
+}
+
+// login service
+func handleLogin(db *gorm.DB) func(*gin.Context) {
+	return func(c *gin.Context) {
+		var input struct {
+			Email    string `json:"email" binding:"required,email"` //Email format authorized here
+			Password string `json:"password" binding:"required"`
+		}
+		if err := c.ShouldBindJSON(&input); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		repo := database.New(db)
+		user, err := repo.GetUserByEmail(input.Email)
+		if err != nil || !utils.CheckPasswordHash(input.Password, user.Password) {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
+			return
+		}
+		token, err := utils.GenerateToken(user)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"token": token})
+	}
+}
+func handleRegister(db *gorm.DB) func(*gin.Context) {
+	return func(c *gin.Context) {
+		var user model.User
+		repo := database.New(db)
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if _, err := repo.GetUserByUsername(user.Username); err == nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
+			return
+		}
+		if err := repo.CreateUser(&user); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create user"})
+			return
+		}
+		if user.ID == 1 { // if it is the first user, set it as admin
+			user.AccountInfo.Permission = 0
+			if err := repo.UpdateUser(&user); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
+				return
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "user created successfully"})
+	}
 }
