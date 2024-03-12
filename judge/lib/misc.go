@@ -6,10 +6,22 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/gofrs/uuid"
 	"github.com/golang-jwt/jwt"
 )
+
+// 为Gin router 添加CRUD
+func APIBuilder(router gin.IRouter, handlers ...func(*gin.RouterGroup) *gin.RouterGroup) func(gin.IRouter, string) *gin.RouterGroup {
+	return func(router gin.IRouter, path string) *gin.RouterGroup {
+		group := router.Group(path)
+		for _, handler := range handlers {
+			group = handler(group)
+		}
+		return group
+	}
+}
 
 // 生成token
 func GenerateToken(userClaim *UserClaim) (string, error) {
