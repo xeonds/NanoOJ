@@ -24,9 +24,9 @@ func LoadConfig[Config any]() (*Config, error) {
 	}(); err != nil {
 		return nil, errors.New("config file read failed")
 	}
-	if err := viper.Unmarshal(new(Config)); err != nil {
+	config := new(Config)
+	if err := viper.Unmarshal(config); err != nil {
 		return nil, errors.New("config file parse failed")
 	}
-
-	return viper.Get("config").(*Config), nil
+	return config, nil
 }
