@@ -41,7 +41,7 @@ const small = ref(false);
 const disabled = ref(false);
 const background = ref(false);
 
-const { data: submissions, get } = getDataArr<Submission>("submissions");
+const { data: submissions, get } = getDataArr<Submission>("/submissions");
 
 const status = (status: number) => ["Pending", "InProgress", "Accepted", "WrongAnswer", "TimeLimitExceeded", "MemoryLimitExceeded", "RuntimeError", "CompilationError"][status] || "Unknown";
 const statusTag = (status: number): _EpPropMergeType => ["info", "info", "success", "danger", "warning", "warning", "danger", "danger"][status] as _EpPropMergeType;

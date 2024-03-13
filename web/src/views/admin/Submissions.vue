@@ -26,7 +26,7 @@
 import { Submission } from '@/model';
 import { getDataArr } from '@/utils/http';
 
-const { data: submissions, get: getSubmissions } = getDataArr<Submission>('submissions');
+const { data: submissions, get: getSubmissions } = getDataArr<Submission>('/submissions');
 
 const deleteSubmission = async (id: number) => {
     await fetch(`/api/submissions/${id}`, {
