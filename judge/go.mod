@@ -8,7 +8,6 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/spf13/viper v1.15.0
 	golang.org/x/crypto v0.5.0
