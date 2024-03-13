@@ -1,8 +1,8 @@
 package database
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"xyz.xeonds/nano-oj/lib"
 	"xyz.xeonds/nano-oj/model"
 )
 
@@ -174,10 +174,7 @@ func (r *Repository) GetUserByUsername(username string) (*model.User, error) {
 }
 
 func (r *Repository) CreateUser(user *model.User) error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
+	hashedPassword := lib.HashedPassword(user.Password)
 	user.Password = string(hashedPassword)
 	result := r.DB.Create(&user)
 	return result.Error

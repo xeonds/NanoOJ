@@ -149,8 +149,14 @@ func NewDB(config *DatabaseConfig, migrator func(*gorm.DB) error) *gorm.DB {
 	}
 	return db
 }
+func HashedPassword(password string) string {
+	res, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Println("Failed to hash password: ", err)
+	}
+	return string(res)
 
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+}
+func CheckPasswordHash(password, hash string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
