@@ -42,5 +42,5 @@ export const getUsername = getter("username");
 export const setUsername = setter("username");
 export const getUserid = getter("userid");
 export const setUserid = setter("userid");
-export const getRole = getter("role");
-export const setRole = setter("role");
+export const getRole = getter("permission");
+export const setRole = setter("permission");

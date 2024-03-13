@@ -5,7 +5,7 @@ import (
 
 	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/database"
-	"xyz.xeonds/nano-oj/database/model"
+	"xyz.xeonds/nano-oj/model"
 )
 
 var judgeQueue = make(chan model.Submission, 100)

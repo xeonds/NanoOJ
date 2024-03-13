@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/config"
-	"xyz.xeonds/nano-oj/database/model"
 	"xyz.xeonds/nano-oj/lib"
+	"xyz.xeonds/nano-oj/model"
 	"xyz.xeonds/nano-oj/worker"
 )
 
@@ -30,7 +30,6 @@ func main() {
 	redis := lib.NewRedis(&config.RedisConfig)
 	router := gin.Default()
 	apiRouter := router.Group("/api/v1")
-	apiRouter.Use(lib.AuthMiddleware(0, 0))
 	lib.AddCRUD[model.Problem](apiRouter, "/problems", db)
 	lib.AddCRUD[model.Submission](apiRouter, "/submissions", db)
 	lib.AddCRUD[model.Contest](apiRouter, "/contests", db)

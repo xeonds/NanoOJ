@@ -10,7 +10,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"gorm.io/gorm"
-	"xyz.xeonds/nano-oj/database/model"
+	"xyz.xeonds/nano-oj/model"
 	"xyz.xeonds/nano-oj/utils"
 )
 

@@ -15,7 +15,7 @@ import (
 	"github.com/jordan-wright/email"
 	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/database"
-	"xyz.xeonds/nano-oj/database/model"
+	"xyz.xeonds/nano-oj/model"
 	"xyz.xeonds/nano-oj/utils"
 )
 
@@ -202,7 +202,7 @@ func handleLogin(db *gorm.DB) func(*gin.Context) {
 		}
 		repo := database.New(db)
 		user, err := repo.GetUserByEmail(input.Email)
-		if err != nil || !utils.CheckPasswordHash(input.Password, user.Password) {
+		if err != nil || !CheckPasswordHash(input.Password, user.Password) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 			return
 		}

@@ -5,13 +5,16 @@ import (
 	"errors"
 	"log"
 	"math/rand"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/gofrs/uuid"
 	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -22,6 +25,17 @@ func APIBuilder(router gin.IRouter, handlers ...func(*gin.RouterGroup) *gin.Rout
 		for _, handler := range handlers {
 			group = handler(group)
 		}
+		return group
+	}
+}
+
+func APIBuilderWithPermission(router gin.IRouter, handlers ...func(*gin.RouterGroup) *gin.RouterGroup) func(gin.IRouter, string, int, int) *gin.RouterGroup {
+	return func(router gin.IRouter, path string, permLo, permHi int) *gin.RouterGroup {
+		group := router.Group(path)
+		for _, handler := range handlers {
+			group = handler(group)
+		}
+		group.Use(JWTMiddleware(AuthPermission(permLo, permHi)))
 		return group
 	}
 }
@@ -58,6 +72,21 @@ func (uc *UserClaim) Valid() error {
 		return errors.New("token expired")
 	}
 	return nil
+}
+
+// 验证权限
+// 权限位于[permLo, permHi]之间则为合理
+func AuthPermission(permLo, permHi int) func(c *gin.Context, token UserClaim) error {
+	return func(c *gin.Context, token UserClaim) error {
+		if token.Permission < permLo || token.Permission > permHi {
+			c.AbortWithStatus(http.StatusForbidden)
+			return errors.New("permission denied")
+		}
+		c.Set("username", token.Name)
+		c.Set("permission", token.Permission)
+		c.Next()
+		return nil
+	}
 }
 
 // 生成uuid
@@ -105,7 +134,7 @@ func NewDB(config *DatabaseConfig, migrator func(*gorm.DB) error) *gorm.DB {
 		dsn := config.User + ":" + config.Password + "@tcp(" + config.Host + ":" + config.Port + ")/" + config.DB + "?charset=utf8mb4&parseTime=True&loc=Local"
 		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	case "sqlite":
-		db, err = gorm.Open(mysql.Open(config.DB), &gorm.Config{})
+		db, err = gorm.Open(sqlite.Open(config.DB), &gorm.Config{})
 	}
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
@@ -119,4 +148,9 @@ func NewDB(config *DatabaseConfig, migrator func(*gorm.DB) error) *gorm.DB {
 		}
 	}
 	return db
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

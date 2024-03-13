@@ -9,7 +9,7 @@ import (
 
 	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/database"
-	"xyz.xeonds/nano-oj/database/model"
+	"xyz.xeonds/nano-oj/model"
 )
 
 type task struct {

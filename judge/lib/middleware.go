@@ -2,6 +2,7 @@ package lib
 
 import (
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,51 +18,24 @@ func Logger() gin.HandlerFunc {
 	}
 }
 
-func JWTMiddleware(setUserToken func(c *gin.Context, userClaim UserClaim)) gin.HandlerFunc {
+// JWT中间件
+func JWTMiddleware(authToken func(*gin.Context, UserClaim) error) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.GetHeader("Authorization") == "" {
-			c.AbortWithStatus(401)
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		token := c.GetHeader("Authorization")
-		parsed, err := ParseToken(token)
+		parsed, err := ParseToken(c.GetHeader("Authorization"))
 		if err != nil {
-			c.AbortWithStatus(401)
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 		if parsed.Valid() != nil {
-			c.AbortWithStatus(401)
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		if setUserToken != nil {
-			// 设置用户信息字段
-			setUserToken(c, *parsed)
-		}
-		c.Next()
-	}
-}
-
-// 验证用户权限等级
-// 权限位于[permLo, permHi]之间则为合理
-func AuthMiddleware(permLo, permHi int) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if c.GetHeader("Authorization") == "" {
-			c.AbortWithStatus(401)
-		}
-		token := c.GetHeader("Authorization")
-		parsed, err := ParseToken(token)
-		if err != nil {
-			c.AbortWithStatus(401)
-			return
-		}
-		if parsed.Valid() != nil {
-			c.AbortWithStatus(401)
-			return
-		}
-		// TODO: query from db in case of priviledge delay
-		if parsed.Permission < permLo || parsed.Permission > permHi {
-			c.AbortWithStatus(403)
-			return
+		if authToken != nil && authToken(c, *parsed) != nil {
+			c.AbortWithStatus(http.StatusUnauthorized)
 		}
 		c.Next()
 	}

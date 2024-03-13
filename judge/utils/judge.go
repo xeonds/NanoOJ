@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
-	"xyz.xeonds/nano-oj/database/model"
+	"xyz.xeonds/nano-oj/model"
 )
 
 func ParseResult(out io.Reader) (model.Status, string, error) {

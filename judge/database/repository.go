@@ -3,7 +3,7 @@ package database
 import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"xyz.xeonds/nano-oj/database/model"
+	"xyz.xeonds/nano-oj/model"
 )
 
 type Repository struct {
