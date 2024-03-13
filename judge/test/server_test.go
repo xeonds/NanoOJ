@@ -1,4 +1,4 @@
-package lib_test
+package test
 
 import (
 	"testing"
@@ -13,7 +13,7 @@ import (
 var db *gorm.DB
 
 func init() {
-	config, _ := lib.LoadConfig[config.Config]()
+	config := lib.LoadConfig[config.Config]()
 	db = lib.NewDB(&config.DatabaseConfig, func(db *gorm.DB) error {
 		return db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{}, &model.Contest{}, &model.Notification{})
 	})

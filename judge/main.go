@@ -14,33 +14,32 @@ import (
 )
 
 func main() {
-	config, err := lib.LoadConfig[config.Config]()
-	if err != nil {
-		log.Fatal("Failed to load config file")
-	}
-	migrator := func(db *gorm.DB) error {
-		return db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{}, &model.Contest{}, &model.Notification{})
-	}
-	db := lib.NewDB(&config.DatabaseConfig, migrator)
-	if config.ServerType == "web-judge" {
+	config := lib.LoadConfig[config.Config]()
+	db := lib.NewDB(&config.DatabaseConfig, func(db *gorm.DB) error {
+		return db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{}, &model.Contest{}, &model.Notification{}, &model.Rank{})
+	})
+	switch config.ServerType {
+	case "web-judge":
 		worker.InitJudgerPool()
 		go judgeEnqueuer(db)
 		go judgeWorker(db)
-	}
-	redis := lib.NewRedis(&config.RedisConfig)
-	router := gin.Default()
-	apiRouter := router.Group("/api/v1")
-	lib.AddCRUD[model.Problem](apiRouter, "/problems", db)
-	lib.AddCRUD[model.Submission](apiRouter, "/submissions", db)
-	lib.AddCRUD[model.Contest](apiRouter, "/contests", db)
-	lib.AddCRUD[model.Notification](apiRouter, "/notifications", db)
-	lib.AddCRUD[model.User](apiRouter, "/users", db)
-	lib.AddCaptchaAPI(apiRouter, "/captcha", config.MailConfig, config.CaptchaConfig, redis)
-	lib.AddLoginAPI(apiRouter, "/user", db)
-	router.NoRoute(gin.WrapH(http.FileServer(gin.Dir("./dist", false))))
+	case "main":
+		redis := lib.NewRedis(&config.RedisConfig)
+		router := gin.Default()
+		apiRouter := router.Group("/api/v1")
+		lib.AddCRUD[model.Problem](apiRouter, "/problems", db)
+		lib.AddCRUD[model.Submission](apiRouter, "/submissions", db)
+		lib.AddCRUD[model.Contest](apiRouter, "/contests", db)
+		lib.AddCRUD[model.Notification](apiRouter, "/notifications", db)
+		lib.AddCRUD[model.Rank](apiRouter, "/ranks", db)
+		lib.AddCRUD[model.User](apiRouter, "/users", db)
+		lib.AddCaptchaAPI(apiRouter, "/captcha", config.MailConfig, config.CaptchaConfig, redis)
+		lib.AddLoginAPI(apiRouter, "/user", db)
+		router.NoRoute(gin.WrapH(http.FileServer(gin.Dir("./dist", false))))
 
-	if err := router.Run(config.ServerConfig.Port); err != nil {
-		log.Fatalf("Server failed to start: %v", err)
+		if err := router.Run(config.ServerConfig.Port); err != nil {
+			log.Fatalf("Server failed to start: %v", err)
+		}
 	}
 }
 

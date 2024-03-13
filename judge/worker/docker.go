@@ -11,7 +11,6 @@ import (
 	"github.com/docker/docker/client"
 	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/model"
-	"xyz.xeonds/nano-oj/utils"
 )
 
 // init judger pool when the server starts
@@ -31,7 +30,7 @@ type IJudgeServer interface {
 }
 
 func InitJudgerPool() {
-	judgers := utils.GetJudgers()
+	judgers := GetJudgers()
 	for _, judger := range judgers {
 		judgerServer, err := NewJudgeServer(judger)
 		if err != nil {
@@ -156,7 +155,7 @@ func (c JudgeServer) RunTask(t task) (result, error) {
 		return result{model.CompilationError, "Failed to remove container"}, err
 	}
 	// parse the result
-	stat, info, err := utils.ParseResult(out)
+	stat, info, err := ParseResult(out)
 	if err != nil {
 		return result{model.CompilationError, "Failed to parse result"}, err
 	}

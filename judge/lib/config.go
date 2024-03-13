@@ -2,6 +2,7 @@ package lib
 
 import (
 	"errors"
+	"log"
 	"os"
 
 	"github.com/spf13/viper"
@@ -9,12 +10,12 @@ import (
 )
 
 // 配置管理
-func LoadConfig[Config any]() (*Config, error) {
+func LoadConfig[Config any]() *Config {
 	if _, err := os.Stat("config.yaml"); err != nil {
 		confTmpl := new(Config)
 		data, _ := yaml.Marshal(confTmpl)
 		os.WriteFile("config.yaml", []byte(data), 0644)
-		return nil, errors.New("config file not found")
+		log.Fatal(errors.New("config file not found, a template file has been created"))
 	}
 	if err := func() error {
 		viper.SetConfigName("config")
@@ -22,11 +23,11 @@ func LoadConfig[Config any]() (*Config, error) {
 		viper.SetConfigType("yaml")
 		return viper.ReadInConfig()
 	}(); err != nil {
-		return nil, errors.New("config file read failed")
+		log.Fatal(errors.New("config file read failed"))
 	}
 	config := new(Config)
 	if err := viper.Unmarshal(config); err != nil {
-		return nil, errors.New("config file parse failed")
+		log.Fatal(errors.New("config file parse failed"))
 	}
-	return config, nil
+	return config
 }

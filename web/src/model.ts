@@ -50,16 +50,17 @@ export interface Submission {
 }
 
 export interface User {
-    CreatedAt: string;
-    UpdatedAt: string;
-    DeletedAt: string;
-    id: number;
-    username: string;
-    email: string;
-    personal_info: PersonalInfo;
-    account_info: AccountInfo;
-    submissions: Submission[];
-    ranks: Rank[];
+    CreatedAt?: string;
+    UpdatedAt?: string;
+    DeletedAt?: string;
+    id?: number;
+    username?: string;
+    password?: string;
+    email?: string;
+    personal_info?: PersonalInfo;
+    account_info?: AccountInfo;
+    submissions?: Submission[];
+    ranks?: Rank[];
 }
 
 export interface PersonalInfo {

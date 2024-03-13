@@ -1,12 +1,16 @@
 package worker
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/database"
 	"xyz.xeonds/nano-oj/model"
@@ -93,4 +97,30 @@ func CommitStatus(db *gorm.DB, submission model.Submission, stat model.Status, i
 	submission.Status = stat
 	submission.Information = append(submission.Information, info...)
 	db.Save(&submission)
+}
+
+func ParseResult(out io.Reader) (model.Status, string, error) {
+	var result model.Status
+	var info string
+	scanner := bufio.NewScanner(out)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "Result: ") {
+			result = model.Status(line[8:])
+		} else if strings.HasPrefix(line, "Info: ") {
+			info += line[6:] + "\n"
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return model.CompilationError, "Failed to read container logs", err
+	}
+	return result, info, nil
+}
+
+// get judgers from config
+func GetJudgers() []string {
+	judgers := make([]string, 0)
+	judgers = append(judgers, viper.GetString("judger.daemons"))
+
+	return judgers
 }

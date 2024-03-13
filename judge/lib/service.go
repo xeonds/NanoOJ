@@ -15,7 +15,6 @@ import (
 	"github.com/jordan-wright/email"
 	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/model"
-	"xyz.xeonds/nano-oj/utils"
 )
 
 func AddCRUD[T any](router gin.IRouter, path string, db *gorm.DB) *gin.RouterGroup {
@@ -192,21 +191,26 @@ func AddCaptchaAPI(router gin.IRouter, path string, conf1 MailConfig, conf2 Capt
 func handleLogin(db *gorm.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
 		input, user := new(model.User), new(model.User)
-		if err := c.ShouldBindJSON(&user); err != nil {
+		// user is already a pointer, so no need to use &user
+		if err := c.ShouldBindJSON(input); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		if err := db.Where("email = ?", input.Email).Find(user); err != nil {
+		if err := db.Where("email = ?", input.Email).Find(user).Error; err != nil {
 			log.Println("Find user by email failed: ", err)
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User does not exist"})
 			return
 		}
 		if err := CheckPasswordHash(input.Password, user.Password); err != nil {
 			log.Println("Incorrect password: ", err)
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Incorrect password"})
 			return
 		}
-		token, err := utils.GenerateToken(user)
+		token, err := GenerateToken(&UserClaim{
+			Name:       user.Username,
+			Expire:     time.Now().Add(time.Hour * 24),
+			Permission: int(user.AccountInfo.Permission),
+		})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 			return
@@ -218,11 +222,12 @@ func handleRegister(db *gorm.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
 		var user model.User
 		var err error
+		var count int64
 		if err = c.ShouldBindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		if err = db.Where("username = ?", user.Username).Find(new(model.User)).Error; err == nil {
+		if err = db.Where("username = ?", user.Username).Find(new(model.User)).Count(&count).Error; count != 0 {
 			log.Println("User already exists: ", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
 			return
@@ -233,7 +238,7 @@ func handleRegister(db *gorm.DB) func(*gin.Context) {
 		}
 		if user.ID == 1 { // if it is the first user, set it as admin
 			user.AccountInfo.Permission = 0
-			if err := db.Save(&user); err != nil {
+			if err := db.Save(&user).Error; err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
 				return
 			}

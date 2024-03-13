@@ -11,7 +11,7 @@
       <el-table-column prop="problem_id" label="题目id"></el-table-column>
       <el-table-column label="状态">
         <template #default="{ row }">
-          <el-tag class="ml-2" :type="statusTag(row.status)">{{ status(row.status) }}</el-tag>
+          <el-tag class="ml-2" :type="statusTag(row.status)">{{ row.status }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="信息">
@@ -43,8 +43,7 @@ const background = ref(false);
 
 const { data: submissions, get } = getDataArr<Submission>("/submissions");
 
-const status = (status: number) => ["Pending", "InProgress", "Accepted", "WrongAnswer", "TimeLimitExceeded", "MemoryLimitExceeded", "RuntimeError", "CompilationError"][status] || "Unknown";
-const statusTag = (status: number): _EpPropMergeType => ["info", "info", "success", "danger", "warning", "warning", "danger", "danger"][status] as _EpPropMergeType;
+const statusTag = (status: string): _EpPropMergeType => { return { "Pending": "info", "InProgress": "info", "Accepted": "success", "WrongAnswer": "danger", "TimeLimitExceeded": "warning", "MemoryLimitExceeded": "warning", "RuntimeError": "danger", "CompilationError": "danger" }[status] as _EpPropMergeType; }
 
 const showInfo = (row: { information: any[] }) => {
   ElMessage({ message: row.information.join("\n"), type: 'info', showClose: true });

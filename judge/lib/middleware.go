@@ -19,6 +19,7 @@ func Logger() gin.HandlerFunc {
 }
 
 // JWT中间件
+// 支持添加权限校验（返回error表示校验失败），以及上下文操作
 func JWTMiddleware(authToken func(*gin.Context, UserClaim) error) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.GetHeader("Authorization") == "" {
