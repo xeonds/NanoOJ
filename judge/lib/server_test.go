@@ -26,8 +26,9 @@ func TestUserRegister(t *testing.T) {
 		Password: "testpassword",
 		Email:    "test@email.com",
 	}
-	if err = db.Where("username = ?", user.Username).Find(new(model.User)).Error; err == nil {
-		t.Log("User already exists: ", err)
+	var count int64
+	if err = db.Where("username = ?", user.Username).Find(new([]model.User)).Count(&count).Error; count != 0 {
+		t.Fatal("User already exists: ", err)
 		return
 	}
 	if user.Password, err = lib.HashedPassword(user.Password), db.Create(&user).Error; err != nil {
@@ -36,7 +37,7 @@ func TestUserRegister(t *testing.T) {
 	}
 	if user.ID == 1 { // if it is the first user, set it as admin
 		user.AccountInfo.Permission = 0
-		if err := db.Save(&user); err != nil {
+		if err := db.Save(&user).Error; err != nil {
 			t.Fatal("Failed to set user as admin: ", err)
 		}
 	}
@@ -53,8 +54,8 @@ func TestUserLogin(t *testing.T) {
 	if err := db.Where("email = ?", input.Email).Find(user).Error; err != nil {
 		t.Fatal("Find user by email failed: ", err)
 	}
+	t.Log("input pass: ", input.Password, "user pass: ", user.Password)
 	if err := lib.CheckPasswordHash(input.Password, user.Password); err != nil {
-		t.Log("input pass: ", input.Password, "user pass: ", user.Password)
 		t.Fatal("Incorrect password: ", err)
 	}
 	claim := lib.UserClaim{

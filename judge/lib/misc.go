@@ -149,6 +149,7 @@ func NewDB(config *DatabaseConfig, migrator func(*gorm.DB) error) *gorm.DB {
 	}
 	return db
 }
+
 func HashedPassword(password string) string {
 	res, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
