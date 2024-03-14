@@ -1,6 +1,7 @@
 package test
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -68,4 +69,41 @@ func TestUserLogin(t *testing.T) {
 		t.Fatal("Failed to generate token: ", err)
 	}
 	t.Log("Token: ", token)
+}
+
+func TestUserPermission(t *testing.T) {
+	input, user := model.User{
+		Username: "testuser",
+		Password: "testpassword",
+		Email:    "test@email.com",
+	}, new(model.User)
+
+	if err := db.Where("email = ?", input.Email).Find(user).Error; err != nil {
+		t.Fatal("Find user by email failed: ", err)
+	}
+	t.Log("input pass: ", input.Password, "user pass: ", user.Password)
+	if err := lib.CheckPasswordHash(input.Password, user.Password); err != nil {
+		t.Fatal("Incorrect password: ", err)
+	}
+	claim := lib.UserClaim{
+		Name:       user.Username,
+		Expire:     time.Now().Add(time.Hour * 24),
+		Permission: int(user.AccountInfo.Permission),
+	}
+	token, err := lib.GenerateToken(&claim)
+	if err != nil {
+		t.Fatal("Failed to generate token: ", err)
+	}
+	parsed, err := lib.ParseToken(token)
+	if err != nil {
+		t.Fatal("Failed to parse token:", err)
+	}
+	if func(permLo, permHi int) error {
+		if parsed.Permission < permLo || parsed.Permission > permHi {
+			return errors.New("permission not valid")
+		}
+		return nil
+	}(0, 1) != nil {
+		t.Error("Priviledge not included in allowance area")
+	}
 }

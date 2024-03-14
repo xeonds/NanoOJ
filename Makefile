@@ -25,7 +25,7 @@ web-dev:
 linux-amd64: 
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@-$(VERSION)
 
-linux-amd64-dev: linux-amd64
+linux-amd64-dev: linux-amd64 web
 	cd $(BINDIR) && ./$(NAME)-linux-amd64-$(VERSION)
 
 windows-amd64: 
