@@ -29,7 +29,7 @@
             </el-form-item>
             <el-form-item label="Problems">
                 <el-select v-model="newContest.problems" multiple placeholder="Please select">
-                    <el-option v-for="problem in problems" :key="problem.id" :label="problem.title" :value="problem">
+                    <el-option v-for="problem in problems" :key="problem.id" :label="problem.title" :value="problem.id">
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -53,7 +53,7 @@
             </el-form-item>
             <el-form-item label="Problems">
                 <el-select v-model="selectedContest.problems" multiple placeholder="Please select">
-                    <el-option v-for="problem in problems" :key="problem.id" :label="problem.title" :value="problem">
+                    <el-option v-for="problem in problems" :key="problem.id" :label="problem.title" :value="problem.id">
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -84,6 +84,7 @@ const newContestTimePeriod = ref('');
 const handleCreateContest = () => {
     newContest.value.start_time = newContestTimePeriod.value[0];
     newContest.value.end_time = newContestTimePeriod.value[1];
+    newContest.value.problems = problems.value.filter(problem => newContest.value.problems.includes(problem.id as any));
     api.addContests(newContest.value).then(() => {
         contests.value.push(newContest.value);
         createContestDialogVisible.value = false;
@@ -99,6 +100,7 @@ const editContest = (contest: Contest) => {
 const handleEditContest = () => {
     selectedContest.value.start_time = selectedContestTimePeriod.value[0];
     selectedContest.value.end_time = selectedContestTimePeriod.value[1];
+    selectedContest.value.problems = problems.value.filter(problem => selectedContest.value.problems.includes(problem.id as any));
     api.updateContests(selectedContest.value, selectedContest.value.id).then(() => {
         contests.value = contests.value.map(contest => {
             if (contest.id === selectedContest.value.id) {
