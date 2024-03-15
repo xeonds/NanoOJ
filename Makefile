@@ -20,7 +20,7 @@ web:
 	$(FRONTBUILD)
 
 web-dev:
-	cd web && pnpm i && vite dev --host
+	cd web && pnpm i && vite dev --host --port 8080
 
 linux-amd64: 
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@-$(VERSION)

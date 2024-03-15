@@ -1,4 +1,3 @@
-import { ElMessage } from "element-plus"
 import { getToken } from "./login"
 import { Pagination } from "@/model"
 
@@ -10,7 +9,6 @@ export const useFetch = async (url: string, init?: RequestInit | undefined) => {
     .then((res) => res.json())
     .then((json) => (data.value = json))
     .catch((err) => (err.value = err))
-
   return { data, err }
 }
 
@@ -67,8 +65,8 @@ export const dialogPost = async (
 ) => {
   const { post } = http
   const { err } = await post(api, _data)
-  if (err.value != null) ElMessage.error(err.value)
-  else ElMessage.success('添加成功')
+  if (err.value != null) ElMessage({message: err.value, type: 'error'})
+  else ElMessage({message: '添加成功', type: 'success'})
   visibleRef.value = false // 关闭弹窗
   await fetchData(api, dataSrc)
   return err
@@ -77,16 +75,16 @@ export const dialogPost = async (
 export const fetchData = async (api: string, dataSrc: any) => {
   const { get } = http
   const { data, err } = await get(api)
-  if (err.value != null) ElMessage.warning(err.value)
+  if (err.value != null) ElMessage({message: err.value, type: 'error'})
   dataSrc.value = data.value as any
 }
 
 export const deleteData = async (api: string, id: number, dataSrc: any) => {
   const { del } = http
   const { err } = await del(api, id)
-  if (err.value != null) ElMessage.error(err.value)
+  if (err.value != null) ElMessage({ message: err.value, type: 'warning'})
   else {
-    ElMessage.success('删除成功')
+    ElMessage({ message: '删除成功', type: 'success' })
     fetchData(api, dataSrc)
   }
 }

@@ -26,5 +26,15 @@ export default defineConfig({
         alias: {
             '@': pathSrc,
         },
+    },
+    server: {
+        proxy: {
+            "/api/v1/": {
+                target: "http://localhost:8765",
+                changeOrigin: true,
+                pathRewrite: {
+                    "^/api/v1/": ""
+                }
+            }
     }
 })
