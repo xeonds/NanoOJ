@@ -17,12 +17,11 @@ func main() {
 	db := lib.NewDB(&config.DatabaseConfig, func(db *gorm.DB) error {
 		return db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{}, &model.Contest{}, &model.Notification{}, &model.Rank{})
 	})
-	switch config.ServerType {
-	case "web-judge":
-		worker.InitJudgerPool(config)
+	if config.ServerType == "main" || config.ServerType == "core" || config.ServerType == "web-judge" || config.ServerType == "judge" {
 		go worker.JudgeEnqueuer(db)
-		go worker.JudgeWorker(db)
-	case "main":
+		go worker.JudgeWorker(db, config)
+	}
+	if config.ServerType == "main" || config.ServerType == "core" || config.ServerType == "web" {
 		redis := lib.NewRedis(&config.RedisConfig)
 		router := gin.Default()
 		apiRouter := router.Group("/api/v1")
