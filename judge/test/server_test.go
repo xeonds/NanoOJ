@@ -107,3 +107,25 @@ func TestUserPermission(t *testing.T) {
 		t.Error("Priviledge not included in allowance area")
 	}
 }
+
+func TestLoginAPI(t *testing.T) {
+	testCases := map[string]model.User{
+		"testuser": {
+			Username: "testuser",
+			Email:    "test@test",
+			Password: "testpass",
+		},
+	}
+	r := gin.Default()
+	lib.AddLoginAPI(r, "", db)
+	w := httptest.NewRecorder()
+	for name, testCase := range testCases {
+		payload, _ := json.Marshal(&testCase)
+		req, _ := http.NewRequest("POST", "/login", payload)
+		req.Header.Set("Content-Type", "application/json")
+		r.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status code %d, but got %d", http.StatusOK, w.Code)
+		}
+	}
+}
