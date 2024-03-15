@@ -68,9 +68,9 @@ func create[T any](db *gorm.DB) func(c *gin.Context) {
 }
 func get[T any](db *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		params := c.Request.URL.Query()
+		id := c.Param("id")
 		var d T
-		if err := db.Where(params).Find(&d).Error; err != nil {
+		if err := db.First(&d, id).Error; err != nil {
 			c.AbortWithStatus(404)
 			fmt.Println(err)
 		} else {
@@ -102,9 +102,9 @@ func update[T any](db *gorm.DB) func(c *gin.Context) {
 }
 func delete[T any](db *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		id := c.Param("id")
 		var d T
-		params := c.Request.URL.Query()
-		if err := db.Where(params).Delete(&d).Error; err != nil {
+		if err := db.Where("id = ?", id).Delete(&d).Error; err != nil {
 			c.AbortWithStatus(404)
 			fmt.Println(err)
 		} else {
