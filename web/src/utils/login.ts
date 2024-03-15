@@ -23,8 +23,8 @@ export const isAdmin = () => {
 export const isLogin = () => {
     const token = window.sessionStorage.getItem("token");
     if (typeof token === "string") {
-        const { exp } = jwtDecode(token) as { exp: number };
-        if (Date.now() < exp * 1000) {
+        const { expire } = jwtDecode(token) as { expire: number };
+        if (Date.now() < new Date(expire).getTime()) {
             return true;
         }
     }
