@@ -38,8 +38,8 @@ const useHttp = (baseUrl: string) => (token: string) => {
       },
     })
   }
-  const put = (url: string, data: any) => {
-    return useFetch(`${baseUrl}${url}`, {
+  const put = (url: string, id: number, data: any) => {
+    return useFetch(`${baseUrl}${url}/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -65,8 +65,8 @@ export const dialogPost = async (
 ) => {
   const { post } = http
   const { err } = await post(api, _data)
-  if (err.value != null) ElMessage({message: err.value, type: 'error'})
-  else ElMessage({message: '添加成功', type: 'success'})
+  if (err.value != null) ElMessage({ message: err.value, type: 'error' })
+  else ElMessage({ message: '添加成功', type: 'success' })
   visibleRef.value = false // 关闭弹窗
   await fetchData(api, dataSrc)
   return err
@@ -75,14 +75,14 @@ export const dialogPost = async (
 export const fetchData = async (api: string, dataSrc: any) => {
   const { get } = http
   const { data, err } = await get(api)
-  if (err.value != null) ElMessage({message: err.value, type: 'error'})
+  if (err.value != null) ElMessage({ message: err.value, type: 'error' })
   dataSrc.value = data.value as any
 }
 
 export const deleteData = async (api: string, id: number, dataSrc: any) => {
   const { del } = http
   const { err } = await del(api, id)
-  if (err.value != null) ElMessage({ message: err.value, type: 'warning'})
+  if (err.value != null) ElMessage({ message: err.value, type: 'warning' })
   else {
     ElMessage({ message: '删除成功', type: 'success' })
     fetchData(api, dataSrc)
