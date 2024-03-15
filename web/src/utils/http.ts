@@ -96,10 +96,7 @@ export const getDataArr = <T>(api: string, _pagination = <Pagination>{ pageNum: 
   const get = async (): Promise<T[]> => {
     const { data, err } = await http.get(api);
     console.log(data.value)
-    if (err) {
-      ElMessage({ message: `数据拉取失败：${err}`, type: 'error' });
-      return [];
-    }
+    if (err.value != null) ElMessage({ message: `数据拉取失败：${err}`, type: 'error' });
     return (data as Ref<T[]>).value;
   };
   return { data, get };
@@ -110,10 +107,7 @@ export const getData = <T>(api: string, _pagination = <Pagination>{ pageNum: 1, 
   const get = async (): Promise<T> => {
     const { data, err } = await http.get(api);
     console.log(data.value)
-    if (err) {
-      ElMessage({ message: `数据拉取失败：${err}`, type: 'error' });
-      return {} as T;
-    }
+    if (err.value != null) ElMessage({ message: `数据拉取失败：${err}`, type: 'error' });
     return (data as Ref<T>).value;
   };
   return { data, get };
