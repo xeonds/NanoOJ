@@ -1,46 +1,31 @@
 import { jwtDecode } from "jwt-decode";
 
-const keys = ["token", "role", "username", "userid"];
-
 const getter = (key: string) => () => {
     const value = window.sessionStorage.getItem(key);
     return value ? value : "";
 };
-
-const setter = (key: string) => (value: string) => {
-    window.sessionStorage.setItem(key, value);
-};
-
 const remove = (key: string) => () => {
     window.sessionStorage.removeItem(key);
 };
+const keys = ["token", "name", "permission", "expire"];
 
 export const isAdmin = () => {
-    const role = window.sessionStorage.getItem("role");
+    const role = getPermission();
     return role ? role == "0" || role == "1" : false;
 };
-
-export const isLogin = () => {
-    const token = window.sessionStorage.getItem("token");
-    if (typeof token === "string") {
-        const { exp } = jwtDecode(token) as { exp: number };
-        if (Date.now() < exp * 1000) {
-            return true;
-        }
-    }
-    return false;
-};
-
+export const isLogin = () => (Date.now() < new Date(getExpire()).getTime());
 export const logout = () => {
     keys.forEach((key) => remove(key)());
     window.location.href = "/login";
 };
-
 export const getToken = getter("token");
-export const setToken = setter("token");
-export const getUsername = getter("username");
-export const setUsername = setter("username");
-export const getUserid = getter("userid");
-export const setUserid = setter("userid");
-export const getRole = getter("role");
-export const setRole = setter("role");
+export const getUsername = getter("name");
+export const getPermission = getter("permission");
+export const getExpire = getter("expire");
+export const setToken  =  (value: string) => {
+    window.sessionStorage.setItem("token", value);
+    const { permission, name, expire } = jwtDecode(value) as { permission: number, name: string, expire: string}
+    window.sessionStorage.setItem("name", name);
+    window.sessionStorage.setItem("permission", permission.toString());
+    window.sessionStorage.setItem("expire", expire);
+};

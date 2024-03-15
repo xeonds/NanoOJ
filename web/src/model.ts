@@ -43,23 +43,24 @@ export interface Submission {
     user_id: number;
     language: string;
     code: string;
-    status: number;
+    status: string;
     information: string[];
     time: number;
     memory: number;
 }
 
 export interface User {
-    CreatedAt: string;
-    UpdatedAt: string;
-    DeletedAt: string;
-    id: number;
-    username: string;
-    email: string;
-    personal_info: PersonalInfo;
-    account_info: AccountInfo;
-    submissions: Submission[];
-    ranks: Rank[];
+    CreatedAt?: string;
+    UpdatedAt?: string;
+    DeletedAt?: string;
+    id?: number;
+    username?: string;
+    password?: string;
+    email?: string;
+    personal_info?: PersonalInfo;
+    account_info?: AccountInfo;
+    submissions?: Submission[];
+    ranks?: Rank[];
 }
 
 export interface PersonalInfo {

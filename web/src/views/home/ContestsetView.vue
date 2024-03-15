@@ -13,15 +13,15 @@
 <script lang="ts" setup>
 import { Contest } from '@/model';
 import { getDataArr } from '@/utils/http';
-import { formatDate } from '@/utils/datetime';
+import { time } from '@/utils/datetime';
 
 const router = useRouter();
 const { data: contests, get } = getDataArr<Contest>('/contests');
 
 onMounted(async () => {
-  contests.value = (await get()).map((contest: any) => {
-    contest.start_time = formatDate(contest.start_time);
-    contest.end_time = formatDate(contest.end_time);
+  contests.value = (await get()).map((contest) => {
+    contest.start_time = time.formatDate(contest.start_time);
+    contest.end_time = time.formatDate(contest.end_time);
     return contest;
   });
 });

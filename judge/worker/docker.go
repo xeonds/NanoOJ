@@ -9,14 +9,15 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"xyz.xeonds/nano-oj/database/model"
-	"xyz.xeonds/nano-oj/utils"
+	"gorm.io/gorm"
+	"xyz.xeonds/nano-oj/model"
 )
 
 // init judger pool when the server starts
 var JudgerPool = make(map[string]JudgeServer)
 
 type JudgeServer struct {
+	db    *gorm.DB
 	cli   *client.Client
 	ctx   context.Context
 	Works chan task
@@ -29,7 +30,7 @@ type IJudgeServer interface {
 }
 
 func InitJudgerPool() {
-	judgers := utils.GetJudgers()
+	judgers := GetJudgers()
 	for _, judger := range judgers {
 		judgerServer, err := NewJudgeServer(judger)
 		if err != nil {
@@ -38,10 +39,6 @@ func InitJudgerPool() {
 		}
 		JudgerPool[judger] = judgerServer
 	}
-}
-
-func (c JudgeServer) AddTask(t task) {
-	c.Works <- t
 }
 
 // TODO: should be verified
@@ -55,7 +52,6 @@ func RunJudgerPool() {
 	}
 }
 
-// TODO: test the function. it's just a demo now
 func NewJudgeServer(addr string) (JudgeServer, error) {
 	cli, err := client.NewClient(addr, "", nil, nil) // initiate docker connection
 	if err != nil {
@@ -78,6 +74,10 @@ func GetAvailableJudger() JudgeServer {
 		}
 	}
 	return minLoadJudger
+}
+
+func (c JudgeServer) AddTask(t task) {
+	c.Works <- t
 }
 
 // list all images at the target server
@@ -103,7 +103,6 @@ func (c JudgeServer) BuildImage() error {
 			}
 		}
 	}
-
 	_, err = c.cli.ImageBuild(context.Background(), nil, types.ImageBuildOptions{ // if the judge image isn't exist, build it from the Dockerfile
 		Dockerfile: "judge.Dockerfile",
 		Tags:       []string{"nano-oj/judge"},
@@ -154,7 +153,7 @@ func (c JudgeServer) RunTask(t task) (result, error) {
 		return result{model.CompilationError, "Failed to remove container"}, err
 	}
 	// parse the result
-	stat, info, err := utils.ParseResult(out)
+	stat, info, err := ParseResult(out)
 	if err != nil {
 		return result{model.CompilationError, "Failed to parse result"}, err
 	}
@@ -164,13 +163,15 @@ func (c JudgeServer) RunTask(t task) (result, error) {
 // process all tasks in the queue, using goroutine
 func (c JudgeServer) Process() {
 	for {
-		t := <-c.Works
-		// get a task from the queue
-		res, err := c.RunTask(t)
-		if err != nil {
-			log.Println("failed to run task", err)
-		}
-		// update the result to the database
-		CommitStatus(t.Submission, res.Status, res.Info)
+		go func() {
+			t := <-c.Works
+			// get a task from the queue
+			res, err := c.RunTask(t)
+			if err != nil {
+				log.Println("failed to run task:", err)
+			}
+			// update the result to the database
+			CommitStatus(c.db, t.Submission, res.Status, res.Info)
+		}()
 	}
 }

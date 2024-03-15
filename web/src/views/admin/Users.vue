@@ -18,7 +18,7 @@ import api from '@/api';
 import { User } from '@/model';
 import { getDataArr } from '@/utils/http';
 
-const { data: users, get: getUsers } = getDataArr<User>('users');
+const { data: users, get: getUsers } = getDataArr<User>('/users');
 
 const deleteUser = async (id: number) => {
     api.deleteUser(id).then(() => {

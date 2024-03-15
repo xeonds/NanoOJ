@@ -46,6 +46,7 @@
 import api from '@/api';
 import FooterBox from '@/components/FooterBox.vue';
 import { setToken } from '@/utils/login';
+import { User } from '@/model';
 
 const router = useRouter();
 const route = useRoute();
@@ -56,7 +57,7 @@ const password = ref("");
 
 const login = async () => {
   try {
-    const response = await api.login({ email: email.value, password: password.value });
+    const response = await api.login({ email: email.value, password: password.value } as User);
     setToken(response.data.value.token);
     router.push("/");
   } catch (error) {
@@ -66,7 +67,7 @@ const login = async () => {
 
 const register = async () => {
   try {
-    await api.register({ username: username.value, email: email.value, password: password.value });
+    await api.register({ username: username.value, email: email.value, password: password.value } as User);
     router.push("/login");
   } catch (error) {
     ElMessage.error("Invalid email or password");

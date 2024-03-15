@@ -3,8 +3,9 @@ package worker
 import (
 	"fmt"
 
+	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/database"
-	"xyz.xeonds/nano-oj/database/model"
+	"xyz.xeonds/nano-oj/model"
 )
 
 var judgeQueue = make(chan model.Submission, 100)
@@ -14,8 +15,9 @@ func IsEmpty() bool {
 }
 
 // Scans the database, and enqueue all pending submissions timely
-func JudgeEnqueue() {
-	submissions, err := database.GetSubmissionsByStatus(model.Pending)
+func JudgeEnqueue(db *gorm.DB) {
+	repo := database.Repository{DB: db}
+	submissions, err := repo.GetSubmissionsByStatus(model.Pending)
 	if err != nil {
 		fmt.Println(err)
 		return

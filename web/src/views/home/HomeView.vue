@@ -5,15 +5,13 @@
       <el-col :span="24">
         <el-card>
           <div v-if="notifications.length === 0">暂无公告</div>
-          <el-carousel v-else trigger="click" :interval="5000" indicator-position="outside" arrow="always">
-            <el-carousel-item v-for="item in notifications" :key="item.id">
-              <div class="notification-content">
-                <h3>{{ item.title }} </h3>
-                <p v-html="item.content"></p>
-                <el-divider></el-divider>
-                <el-tag>创建于：{{ formatDate(item.CreatedAt) }}</el-tag>
-                <el-tag v-if="item.UpdatedAt">修改于：{{ formatDate(item.UpdatedAt) }}</el-tag>
-              </div>
+          <el-carousel v-else trigger="click" :interval="5000" indicator-position="outside" arrow="never" height="auto">
+            <el-carousel-item style="height: auto" v-for="item in notifications" :key="item.id">
+              <h3>{{ item.title }} </h3>
+              <p v-html="item.content"></p>
+              <el-divider></el-divider>
+              <el-tag>创建于：{{ time.formatDate(item.CreatedAt) }}</el-tag> |
+              <el-tag v-if="item.UpdatedAt">修改于：{{ time.formatDate(item.UpdatedAt) }}</el-tag>
             </el-carousel-item>
           </el-carousel>
         </el-card>
@@ -62,7 +60,7 @@
 import { Notification, Contest, Problem, Rank } from '@/model';
 import { marked } from "marked";
 import { getDataArr } from '@/utils/http';
-import { formatDate } from "@/utils/datetime";
+import { time } from "@/utils/datetime";
 
 const router = useRouter();
 const colors = { 2: '#01D842', 4: '#66CCFF', 5: '#FF4040' };
@@ -91,10 +89,6 @@ onMounted(async () => {
 
 el-card {
   width: 100%;
-}
-
-.notification-content {
-  margin-bottom: 10px;
 }
 
 .notification-time {

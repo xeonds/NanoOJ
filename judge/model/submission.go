@@ -15,46 +15,10 @@ type Submission struct {
 	UserID      uint16      `json:"user_id"`
 	Language    string      `json:"language"`
 	Code        string      `json:"code"`
-	Status      Status      `json:"status" gorm:"type:int"`
+	Status      Status      `json:"status"`
 	Information Information `json:"information" gorm:"type:json"`
 	Time        int         `json:"time"`
 	Memory      int         `json:"memory"`
-}
-
-type Status int
-
-const (
-	Pending Status = iota
-	InProgress
-	Accepted
-	WrongAnswer
-	TimeLimitExceeded
-	MemoryLimitExceeded
-	RuntimeError
-	CompilationError
-)
-
-func (s Status) String() string {
-	switch s {
-	case Pending:
-		return "Pending"
-	case InProgress:
-		return "In progress"
-	case Accepted:
-		return "Accepted"
-	case WrongAnswer:
-		return "Wrong Answer"
-	case TimeLimitExceeded:
-		return "Time Limit Exceeded"
-	case MemoryLimitExceeded:
-		return "Memory Limit Exceeded"
-	case RuntimeError:
-		return "Runtime Error"
-	case CompilationError:
-		return "Compilation Error"
-	default:
-		return "Unknown"
-	}
 }
 
 type Information []string
@@ -66,4 +30,22 @@ func (i *Information) Scan(value interface{}) error {
 
 func (i Information) Value() (driver.Value, error) {
 	return json.Marshal(i)
+}
+
+type Status string
+
+const (
+	Pending             Status = "Pending"
+	InProgress          Status = "In progress"
+	Accepted            Status = "Accepted"
+	WrongAnswer         Status = "Wrong Answer"
+	TimeLimitExceeded   Status = "Time Limit Exceeded"
+	MemoryLimitExceeded Status = "Memory Limit Exceeded"
+	RuntimeError        Status = "Runtime Error"
+	CompilationError    Status = "Compilation Error"
+	Unknown             Status = "Unknown"
+)
+
+func (s Status) String() string {
+	return string(s)
 }

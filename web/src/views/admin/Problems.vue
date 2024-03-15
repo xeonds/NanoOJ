@@ -32,13 +32,20 @@
             <el-form-item label="Description">
                 <el-input v-model="newProblem.description" type="textarea"></el-input>
             </el-form-item>
-            <!-- TODO: 增加多项表单 -->
-            <el-form-item label="Inputs">
-                <el-input v-model="newProblem.inputs" type="textarea" />
+            <el-form-item v-for="(_, index) in newProblem.inputs" :key="index" :label="`Test Case ${index + 1}`">
+                <el-row>
+                    <el-col :span="11">
+                        <el-input v-model="newProblem.inputs[index]" type="textarea" />
+                    </el-col>
+                    <el-col :span="11" :offset="1">
+                        <el-input v-model="newProblem.outputs[index]" type="textarea" />
+                    </el-col>
+                    <el-col :span="1">
+                        <el-button @click="newProblem.inputs.splice(index, 1); newProblem.outputs.splice(index, 1)" type="danger" icon="el-icon-delete"></el-button>
+                    </el-col>
+                </el-row>
             </el-form-item>
-            <el-form-item label="Outputs">
-                <el-input v-model="newProblem.outputs" type="textarea" />
-            </el-form-item>
+            <el-button @click="newProblem.inputs.push(''); newProblem.outputs.push('')">Add Test Case</el-button>
             <el-form-item label="Difficulty">
                 <el-rate v-model="newProblem.difficulty" :colors="colors" />
             </el-form-item>
@@ -56,12 +63,20 @@
             <el-form-item label="Description">
                 <el-input v-model="selectedProblem.description" type="textarea"></el-input>
             </el-form-item>
-            <el-form-item label="Inputs">
-                <el-input v-model="selectedProblem.inputs" type="textarea" />
+            <el-form-item v-for="(_, index) in selectedProblem.inputs" :key="index" :label="`Test Case ${index + 1}`">
+                <el-row>
+                    <el-col :span="11">
+                        <el-input v-model="selectedProblem.inputs[index]" type="textarea" />
+                    </el-col>
+                    <el-col :span="11" :offset="1">
+                        <el-input v-model="selectedProblem.outputs[index]" type="textarea" />
+                    </el-col>
+                    <el-col :span="1">
+                        <el-button @click="selectedProblem.inputs.splice(index, 1); selectedProblem.outputs.splice(index, 1)" type="danger" icon="el-icon-delete"></el-button>
+                    </el-col>
+                </el-row>
             </el-form-item>
-            <el-form-item label="Outputs">
-                <el-input v-model="selectedProblem.outputs" type="textarea" />
-            </el-form-item>
+            <el-button @click="selectedProblem.inputs.push(''); selectedProblem.outputs.push('')">Add Test Case</el-button>
             <el-form-item label="Difficulty">
                 <el-rate v-model="selectedProblem.difficulty" :colors="colors" />
             </el-form-item>
@@ -83,7 +98,13 @@ const editProblemDialogVisible = ref(false);
 const { data: problems, get: getProblems } = getDataArr<Problem>('/problems');
 const colors = { 2: '#01D842', 4: '#66CCFF', 5: '#FF4040' }
 
-const newProblem: Ref<Problem> = ref({} as Problem);
+const newProblem: Ref<Problem> = ref({
+    title: '',
+    description: '',
+    inputs: [''],
+    outputs: [''],
+    difficulty: 2
+} as Problem);
 const createProblem = () => {
     api.addProblems(newProblem.value).then(() => {
         problems.value.push(newProblem.value);
