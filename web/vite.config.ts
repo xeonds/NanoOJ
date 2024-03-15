@@ -36,5 +36,6 @@ export default defineConfig({
                     "^/api/v1/": ""
                 }
             }
+        }
     }
 })
