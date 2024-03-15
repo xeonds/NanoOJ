@@ -43,7 +43,7 @@ export interface Submission {
     user_id: number;
     language: string;
     code: string;
-    status: number;
+    status: string;
     information: string[];
     time: number;
     memory: number;
