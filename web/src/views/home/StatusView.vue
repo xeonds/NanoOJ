@@ -24,6 +24,16 @@
     </el-table>
     <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :small="small" :disabled="disabled"
       :background="background" layout="prev, pager, next, jumper" :total="submissions.length" />
+    <el-dialog v-model="dialogVisible" title="Submission Information" width="30%">
+      <el-descriptions :bordered="true" :column="1">
+        <el-descriptions-item label="Submission ID">{{ dialogData.id }}</el-descriptions-item>
+        <el-descriptions-item label="Problem ID">{{ dialogData.problem_id }}</el-descriptions-item>
+        <el-descriptions-item label="Status"><el-tag class="ml-2" :type="statusTag(dialogData.status)">{{ dialogData.status }}</el-tag></el-descriptions-item>
+        <el-descriptions-item label="Information">{{ dialogData.information?dialogData.information.join('\n'):'' }}</el-descriptions-item>
+        <el-descriptions-item label="Time">{{ dialogData.time }}</el-descriptions-item>
+        <el-descriptions-item label="User ID">{{ dialogData.user_id }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
 
@@ -40,14 +50,16 @@ const pageSize = ref(10);
 const small = ref(false);
 const disabled = ref(false);
 const background = ref(false);
+const dialogVisible = ref(false);
+const dialogData = ref({} as Submission);
 
 const { data: submissions, get } = getDataArr<Submission>("/submissions");
-
 const statusTag = (status: string): _EpPropMergeType => { return { "Pending": "info", "InProgress": "info", "Accepted": "success", "WrongAnswer": "danger", "TimeLimitExceeded": "warning", "MemoryLimitExceeded": "warning", "RuntimeError": "danger", "CompilationError": "danger" }[status] as _EpPropMergeType; }
-
-const showInfo = (row: { information: any[] }) => {
-  ElMessage({ message: row.information.join("\n"), type: 'info', showClose: true });
+const showInfo = (row: Submission) => {
+  dialogData.value = row;
+  dialogVisible.value = true;
 };
+
 onMounted(async () => {
   submissions.value = await get();
 });
