@@ -10,8 +10,8 @@
               <h3>{{ item.title }} </h3>
               <p v-html="item.content"></p>
               <el-divider></el-divider>
-              <el-tag>创建于：{{ formatDate(item.CreatedAt) }}</el-tag> |
-              <el-tag v-if="item.UpdatedAt">修改于：{{ formatDate(item.UpdatedAt) }}</el-tag>
+              <el-tag>创建于：{{ time.formatDate(item.CreatedAt) }}</el-tag> |
+              <el-tag v-if="item.UpdatedAt">修改于：{{ time.formatDate(item.UpdatedAt) }}</el-tag>
             </el-carousel-item>
           </el-carousel>
         </el-card>
@@ -60,7 +60,7 @@
 import { Notification, Contest, Problem, Rank } from '@/model';
 import { marked } from "marked";
 import { getDataArr } from '@/utils/http';
-import { formatDate } from "@/utils/datetime";
+import { time } from "@/utils/datetime";
 
 const router = useRouter();
 const colors = { 2: '#01D842', 4: '#66CCFF', 5: '#FF4040' };

@@ -29,12 +29,12 @@
             </el-form-item>
             <el-form-item label="Problems">
                 <el-select v-model="newContest.problems" multiple placeholder="Please select">
-                    <el-option v-for="problem in problems" :key="problem.id" :label="problem.title" :value="problem.id">
+                    <el-option v-for="problem in problems" :key="problem.id" :label="problem.title" :value="problem">
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="Time Duration">
-                <el-date-picker v-model="newContest.CreatedAt" type="datetimerange" range-separator="To"
+                <el-date-picker v-model="newContestTimePeriod" type="datetimerange" range-separator="To"
                     start-placeholder="Start date" end-placeholder="End date" />
             </el-form-item>
         </el-form>
@@ -53,12 +53,12 @@
             </el-form-item>
             <el-form-item label="Problems">
                 <el-select v-model="selectedContest.problems" multiple placeholder="Please select">
-                    <el-option v-for="problem in problems" :key="problem.id" :label="problem.title" :value="problem.id">
+                    <el-option v-for="problem in problems" :key="problem.id" :label="problem.title" :value="problem">
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="Time Duration">
-                <el-date-picker v-model="selectedContest.CreatedAt" type="datetimerange" range-separator="To"
+                <el-date-picker v-model="selectedContestTimePeriod" type="datetimerange" range-separator="To"
                     start-placeholder="Start date" end-placeholder="End date" />
             </el-form-item>
         </el-form>
@@ -80,7 +80,10 @@ const { data: contests, get: getContests } = getDataArr<Contest>('/contests');
 const { data: problems, get: getProblems } = getDataArr<Problem>('/problems');
 
 const newContest: Ref<Contest> = ref({} as Contest);
+const newContestTimePeriod = ref('');
 const handleCreateContest = () => {
+    newContest.value.start_time = newContestTimePeriod.value[0];
+    newContest.value.end_time = newContestTimePeriod.value[1];
     api.addContests(newContest.value).then(() => {
         contests.value.push(newContest.value);
         createContestDialogVisible.value = false;
@@ -88,11 +91,14 @@ const handleCreateContest = () => {
 };
 
 const selectedContest: Ref<Contest> = ref({} as Contest);
+const selectedContestTimePeriod = ref('');
 const editContest = (contest: Contest) => {
     selectedContest.value = contest;
     editContestDialogVisible.value = true;
 };
 const handleEditContest = () => {
+    selectedContest.value.start_time = selectedContestTimePeriod.value[0];
+    selectedContest.value.end_time = selectedContestTimePeriod.value[1];
     api.updateContests(selectedContest.value, selectedContest.value.id).then(() => {
         contests.value = contests.value.map(contest => {
             if (contest.id === selectedContest.value.id) {
