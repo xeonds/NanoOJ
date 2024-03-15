@@ -101,7 +101,7 @@ export const getDataArr = <T>(api: string, _pagination = <Pagination>{ pageNum: 
 }
 
 export const getData = <T>(api: string, _pagination = <Pagination>{ pageNum: 1, pageSize: 25, total: 25 }) => {
-  const data = ref<T>();
+  const data = ref({} as T);
   const get = async (): Promise<T> => {
     const { data, err } = await http.get(api);
     console.log(data.value)
