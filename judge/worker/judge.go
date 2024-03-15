@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"xyz.xeonds/nano-oj/database"
 	"xyz.xeonds/nano-oj/model"
@@ -31,7 +30,25 @@ type result struct {
 	Info   string
 }
 
-func JudgeWorker(db *gorm.DB) { // Create task & enqueue it
+func JudgeEnqueuer(db *gorm.DB) {
+	log.Println("Judge enqueuer process starting...")
+	for {
+		JudgeEnqueue(db)
+		time.Sleep(5 * time.Second)
+	}
+}
+
+func JudgeWorker(db *gorm.DB) {
+	log.Println("Judge worker processes starting...")
+	for {
+		if !IsEmpty() {
+			go JudgeWorker(db)
+		}
+		time.Sleep(1 * time.Second)
+	}
+}
+
+func AddTask(db *gorm.DB) { // Create task & enqueue it
 	submission := <-judgeQueue // read a submission from judgeQueue
 	CommitStatus(db, submission, model.InProgress, "Judging...")
 	repo := database.Repository{DB: db}
@@ -115,12 +132,4 @@ func ParseResult(out io.Reader) (model.Status, string, error) {
 		return model.CompilationError, "Failed to read container logs", err
 	}
 	return result, info, nil
-}
-
-// get judgers from config
-func GetJudgers() []string {
-	judgers := make([]string, 0)
-	judgers = append(judgers, viper.GetString("judger.daemons"))
-
-	return judgers
 }

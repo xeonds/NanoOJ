@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -20,9 +19,9 @@ func main() {
 	})
 	switch config.ServerType {
 	case "web-judge":
-		worker.InitJudgerPool()
-		go judgeEnqueuer(db)
-		go judgeWorker(db)
+		worker.InitJudgerPool(config)
+		go worker.JudgeEnqueuer(db)
+		go worker.JudgeWorker(db)
 	case "main":
 		redis := lib.NewRedis(&config.RedisConfig)
 		router := gin.Default()
@@ -40,23 +39,5 @@ func main() {
 		if err := router.Run(config.ServerConfig.Port); err != nil {
 			log.Fatalf("Server failed to start: %v", err)
 		}
-	}
-}
-
-func judgeEnqueuer(db *gorm.DB) {
-	log.Println("Judge enqueuer process starting...")
-	for {
-		worker.JudgeEnqueue(db)
-		time.Sleep(5 * time.Second)
-	}
-}
-
-func judgeWorker(db *gorm.DB) {
-	log.Println("Judge worker processes starting...")
-	for {
-		if !worker.IsEmpty() {
-			go worker.JudgeWorker(db)
-		}
-		time.Sleep(1 * time.Second)
 	}
 }

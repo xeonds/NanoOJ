@@ -10,11 +10,9 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"gorm.io/gorm"
+	"xyz.xeonds/nano-oj/config"
 	"xyz.xeonds/nano-oj/model"
 )
-
-// init judger pool when the server starts
-var JudgerPool = make(map[string]JudgeServer)
 
 type JudgeServer struct {
 	db    *gorm.DB
@@ -29,8 +27,11 @@ type IJudgeServer interface {
 	RunTask(t task) error
 }
 
-func InitJudgerPool() {
-	judgers := GetJudgers()
+// init judger pool when the server starts
+var JudgerPool = make(map[string]JudgeServer)
+
+func InitJudgerPool(config *config.Config) {
+	judgers := config.Judger.Daemons
 	for _, judger := range judgers {
 		judgerServer, err := NewJudgeServer(judger)
 		if err != nil {

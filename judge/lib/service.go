@@ -19,11 +19,11 @@ import (
 
 func AddCRUD[T any](router gin.IRouter, path string, db *gorm.DB) *gin.RouterGroup {
 	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
-		group.GET("", getAll[T](db))
-		group.GET("/:id", get[T](db))
-		group.POST("", create[T](db))
-		group.PUT("/:id", update[T](db))
-		group.DELETE("/:id", delete[T](db))
+		group.GET("", GetAll[T](db))
+		group.GET("/:id", Get[T](db))
+		group.POST("", Create[T](db))
+		group.PUT("/:id", Update[T](db))
+		group.DELETE("/:id", Delete[T](db))
 		return group
 	})(router, path)
 }
@@ -37,20 +37,27 @@ func AddStaticFS(router *gin.Engine, fs embed.FS) {
 }
 func AddFindAPI[T any](router gin.IRouter, path string, mode string, db *gorm.DB) *gin.RouterGroup {
 	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
-		group.POST("", handleFind[T](mode, db))
+		group.POST("", HandleFind[T](mode, db))
 		return group
 	})(router, path)
 }
 func AddLoginAPI(router gin.IRouter, path string, db *gorm.DB) *gin.RouterGroup {
 	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
-		group.POST("/login", handleLogin(db))
-		group.POST("/register", handleRegister(db))
+		group.POST("/login", HandleLogin(db))
+		group.POST("/register", HandleRegister(db))
+		return group
+	})(router, path)
+}
+func AddCaptchaAPI(router gin.IRouter, path string, conf1 MailConfig, conf2 CaptchaConfig, rdb *redis.Client) *gin.RouterGroup {
+	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
+		group.POST("/gen_captcha", HandleMailSendCaptcha(conf1, conf2, rdb))
+		group.POST("/verify_captcha", HandleCaptchaVerify(rdb))
 		return group
 	})(router, path)
 }
 
 // handlers for gorm
-func create[T any](db *gorm.DB) func(c *gin.Context) {
+func Create[T any](db *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var d T
 		if err := c.ShouldBindJSON(&d); err != nil {
@@ -66,7 +73,7 @@ func create[T any](db *gorm.DB) func(c *gin.Context) {
 		}
 	}
 }
-func get[T any](db *gorm.DB) func(c *gin.Context) {
+func Get[T any](db *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var d T
@@ -78,7 +85,7 @@ func get[T any](db *gorm.DB) func(c *gin.Context) {
 		}
 	}
 }
-func getAll[T any](db *gorm.DB) func(c *gin.Context) {
+func GetAll[T any](db *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var d []T
 		if err := db.Find(&d).Error; err != nil {
@@ -89,7 +96,7 @@ func getAll[T any](db *gorm.DB) func(c *gin.Context) {
 		}
 	}
 }
-func update[T any](db *gorm.DB) func(c *gin.Context) {
+func Update[T any](db *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var d T
 		if err := db.Save(&d).Error; err != nil {
@@ -100,7 +107,7 @@ func update[T any](db *gorm.DB) func(c *gin.Context) {
 		}
 	}
 }
-func delete[T any](db *gorm.DB) func(c *gin.Context) {
+func Delete[T any](db *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var d T
@@ -112,7 +119,7 @@ func delete[T any](db *gorm.DB) func(c *gin.Context) {
 		}
 	}
 }
-func handleFind[T any](mode string, db *gorm.DB) func(c *gin.Context) {
+func HandleFind[T any](mode string, db *gorm.DB) func(c *gin.Context) {
 	if mode == "single" {
 		return func(c *gin.Context) {
 			var query T
@@ -144,7 +151,7 @@ func handleFind[T any](mode string, db *gorm.DB) func(c *gin.Context) {
 }
 
 // 验证码服务，使用redis存储
-func handleMailSendCaptcha(mailConfig MailConfig, captchaConfig CaptchaConfig, rdb *redis.Client) func(*gin.Context) {
+func HandleMailSendCaptcha(mailConfig MailConfig, captchaConfig CaptchaConfig, rdb *redis.Client) func(*gin.Context) {
 	return func(c *gin.Context) {
 		mailTo := c.Query("mail") // TODO: 增加对mail的合法性验证
 		codeId, code := GenerateCaptcha(captchaConfig.CaptchaLength)
@@ -163,7 +170,7 @@ func handleMailSendCaptcha(mailConfig MailConfig, captchaConfig CaptchaConfig, r
 		}
 	}
 }
-func handleCaptchaVerify(rdb *redis.Client) func(*gin.Context) {
+func HandleCaptchaVerify(rdb *redis.Client) func(*gin.Context) {
 	return func(c *gin.Context) {
 		// TODO: 增加对id和code的合法性验证
 		codeId := c.Query("id")
@@ -179,16 +186,9 @@ func handleCaptchaVerify(rdb *redis.Client) func(*gin.Context) {
 		}
 	}
 }
-func AddCaptchaAPI(router gin.IRouter, path string, conf1 MailConfig, conf2 CaptchaConfig, rdb *redis.Client) *gin.RouterGroup {
-	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
-		group.POST("/gen_captcha", handleMailSendCaptcha(conf1, conf2, rdb))
-		group.POST("/verify_captcha", handleCaptchaVerify(rdb))
-		return group
-	})(router, path)
-}
 
 // login service
-func handleLogin(db *gorm.DB) func(*gin.Context) {
+func HandleLogin(db *gorm.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
 		input, user := new(model.User), new(model.User)
 		// user is already a pointer, so no need to use &user
@@ -218,7 +218,7 @@ func handleLogin(db *gorm.DB) func(*gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"token": token})
 	}
 }
-func handleRegister(db *gorm.DB) func(*gin.Context) {
+func HandleRegister(db *gorm.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
 		var user model.User
 		var count int64
