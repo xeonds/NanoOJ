@@ -1,25 +1,28 @@
 <template>
   <div id="contests">
-    <h1>测试</h1>
-    <ContestList :contests="contests"></ContestList>
+    <h2>测试</h2>
+    <el-table :data="contests" @row-click="(row: any) => { router.push(`/contest/${row.id}`) }">
+      <el-table-column prop="id" label="ID"></el-table-column>
+      <el-table-column prop="title" label="标题"></el-table-column>
+      <el-table-column prop="start_time" label="开始时间"></el-table-column>
+      <el-table-column prop="end_time" label="结束时间"></el-table-column>
+    </el-table>
   </div>
 </template>
 
-<script>
-import ContestList from "../../components/ContestList.vue";
-import { mapGetters } from "vuex";
+<script lang="ts" setup>
+import { Contest } from '@/model';
+import { getDataArr } from '@/utils/http';
+import { time } from '@/utils/datetime';
 
-export default {
-  name: "ContestView",
-  components: {
-    ContestList,
-  },
-  computed: {
-    ...mapGetters({
-      contests: "getContests",
-    }),
-  },
-};
+const router = useRouter();
+const { data: contests, get } = getDataArr<Contest>('/contests');
+
+onMounted(async () => {
+  contests.value = (await get()).map((contest) => {
+    contest.start_time = time.formatDate(contest.start_time);
+    contest.end_time = time.formatDate(contest.end_time);
+    return contest;
+  });
+});
 </script>
-
-<style scoped></style>

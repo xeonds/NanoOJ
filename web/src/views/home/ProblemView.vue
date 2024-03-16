@@ -8,16 +8,31 @@
           </template>
           <h4 type="primary" size="large">Problem Description</h4>
           <p v-html="description"></p><br>
+          <h4 type="primary" size="large">Test Cases</h4>
+          <template v-for="(_, index) in problem.inputs" :key="index">
+            <el-row>
+              <el-col :span="12">
+                <h5>Input:</h5>
+                <pre>{{ problem.inputs[index] }}</pre>
+              </el-col>
+              <el-col :span="12">
+                <h5>Output:</h5>
+                <pre>{{ problem.outputs[index] }}</pre>
+              </el-col>
+            </el-row>
+          </template>
           <el-divider>Code here</el-divider>
-          <CodeEditor language="c" :callback="submitCode">
+          <CodeEditor :language="language" :height="'24rem'" id="editor">
             <template #editor-options>
               <div id="buttons">
-                <el-select v-model="problem.language" placeholder="Select Language">
-                  <el-option label="C" value="c"></el-option>
-                  <el-option label="C++" value="cpp"></el-option>
-                  <el-option label="Java" value="java"></el-option>
-                  <el-option label="Python" value="python"></el-option>
-                </el-select>
+                <el-form-item label="language">
+                  <el-select v-model="language" placeholder="Select Language" style="width: 100px">
+                    <el-option label="C" value="c"></el-option>
+                    <el-option label="C++" value="cpp"></el-option>
+                    <el-option label="Java" value="java"></el-option>
+                    <el-option label="Python" value="python"></el-option>
+                  </el-select>
+                </el-form-item>
                 <el-button type="primary" @click="submitCode">Commit</el-button>
               </div>
             </template>
@@ -44,52 +59,40 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { marked } from "marked";
-import CodeEditor from '../../components/CodeEditor.vue';
-import api from '../../api';
+import { onMounted } from "vue";
+import CodeEditor from '@/components/CodeEditor.vue';
+import { getData, http } from "@/utils/http";
+import { Problem } from "@/model";
 
-export default {
-  name: "ProblemView",
-  components: {
-    CodeEditor,
-  },
-  data() {
-    return {
-      problem: { description: '' },
-    }
-  },
-  created() {
-    api.getProblemInfo(this.$route.params.id).then((response) => {
-      if (response.status === 200) {
-        this.problem = response.data;
+const route = useRoute();
+const router = useRouter();
+const id = parseInt(route.params.id as string);
+const language = ref('c');
+const code = ref('');
+const { data: problem, get: getProblemInfo } = getData<Problem>(`/problems/${id}`);
+const description = computed(() => marked(problem.value.description ?? 'loading...'));
+
+const submitCode = async () => {
+  http.post('/submissions', { code: code.value, language: language.value, state: 'waiting', problem_id: id })
+    .then(({ data, err }) => {
+      if (err) {
+        console.error(err);
+        return;
       }
-    }).catch((error) => {
-      this.$message({ type: 'error', message: 'Failed to get problem info: ' + error });
-    });
-  },
-  computed: {
-    description() {
-      return marked(this.problem.description);
-    },
-  },
-  methods: {
-    submitCode: function (language, code) {
-      api.addSubmissions({ code: code, language: 'c', state: 'waiting', problem_id: parseInt(this.$route.params.id) })
-        .then((response) => {
-          if (response.status === 200) {
-            this.$message({
-              message: 'Code submitted successfully',
-              type: 'success'
-            });
-            this.$router.push('/status');
-          }
-        })
-        .catch((error) => {
-        });
-    },
-  }
-};
+      if (data.value.status === 200) {
+        ElMessage({ message: 'Code submitted successfully', type: 'success' });
+        router.push('/status');
+      }
+    })
+}
+
+onMounted(async () => {
+  problem.value = await getProblemInfo();
+});
+
+provide('code', code)
 </script>
 
 <style scoped>
