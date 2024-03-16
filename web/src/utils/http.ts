@@ -16,7 +16,7 @@ const useHttp = (baseUrl: string) => (token: string) => {
   const get = (url: string) => {
     return useFetch(`${baseUrl}${url}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `${token}`,
       },
     })
   }
@@ -25,7 +25,7 @@ const useHttp = (baseUrl: string) => (token: string) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `${token}`,
       },
       body: JSON.stringify(data),
     })
@@ -34,7 +34,7 @@ const useHttp = (baseUrl: string) => (token: string) => {
     return useFetch(`${baseUrl}${url}/${id}`, {
       method: 'DELETE',
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `${token}`,
       },
     })
   }
@@ -43,7 +43,7 @@ const useHttp = (baseUrl: string) => (token: string) => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `${token}`,
       },
       body: JSON.stringify(data),
     })
