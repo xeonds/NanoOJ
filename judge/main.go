@@ -25,14 +25,17 @@ func main() {
 		redis := lib.NewRedis(&config.RedisConfig)
 		router := gin.Default()
 		apiRouter := router.Group("/api/v1")
-		lib.AddCRUD[model.Problem](apiRouter, "/problems", db)
-		lib.AddCRUD[model.Submission](apiRouter, "/submissions", db)
-		lib.AddCRUD[model.Contest](apiRouter, "/contests", db)
-		lib.AddCRUD[model.Notification](apiRouter, "/notifications", db)
-		lib.AddCRUD[model.Rank](apiRouter, "/ranks", db)
-		lib.AddCRUD[model.User](apiRouter, "/users", db)
+		lib.AddCRUDWithAuth[model.Problem](apiRouter, "/problems", db, 0, 1)
+		lib.AddCRUDWithAuth[model.Submission](apiRouter, "/submissions", db, 0, 1)
+		lib.AddCRUDWithAuth[model.Contest](apiRouter, "/contests", db, 0, 1)
+		lib.AddCRUDWithAuth[model.Notification](apiRouter, "/notifications", db, 0, 1)
+		lib.AddCRUDWithAuth[model.Rank](apiRouter, "/ranks", db, 0, 1)
+		lib.AddCRUD[model.User](apiRouter, "/users", db).Use(lib.JWTMiddleware(lib.AuthPermission(0, 1)))
 		lib.AddCaptchaAPI(apiRouter, "/captcha", config.MailConfig, config.CaptchaConfig, redis)
 		lib.AddLoginAPI(apiRouter, "/user", db)
+		actionRouter := apiRouter.Group("/actions").Use(lib.JWTMiddleware(lib.AuthPermission(0, 2)))
+		actionRouter.POST("/submit", lib.Create[model.Submission](db))
+		actionRouter.POST("/info/update", lib.Update[model.User](db)) // TODO: Add UserID check
 		router.NoRoute(gin.WrapH(http.FileServer(gin.Dir("./dist", false))))
 
 		if err := router.Run(config.ServerConfig.Port); err != nil {

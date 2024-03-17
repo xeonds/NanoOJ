@@ -27,6 +27,19 @@ func AddCRUD[T any](router gin.IRouter, path string, db *gorm.DB) *gin.RouterGro
 		return group
 	})(router, path)
 }
+func AddCRUDWithAuth[T any](router gin.IRouter, path string, db *gorm.DB, permLo, permHi int) *gin.RouterGroup {
+	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
+		group.GET("", GetAll[T](db))
+		group.GET("/:id", Get[T](db))
+		return group
+	}, func(group *gin.RouterGroup) *gin.RouterGroup {
+		group.Use(JWTMiddleware(AuthPermission(permLo, permHi)))
+		group.POST("", Create[T](db))
+		group.PUT("/:id", Update[T](db))
+		group.DELETE("/:id", Delete[T](db))
+		return group
+	})(router, path)
+}
 func AddStatic(router *gin.Engine, staticFileDir []string) {
 	for _, dir := range staticFileDir {
 		router.NoRoute(gin.WrapH(http.FileServer(http.Dir(dir))))
@@ -34,12 +47,6 @@ func AddStatic(router *gin.Engine, staticFileDir []string) {
 }
 func AddStaticFS(router *gin.Engine, fs embed.FS) {
 	router.NoRoute(gin.WrapH(http.FileServer(http.FS(fs))))
-}
-func AddFindAPI[T any](router gin.IRouter, path string, mode string, db *gorm.DB) *gin.RouterGroup {
-	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
-		group.POST("", HandleFind[T](mode, db))
-		return group
-	})(router, path)
 }
 func AddLoginAPI(router gin.IRouter, path string, db *gorm.DB) *gin.RouterGroup {
 	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
@@ -75,9 +82,8 @@ func Create[T any](db *gorm.DB) func(c *gin.Context) {
 }
 func Get[T any](db *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		id := c.Param("id")
-		var d T
-		if err := db.First(&d, id).Error; err != nil {
+		id, d := c.Param("id"), new(T)
+		if err := db.Where("id = ?", id).First(d).Error; err != nil {
 			c.AbortWithStatus(404)
 			fmt.Println(err)
 		} else {
@@ -119,33 +125,29 @@ func Delete[T any](db *gorm.DB) func(c *gin.Context) {
 		}
 	}
 }
-func HandleFind[T any](mode string, db *gorm.DB) func(c *gin.Context) {
-	if mode == "single" {
-		return func(c *gin.Context) {
-			var query T
-			c.ShouldBindJSON(&query)
-			err := db.Where(&query).Find(&query).Error
-			if err != nil {
-				c.JSON(200, gin.H{
-					"message": "很抱歉，没有找到你要查询的内容哦",
-				})
-			} else {
-				c.JSON(200, query)
-			}
+func HandleFind[T any](queryProcess func(c *gin.Context) *gorm.DB) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		query := new(T)
+		err := queryProcess(c).First(query).Error
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "Query Content Not Found",
+			})
+		} else {
+			c.JSON(200, query)
 		}
-	} else {
-		return func(c *gin.Context) {
-			var query T
-			var results []T
-			c.ShouldBindJSON(&query)
-			err := db.Where(&query).Find(&results).Error
-			if err != nil {
-				c.JSON(200, gin.H{
-					"message": "很抱歉，没有找到你要查询的内容哦",
-				})
-			} else {
-				c.JSON(200, results)
-			}
+	}
+}
+func HandleFindAll[T any](queryProcess func(c *gin.Context) *gorm.DB) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var query []T
+		err := queryProcess(c).Find(&query).Error
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "Query Content Not Found",
+			})
+		} else {
+			c.JSON(200, query)
 		}
 	}
 }

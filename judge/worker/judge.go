@@ -48,13 +48,12 @@ func JudgeEnqueuer(db *gorm.DB) {
 
 // Scans the database, and enqueue all pending submissions timely
 func JudgeEnqueue(db *gorm.DB) {
-	repo := database.Repository{DB: db}
-	submissions, err := repo.GetSubmissionsByStatus(model.Pending)
-	if err != nil {
+	submissions := new([]model.Submission)
+	if err := database.GetSubmissionsByStatus(db, model.Pending).Find(submissions).Error; err != nil {
 		fmt.Println(err)
 		return
 	}
-	for _, submission := range submissions {
+	for _, submission := range *submissions {
 		JudgeQueue <- submission
 	}
 }
@@ -95,10 +94,9 @@ func IsEmpty() bool {
 func FetchOneTaskFromList(db *gorm.DB) *Task { // Create task & enqueue it
 	submission := <-JudgeQueue // read a submission from judgeQueue
 	CommitStatus(db, submission, model.InProgress, "Judging...")
-	repo := database.Repository{DB: db}
 	sourceCode := submission.Code //fetch all required files for judge
-	problem, err := repo.GetProblemByID(submission.ProblemID)
-	if errorHandler(err, submission, "Failed to fetch problem", db) {
+	problem := new(model.Problem)
+	if errorHandler(database.GetProblemByID(db, submission.ProblemID).Find(problem).Error, submission, "Failed to fetch problem", db) {
 		return nil
 	}
 	tempFolder, programFile, inputFiles, outputFiles, shouldReturn := initWorkDir(sourceCode, submission, problem, db)
