@@ -19,9 +19,13 @@ import (
 )
 
 // 为Gin router 添加CRUD
-func APIBuilder(router gin.IRouter, handler func(*gin.RouterGroup) *gin.RouterGroup) func(gin.IRouter, string) *gin.RouterGroup {
+func APIBuilder(router gin.IRouter, handlers ...func(*gin.RouterGroup) *gin.RouterGroup) func(gin.IRouter, string) *gin.RouterGroup {
 	return func(router gin.IRouter, path string) *gin.RouterGroup {
-		return handler(router.Group(path))
+		group := router.Group(path)
+		for _, handler := range handlers {
+			group = handler(group)
+		}
+		return group
 	}
 }
 
@@ -67,7 +71,7 @@ func AuthPermission(permLo, permHi int) func(c *gin.Context, token UserClaim) er
 			c.AbortWithStatus(http.StatusForbidden)
 			return errors.New("permission denied")
 		}
-		c.Set("username", token.Name)
+		c.Set("name", token.Name)
 		c.Set("permission", token.Permission)
 		c.Next()
 		return nil

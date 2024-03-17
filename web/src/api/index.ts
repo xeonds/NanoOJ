@@ -18,7 +18,7 @@ export default {
     // need token
     addProblems: (data: any) => http.post("/problems", data),
     addContests: (data: any) => http.post("/contests", data),
-    addSubmissions: (data: any) => http.post("/submissions", data),
+    addSubmissions: (data: any) => http.post("/actions/submit", data),
     addNotifications: (data: any) => http.post("/notifications", data),
     updateUser: (data: any, id: number) => http.put(`/users`, id, data),
     updateProblem: (data: any, id: number) => http.put(`/problems`, id, data),

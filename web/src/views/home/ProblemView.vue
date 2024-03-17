@@ -75,17 +75,13 @@ const { data: problem, get: getProblemInfo } = getData<Problem>(`/problems/${id}
 const description = computed(() => marked(problem.value.description ?? 'loading...'));
 
 const submitCode = async () => {
-  http.post('/submissions', { code: code.value, language: language.value, state: 'waiting', problem_id: id })
-    .then(({ data, err }) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      if (data.value.status === 200) {
-        ElMessage({ message: 'Code submitted successfully', type: 'success' });
-        router.push('/status');
-      }
-    })
+  const { err } = await http.post('/actions/submit', { code: code.value, language: language.value, state: 'waiting', problem_id: id })
+  if (err.value !== null) {
+    console.error(err);
+  } else {
+    ElMessage({ message: 'Code submitted successfully', type: 'success' });
+    router.push('/status');
+  }
 }
 
 onMounted(async () => {

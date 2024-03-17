@@ -37,6 +37,7 @@ func JWTMiddleware(authToken func(*gin.Context, UserClaim) error) gin.HandlerFun
 		}
 		if authToken != nil && authToken(c, *parsed) != nil {
 			c.AbortWithStatus(http.StatusUnauthorized)
+			return
 		}
 		c.Next()
 	}
