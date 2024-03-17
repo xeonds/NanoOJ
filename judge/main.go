@@ -15,7 +15,7 @@ import (
 func main() {
 	config := lib.LoadConfig[config.Config]()
 	db := lib.NewDB(&config.DatabaseConfig, func(db *gorm.DB) error {
-		return db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{}, &model.Contest{}, &model.Notification{}, &model.Rank{})
+		return db.AutoMigrate(&model.Submission{}, &model.Problem{}, &model.User{}, &model.Contest{}, &model.Notification{}, &model.Rank{}, &model.PersonalInfo{}, &model.AccountInfo{})
 	})
 	if config.ServerType == "main" || config.ServerType == "core" || config.ServerType == "web-judge" || config.ServerType == "judge" {
 		go worker.JudgeEnqueuer(db)
