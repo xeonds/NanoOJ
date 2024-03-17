@@ -97,6 +97,7 @@ NanoOJ/
 - 数据导入/导出
 - token请求时无感刷新
 - 封榜
+- 修复各种非标准POST请求：submission, contest等
 
 ## Changelog
 
@@ -104,6 +105,7 @@ NanoOJ/
 - 2023.3: 项目demo完成
 - 2024.3: 详细实现&代码优化
     2024.3.15: 重构完成，实现Docker判题机外的大多数功能
+    2024.3.17: 权限系统重构完成
 
 ## LICENSE
 
