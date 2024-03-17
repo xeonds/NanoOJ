@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"xyz.xeonds/nano-oj/lib"
@@ -24,6 +25,7 @@ func TestAPIPermission(t *testing.T) {
 		tokens[i], _ = lib.GenerateToken(&lib.UserClaim{
 			Name:       users[i].Username,
 			Permission: int(users[i].AccountInfo.Permission),
+			Expire:     time.Now().Add(time.Hour * 24 * 7),
 		})
 	}
 	db.Create(&users)
@@ -36,6 +38,8 @@ func TestAPIPermission(t *testing.T) {
 			return group
 		},
 		func(group *gin.RouterGroup) *gin.RouterGroup {
+			// the sequence of middleware is important
+			// the use should be in the first line of the function
 			group.Use(lib.JWTMiddleware(lib.AuthPermission(0, 1)))
 			group.GET("/b", func(c *gin.Context) {
 				c.JSON(http.StatusOK, gin.H{"message": "pong"})
@@ -44,29 +48,11 @@ func TestAPIPermission(t *testing.T) {
 		})(router, "")
 	// Test permission 0
 	req, _ := http.NewRequest("GET", "/a", nil)
-	// req.Header.Set("Authorization", tokens[0])
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
 		t.Error("Permission 0 failed")
 	}
-	// Test permission 1
-	req, _ = http.NewRequest("GET", "/a", nil)
-	// req.Header.Set("Authorization", tokens[1])
-	w = httptest.NewRecorder()
-	router.ServeHTTP(w, req)
-	if w.Code != http.StatusOK {
-		t.Error("Permission 1 failed")
-	}
-	// Test permission 2
-	req, _ = http.NewRequest("GET", "/a", nil)
-	// req.Header.Set("Authorization", tokens[2])
-	w = httptest.NewRecorder()
-	router.ServeHTTP(w, req)
-	if w.Code != http.StatusOK {
-		t.Error("Permission 2 failed", w.Code)
-	}
-
 	// Test permission 0
 	req, _ = http.NewRequest("GET", "/b", nil)
 	req.Header.Set("Authorization", tokens[0])
@@ -88,7 +74,7 @@ func TestAPIPermission(t *testing.T) {
 	req.Header.Set("Authorization", tokens[2])
 	w = httptest.NewRecorder()
 	router.ServeHTTP(w, req)
-	if w.Code != http.StatusUnauthorized {
-		t.Error("Permission 2 failed", w.Code)
+	if w.Code != http.StatusForbidden { // this is returned by AuthPermission, not JWTMiddleware
+		t.Error("Permission 2 failed: ", w.Code)
 	}
 }

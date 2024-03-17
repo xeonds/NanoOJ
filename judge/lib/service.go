@@ -33,6 +33,7 @@ func AddCRUDWithAuth[T any](router gin.IRouter, path string, db *gorm.DB, permLo
 		group.GET("/:id", Get[T](db))
 		return group
 	}, func(group *gin.RouterGroup) *gin.RouterGroup {
+		// use should be in the first line of the function
 		group.Use(JWTMiddleware(AuthPermission(permLo, permHi)))
 		group.POST("", Create[T](db))
 		group.PUT("/:id", Update[T](db))
