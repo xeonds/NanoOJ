@@ -2,6 +2,7 @@ package database
 
 import (
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"xyz.xeonds/nano-oj/model"
 )
 
@@ -27,9 +28,9 @@ func CreateSubmission(db *gorm.DB, submission *model.Submission) *gorm.DB {
 }
 
 func GetAllContests(db *gorm.DB) *gorm.DB {
-	return db.Joins("JOIN problems ON contests.problem_id = problems.id")
+	return db.Preload(clause.Associations)
 }
 
 func GetContestById(db *gorm.DB, id string) *gorm.DB {
-	return db.Joins("JOIN problems ON contests.problem_id = problems.id").Where("contests.id = ?", id)
+	return db.Preload(clause.Associations).Where("contests.id = ?", id)
 }
