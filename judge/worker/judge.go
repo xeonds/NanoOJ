@@ -59,8 +59,9 @@ func JudgeEnqueue(db *gorm.DB) {
 }
 
 func JudgeWorker(db *gorm.DB, config *config.Config) {
-	log.Printf("Judge worker processes starting with mode %v ...", config.ServerType)
+	log.Println("Judge worker processes starting...")
 	if config.ServerType == "web-judge" || config.ServerType == "main" {
+		log.Println("Judge worker containers pool starting...")
 		InitJudgerPool(config)
 		RunJudgerPool()
 		for {
@@ -74,11 +75,15 @@ func JudgeWorker(db *gorm.DB, config *config.Config) {
 			time.Sleep(3 * time.Second)
 		}
 	} else if config.ServerType == "judge" || config.ServerType == "core" {
+		log.Println("Judge worker local native mode starting...")
 		for {
 			if !IsEmpty() {
 				go func() {
 					if t := FetchOneTaskFromList(db); t != nil {
-						LocalJudge[t.Lang](t)
+						status, output := LocalJudge[t.Lang](t)
+						CommitStatus(db, t.Submission, status, output)
+					} else {
+						log.Println("Failed to fetch task")
 					}
 				}()
 			}

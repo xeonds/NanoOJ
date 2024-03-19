@@ -47,7 +47,7 @@ func main() {
 		actionRouter := apiRouter.Group("/actions").Use(lib.JWTMiddleware(lib.AuthPermission(0, 2)))
 		actionRouter.POST("/submit", lib.Create(db, database.CreateSubmission))
 		actionRouter.POST("/info/update", lib.Update[model.User](db)) // TODO: Add UserID check
-		actionRouter.POST("/rerun/:id", lib.HandleReRunJudge(db))
+		actionRouter.GET("/rerun/:id", lib.HandleReRunJudge(db))
 		router.NoRoute(gin.WrapH(http.FileServer(gin.Dir("./dist", false))))
 
 		if err := router.Run(config.ServerConfig.Port); err != nil {
