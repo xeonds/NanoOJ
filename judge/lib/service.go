@@ -250,6 +250,7 @@ func HandleRegister(db *gorm.DB) func(*gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create user"})
 			return
 		}
+		// TODO: fix bug of user & related account info creation
 		if user.ID == 1 { // if it is the first user, set it as admin
 			user.AccountInfo.Permission = 0
 			if err := db.Save(&user).Error; err != nil {
