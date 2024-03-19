@@ -9,7 +9,6 @@ import (
 
 type Submission struct {
 	gorm.Model
-	ID          uint32      `json:"id" gorm:"primaryKey;autoIncrement"`
 	ProblemID   uint32      `json:"problem_id"`
 	Problem     Problem     `json:"problem"`
 	UserID      uint16      `json:"user_id"`

@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"embed"
-	"fmt"
 	"log"
 	"net/http"
 	"net/smtp"
@@ -72,44 +71,47 @@ func Create[T any](db *gorm.DB, process func(*gorm.DB, *T) *gorm.DB) func(c *gin
 			c.AbortWithStatus(404)
 			log.Println("[gorm]parse creation data failed: ", err)
 		} else {
-			if process != nil && process(db, d).Error != nil {
-				c.AbortWithStatus(404)
-				log.Println("[gorm] create data process failed: ", err)
+			if process != nil {
+				if process(db, d).Error != nil {
+					c.AbortWithStatus(404)
+					log.Println("[gorm] create data process failed: ", err)
+				}
 			} else if err := db.Create(d).Error; err != nil {
 				c.AbortWithStatus(404)
 				log.Println("[gorm] create data failed: ", err)
-			} else {
-				c.JSON(200, d)
 			}
+			c.JSON(200, d)
 		}
 	}
 }
 func Get[T any](db *gorm.DB, process func(*gorm.DB, string) *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		id, d := c.Param("id"), new(T)
-		if process != nil && process(db, id).First(d).Error != nil {
-			c.AbortWithStatus(404)
-			fmt.Println("[gorm] db query process failed")
+		if process != nil {
+			if process(db, id).First(d).Error != nil {
+				c.AbortWithStatus(404)
+				log.Println("[gorm] db query process failed")
+			}
 		} else if err := db.Where("id = ?", id).First(d).Error; err != nil {
 			c.AbortWithStatus(404)
-			fmt.Println(err)
-		} else {
-			c.JSON(200, d)
+			log.Println(err)
 		}
+		c.JSON(200, d)
 	}
 }
 func GetAll[T any](db *gorm.DB, process func(*gorm.DB) *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		d := new([]T)
-		if process != nil && process(db).Find(d).Error != nil {
-			c.AbortWithStatus(404)
-			log.Println("[gorm] db query all process failed")
+		if process != nil {
+			if process(db).Find(d).Error != nil {
+				c.AbortWithStatus(404)
+				log.Println("[gorm] db query all process failed")
+			}
 		} else if err := db.Find(d).Error; err != nil {
 			c.AbortWithStatus(404)
-			fmt.Println(err)
-		} else {
-			c.JSON(200, d)
+			log.Println(err)
 		}
+		c.JSON(200, d)
 	}
 }
 func Update[T any](db *gorm.DB) func(c *gin.Context) {
@@ -117,7 +119,7 @@ func Update[T any](db *gorm.DB) func(c *gin.Context) {
 		var d T
 		if err := db.Save(&d).Error; err != nil {
 			c.AbortWithStatus(404)
-			fmt.Println(err)
+			log.Println(err)
 		} else {
 			c.JSON(200, d)
 		}
@@ -129,7 +131,7 @@ func Delete[T any](db *gorm.DB) func(c *gin.Context) {
 		var d T
 		if err := db.Where("id = ?", id).Delete(&d).Error; err != nil {
 			c.AbortWithStatus(404)
-			fmt.Println(err)
+			log.Println(err)
 		} else {
 			c.JSON(200, d)
 		}

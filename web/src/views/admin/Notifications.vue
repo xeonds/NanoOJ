@@ -8,19 +8,21 @@
         <template #header>
             <div class="card-header">
                 <span>All Notifications</span>
-                <el-button type="primary" @click="createNotificationDialogVisible = true">Create
-                    Notification</el-button>
+                <span>
+                    <el-button type="primary" @click="refresh()" text>Refresh</el-button>
+                    <el-button type="primary" @click="createNotificationDialogVisible = true">Create Notification</el-button>
+                </span>
             </div>
         </template>
         <el-table :data="notifications" style="width: 100%">
-            <el-table-column prop="id" label="ID"></el-table-column>
+            <el-table-column prop="ID" label="ID"></el-table-column>
             <el-table-column prop="title" label="通知标题"></el-table-column>
             <el-table-column prop="author" label="发布者"></el-table-column>
             <el-table-column prop="CreatedAt" label="发布时间"></el-table-column>
             <el-table-column label="Actions">
                 <template #default="{ row }">
                     <el-button @click="editNotification(row)">Edit</el-button>
-                    <el-button @click="deleteNotification(row.id)">Delete</el-button>
+                    <el-button @click="deleteNotification(row.ID)">Delete</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -78,19 +80,23 @@ const editNotification = (notification: Notification) => {
     editNotificationDialogVisible.value = true;
 }
 const handleEditNotification = () => {
-    api.updateNotification(selectedNotification.value, selectedNotification.value.id).then(() => {
-        notifications.value = notifications.value.map(n => n.id === selectedNotification.value.id ? selectedNotification.value : n);
+    api.updateNotification(selectedNotification.value, selectedNotification.value.ID).then(() => {
+        notifications.value = notifications.value.map(n => n.ID === selectedNotification.value.ID ? selectedNotification.value : n);
         editNotificationDialogVisible.value = false;
     });
 }
 
 const deleteNotification = (id: number) => {
     api.deleteNotification(id).then(() => {
-        notifications.value = notifications.value.filter(n => n.id !== id);
+        notifications.value = notifications.value.filter(n => n.ID !== id);
     });
 }
 
 onMounted(async () => {
     notifications.value = await getNotifications();
 })
+
+const refresh = async () => {
+    notifications.value = await getNotifications();
+}
 </script>

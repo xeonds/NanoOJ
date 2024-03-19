@@ -2,7 +2,7 @@ export interface Notification {
     CreatedAt: string;
     UpdatedAt: string;
     DeletedAt: string;
-    id: number;
+    ID: number;
     title: string;
     author: string;
     content: string;
@@ -12,7 +12,7 @@ export interface Contest {
     CreatedAt: string;
     UpdatedAt: string;
     DeletedAt: string;
-    id: number;
+    ID: number;
     title: string;
     problems: Problem[];
     description: string;
@@ -24,7 +24,7 @@ export interface Problem {
     CreatedAt: string;
     UpdatedAt: string;
     DeletedAt: string;
-    id: number;
+    ID: number;
     title: string;
     difficulty: number;
     description: string;
@@ -37,7 +37,7 @@ export interface Submission {
     CreatedAt: string;
     UpdatedAt: string;
     DeletedAt: string;
-    id: number;
+    ID: number;
     problem_id: number;
     problem: Problem;
     user_id: number;
@@ -53,7 +53,7 @@ export interface User {
     CreatedAt?: string;
     UpdatedAt?: string;
     DeletedAt?: string;
-    id?: number;
+    ID?: number;
     username?: string;
     password?: string;
     email?: string;

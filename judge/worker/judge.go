@@ -39,7 +39,7 @@ var LocalJudge = map[string]func(*Task) (model.Status, string){
 }
 
 func JudgeEnqueuer(db *gorm.DB) {
-	log.Println("Judge enqueuer process starting...")
+	log.Println("Judge enqueuer process starting with mode ", "...")
 	for {
 		JudgeEnqueue(db)
 		time.Sleep(5 * time.Second)
@@ -50,7 +50,7 @@ func JudgeEnqueuer(db *gorm.DB) {
 func JudgeEnqueue(db *gorm.DB) {
 	submissions := new([]model.Submission)
 	if err := database.GetSubmissionsByStatus(db, model.Pending).Find(submissions).Error; err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	for _, submission := range *submissions {
@@ -59,7 +59,7 @@ func JudgeEnqueue(db *gorm.DB) {
 }
 
 func JudgeWorker(db *gorm.DB, config *config.Config) {
-	log.Println("Judge worker processes starting...")
+	log.Printf("Judge worker processes starting with mode %v ...", config.ServerType)
 	if config.ServerType == "web-judge" || config.ServerType == "main" {
 		InitJudgerPool(config)
 		RunJudgerPool()
@@ -96,7 +96,8 @@ func FetchOneTaskFromList(db *gorm.DB) *Task { // Create task & enqueue it
 	CommitStatus(db, submission, model.InProgress, "Judging...")
 	sourceCode := submission.Code //fetch all required files for judge
 	problem := new(model.Problem)
-	if errorHandler(db.Where("problem_id = ?", submission.ProblemID).First(problem).Error, submission, "Failed to fetch problem", db) {
+	if errorHandler(db.Where("id = ?", submission.ProblemID).First(problem).Error, submission, "Failed to fetch problem", db) {
+		log.Println("Failed to fetch problem")
 		return nil
 	}
 	tempFolder, programFile, inputFiles, outputFiles, shouldReturn := initWorkDir(sourceCode, submission, problem, db)

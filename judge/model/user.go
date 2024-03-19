@@ -4,7 +4,6 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	ID uint16 `json:"id" gorm:"primaryKey;autoIncrement"`
 	// don't mask the json field name, or it will lead to the shouldBindJSON ignore the field
 	Username     string       `json:"username" gorm:"unique"`
 	Password     string       `json:"password"`
