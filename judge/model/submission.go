@@ -36,7 +36,7 @@ type Status string
 
 const (
 	Pending             Status = "Pending"
-	InProgress          Status = "In progress"
+	InProgress          Status = "In Progress"
 	Accepted            Status = "Accepted"
 	WrongAnswer         Status = "Wrong Answer"
 	TimeLimitExceeded   Status = "Time Limit Exceeded"

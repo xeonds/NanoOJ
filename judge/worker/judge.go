@@ -96,7 +96,7 @@ func FetchOneTaskFromList(db *gorm.DB) *Task { // Create task & enqueue it
 	CommitStatus(db, submission, model.InProgress, "Judging...")
 	sourceCode := submission.Code //fetch all required files for judge
 	problem := new(model.Problem)
-	if errorHandler(database.GetProblemByID(db, submission.ProblemID).Find(problem).Error, submission, "Failed to fetch problem", db) {
+	if errorHandler(db.Where("problem_id = ?", submission.ProblemID).First(problem).Error, submission, "Failed to fetch problem", db) {
 		return nil
 	}
 	tempFolder, programFile, inputFiles, outputFiles, shouldReturn := initWorkDir(sourceCode, submission, problem, db)
