@@ -1,13 +1,16 @@
 <template>
   <div>
-    <h2>提交记录</h2>
+    <div class="card-header">
+      <h2>提交记录</h2>
+      <el-button @click="refresh()" type="primary" text>Refresh</el-button>
+    </div>
     <el-table :data="submissions.slice((currentPage - 1) * pageSize, currentPage * pageSize)">
       <el-table-column label="提交时间">
         <template #default="{ row }">
           <span type="info">{{ time.fromString(row.CreatedAt) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="id" label="提交ID"></el-table-column>
+      <el-table-column prop="ID" label="提交ID"></el-table-column>
       <el-table-column prop="problem_id" label="题目id"></el-table-column>
       <el-table-column label="状态">
         <template #default="{ row }">
@@ -26,10 +29,13 @@
       :background="background" layout="prev, pager, next, jumper" :total="submissions.length" />
     <el-dialog v-model="dialogVisible" title="Submission Information" width="30%">
       <el-descriptions :bordered="true" :column="1">
-        <el-descriptions-item label="Submission ID">{{ dialogData.id }}</el-descriptions-item>
+        <el-descriptions-item label="Submission ID">{{ dialogData.ID }}</el-descriptions-item>
         <el-descriptions-item label="Problem ID">{{ dialogData.problem_id }}</el-descriptions-item>
-        <el-descriptions-item label="Status"><el-tag class="ml-2" :type="statusTag(dialogData.status)">{{ dialogData.status }}</el-tag></el-descriptions-item>
-        <el-descriptions-item label="Information">{{ dialogData.information?dialogData.information.join('\n'):'' }}</el-descriptions-item>
+        <el-descriptions-item label="Status"><el-tag class="ml-2" :type="statusTag(dialogData.status)">{{
+        dialogData.status
+      }}</el-tag></el-descriptions-item>
+        <el-descriptions-item label="Information">{{ dialogData.information ? dialogData.information.join('\n') : ''
+          }}</el-descriptions-item>
         <el-descriptions-item label="Time">{{ dialogData.time }}</el-descriptions-item>
         <el-descriptions-item label="User ID">{{ dialogData.user_id }}</el-descriptions-item>
       </el-descriptions>
@@ -63,6 +69,10 @@ const showInfo = (row: Submission) => {
 onMounted(async () => {
   submissions.value = await get();
 });
+
+const refresh = async () => {
+  submissions.value = await get();
+}
 </script>
 
 <style scoped>

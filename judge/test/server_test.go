@@ -216,3 +216,41 @@ func TestUserLoginWithWrongPassword(t *testing.T) {
 		t.Errorf("Expected response body %+v, but got %+v", expectedResponse, responseBody)
 	}
 }
+
+func TestHandleFind(t *testing.T) {
+	// Create a new Gin router
+	router := gin.Default()
+	lib.AddLoginAPI(router, "", db)
+	router.GET("/find",
+		lib.HandleFind[model.User](
+			func(c *gin.Context) *gorm.DB {
+				return db.Where("username = ?", "testuser")
+			}))
+
+	// Register a user
+	registerBody, _ := json.Marshal(model.User{
+		Username: "testuser",
+		Email:    "user@email",
+		Password: "correctpassword",
+	})
+	registerRequest, _ := http.NewRequest("POST", "/register", bytes.NewBuffer(registerBody))
+	registerResponse := httptest.NewRecorder()
+	router.ServeHTTP(registerResponse, registerRequest)
+	if registerResponse.Code != http.StatusOK {
+		t.Errorf("Expected status code %d, but got %d", http.StatusOK, registerResponse.Code)
+	}
+
+	findRequest, _ := http.NewRequest("GET", "/find", bytes.NewBuffer([]byte("testuser")))
+	findResponse := httptest.NewRecorder()
+	router.ServeHTTP(findResponse, findRequest)
+	expectedResponse := map[string]interface{}{
+		"username": "testuser",
+		"email":    "user@email",
+		"password": "correctpassword",
+	}
+	var responseBody map[string]interface{}
+	json.Unmarshal(findResponse.Body.Bytes(), &responseBody)
+	if responseBody["email"] != "user@email" {
+		t.Errorf("Expected response body %+v, but got %+v", expectedResponse, responseBody)
+	}
+}

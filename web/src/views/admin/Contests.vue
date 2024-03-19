@@ -4,17 +4,20 @@
         <template #header>
             <div class="card-header">
                 <span>All Contests</span>
-                <el-button @click="createContestDialogVisible = true" type="primary">Create Contest</el-button>
+                <span>
+                    <el-button @click="refresh()" type="primary" text>Refresh</el-button>
+                    <el-button @click="createContestDialogVisible = true" type="primary">Create Contest</el-button>
+                </span>
             </div>
         </template>
         <el-table :data="contests" style="width: 100%">
-            <el-table-column prop="id" label="ID"></el-table-column>
+            <el-table-column prop="ID" label="ID"></el-table-column>
             <el-table-column prop="title" label="Title"></el-table-column>
             <el-table-column prop="CreatedAt" label="Created At"></el-table-column>
             <el-table-column label="Actions">
                 <template #default="{ row }">
                     <el-button @click="editContest(row)">Edit</el-button>
-                    <el-button @click="deleteContest(row.id)">Delete</el-button>
+                    <el-button @click="deleteContest(row.ID)">Delete</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -29,7 +32,7 @@
             </el-form-item>
             <el-form-item label="Problems">
                 <el-select v-model="newContest.problems" multiple placeholder="Please select">
-                    <el-option v-for="problem in problems" :key="problem.id" :label="problem.title" :value="problem.id">
+                    <el-option v-for="problem in problems" :key="problem.ID" :label="problem.title" :value="problem.ID">
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -53,7 +56,7 @@
             </el-form-item>
             <el-form-item label="Problems">
                 <el-select v-model="selectedContest.problems" multiple placeholder="Please select">
-                    <el-option v-for="problem in problems" :key="problem.id" :label="problem.title" :value="problem.id">
+                    <el-option v-for="problem in problems" :key="problem.ID" :label="problem.title" :value="problem.ID">
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -84,7 +87,7 @@ const newContestTimePeriod = ref('');
 const handleCreateContest = () => {
     newContest.value.start_time = newContestTimePeriod.value[0];
     newContest.value.end_time = newContestTimePeriod.value[1];
-    newContest.value.problems = problems.value.filter(problem => newContest.value.problems.includes(problem.id as any));
+    newContest.value.problems = problems.value.filter(problem => newContest.value.problems.includes(problem.ID as any));
     api.addContests(newContest.value).then(() => {
         contests.value.push(newContest.value);
         createContestDialogVisible.value = false;
@@ -100,10 +103,10 @@ const editContest = (contest: Contest) => {
 const handleEditContest = () => {
     selectedContest.value.start_time = selectedContestTimePeriod.value[0];
     selectedContest.value.end_time = selectedContestTimePeriod.value[1];
-    selectedContest.value.problems = problems.value.filter(problem => selectedContest.value.problems.includes(problem.id as any));
-    api.updateContests(selectedContest.value, selectedContest.value.id).then(() => {
+    selectedContest.value.problems = problems.value.filter(problem => selectedContest.value.problems.includes(problem.ID as any));
+    api.updateContests(selectedContest.value, selectedContest.value.ID).then(() => {
         contests.value = contests.value.map(contest => {
-            if (contest.id === selectedContest.value.id) {
+            if (contest.ID === selectedContest.value.ID) {
                 return selectedContest.value;
             }
             return contest;
@@ -114,7 +117,7 @@ const handleEditContest = () => {
 
 const deleteContest = (id: number) => {
     api.deleteContest(id).then(() => {
-        contests.value = contests.value.filter(contest => contest.id !== id);
+        contests.value = contests.value.filter(contest => contest.ID !== id);
     });
 };
 
@@ -122,4 +125,9 @@ onMounted(async () => {
     contests.value = await getContests();
     problems.value = await getProblems();
 });
+
+const refresh = async () => {
+    contests.value = await getContests();
+    problems.value = await getProblems();
+};
 </script>

@@ -9,27 +9,28 @@ FRONTBUILD=cd web && pnpm i && vite build --outDir=../$(BINDIR)/dist --emptyOutD
 
 all: linux-amd64 windows-amd64 web
 
+web:
+	$(FRONTBUILD)
+
+linux-amd64: 
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@-$(VERSION)
+
+windows-amd64: 
+	GOOS=windows GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@-$(VERSION).exe
+
+dev:
+	(cd $(BINDIR) && ./$(NAME)-linux-amd64-$(VERSION)) & \
+	(cd web && pnpm i && vite dev --host --port 8080)
+
+run:
+	cd $(BINDIR) && ./$(NAME)-linux-amd64-$(VERSION)
+
 init:
-	(cd judge && go mod tidy)
+	(cd judge && go mod tidy) && \
 	(cd web && pnpm i)
 
 push:
 	git push zero --all
 
-web:
-	$(FRONTBUILD)
-
-web-dev:
-	cd web && pnpm i && vite dev --host --port 8080
-
-linux-amd64: 
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@-$(VERSION)
-
-linux-amd64-dev: linux-amd64 web
-	cd $(BINDIR) && ./$(NAME)-linux-amd64-$(VERSION)
-
-windows-amd64: 
-	GOOS=windows GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@-$(VERSION).exe
-
 clean:
-	rm -rf $(BINDIR)/*
+	rm -rf $(BINDIR)/$(NAME)-* $(BINDIR)/dist

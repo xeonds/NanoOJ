@@ -4,7 +4,7 @@
       <el-col :span="16">
         <el-card>
           <template #header>
-            <el-text type="primary" size="large">#{{ problem.id }}.{{ problem.title }}</el-text>
+            <el-text type="primary" size="large">#{{ problem.ID }}.{{ problem.title }}</el-text>
           </template>
           <h4 type="primary" size="large">Problem Description</h4>
           <p v-html="description"></p><br>
@@ -63,8 +63,9 @@
 import { marked } from "marked";
 import { onMounted } from "vue";
 import CodeEditor from '@/components/CodeEditor.vue';
-import { getData, http } from "@/utils/http";
-import { Problem } from "@/model";
+import { getData } from "@/utils/http";
+import { Problem, Submission } from "@/model";
+import api from "@/api";
 
 const route = useRoute();
 const router = useRouter();
@@ -73,19 +74,16 @@ const language = ref('c');
 const code = ref('');
 const { data: problem, get: getProblemInfo } = getData<Problem>(`/problems/${id}`);
 const description = computed(() => marked(problem.value.description ?? 'loading...'));
+const submission: Ref<Submission> = ref({} as Submission);
 
 const submitCode = async () => {
-  http.post('/submissions', { code: code.value, language: language.value, state: 'waiting', problem_id: id })
-    .then(({ data, err }) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      if (data.value.status === 200) {
-        ElMessage({ message: 'Code submitted successfully', type: 'success' });
-        router.push('/status');
-      }
-    })
+  submission.value = { code: code.value, language: language.value, status: 'Pending', problem_id: id } as Submission;
+  const { err } = await api.addSubmission(submission.value);
+  if (err.value !== null) ElMessage({ message: 'Code submission failed', type: 'error' });
+  else {
+    ElMessage({ message: 'Code submitted successfully, heading to status...', type: 'success' });
+    router.push('/status');
+  }
 }
 
 onMounted(async () => {

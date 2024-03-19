@@ -57,7 +57,7 @@ const router = useRouter();
 
 const submitCode = () => {
     api
-        .addSubmissions({ code: code.value, language: language.value, state: 'waiting', mode: 'playground' })
+        .addSubmission({ code: code.value, language: language.value, state: 'waiting', mode: 'playground' })
         .then((response: any) => {
             if (response.status === 200) {
                 console.log('Code submitted successfully');

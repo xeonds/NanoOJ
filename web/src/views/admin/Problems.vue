@@ -4,11 +4,16 @@
         <template #header>
             <div class="card-header">
                 <span>All Problems</span>
-                <el-button @click="createProblemDialogVisible = true" type="primary">Create Problem</el-button>
+                <span>
+                    <el-button @click="refresh()" type="primary" text>Refresh</el-button>
+                    <el-button @click="ElMessage.info('Under construction')" type="primary">Import Problems</el-button>
+                    <el-button @click="ElMessage.info('Under construction')" type="primary">Export Problems</el-button>
+                    <el-button @click="createProblemDialogVisible = true" type="primary">Create Problem</el-button>
+                </span>
             </div>
         </template>
         <el-table :data="problems" style="width: 100%">
-            <el-table-column prop="id" label="ID"></el-table-column>
+            <el-table-column prop="ID" label="ID"></el-table-column>
             <el-table-column prop="title" label="Title"></el-table-column>
             <el-table-column label="Difficulty">
                 <template #default="{ row }">
@@ -19,7 +24,7 @@
             <el-table-column label="Actions">
                 <template #default="{ row }">
                     <el-button @click="editProblem(row)">Edit</el-button>
-                    <el-button @click="deleteProblem(row.id)">Delete</el-button>
+                    <el-button @click="deleteProblem(row.ID)">Delete</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -34,14 +39,15 @@
             </el-form-item>
             <el-form-item v-for="(_, index) in newProblem.inputs" :key="index" :label="`Test Case ${index + 1}`">
                 <el-row>
-                    <el-col :span="11">
+                    <el-col :span="10">
                         <el-input v-model="newProblem.inputs[index]" type="textarea" />
                     </el-col>
-                    <el-col :span="11" :offset="1">
+                    <el-col :span="10" :offset="1">
                         <el-input v-model="newProblem.outputs[index]" type="textarea" />
                     </el-col>
-                    <el-col :span="1">
-                        <el-button @click="newProblem.inputs.splice(index, 1); newProblem.outputs.splice(index, 1)" type="danger" icon="el-icon-delete"></el-button>
+                    <el-col :span="3">
+                        <el-button @click="newProblem.inputs.splice(index, 1); newProblem.outputs.splice(index, 1)"
+                            type="danger">Delete</el-button>
                     </el-col>
                 </el-row>
             </el-form-item>
@@ -72,11 +78,14 @@
                         <el-input v-model="selectedProblem.outputs[index]" type="textarea" />
                     </el-col>
                     <el-col :span="1">
-                        <el-button @click="selectedProblem.inputs.splice(index, 1); selectedProblem.outputs.splice(index, 1)" type="danger" icon="el-icon-delete"></el-button>
+                        <el-button
+                            @click="selectedProblem.inputs.splice(index, 1); selectedProblem.outputs.splice(index, 1)"
+                            type="danger" icon="el-icon-delete"></el-button>
                     </el-col>
                 </el-row>
             </el-form-item>
-            <el-button @click="selectedProblem.inputs.push(''); selectedProblem.outputs.push('')">Add Test Case</el-button>
+            <el-button @click="selectedProblem.inputs.push(''); selectedProblem.outputs.push('')">Add Test
+                Case</el-button>
             <el-form-item label="Difficulty">
                 <el-rate v-model="selectedProblem.difficulty" :colors="colors" />
             </el-form-item>
@@ -118,19 +127,23 @@ const editProblem = (problem: Problem) => {
     editProblemDialogVisible.value = true;
 }
 const handleEditProblem = () => {
-    api.updateProblem(selectedProblem.value, selectedProblem.value.id).then(() => {
-        problems.value = problems.value.map(p => p.id === selectedProblem.value.id ? selectedProblem.value : p);
+    api.updateProblem(selectedProblem.value, selectedProblem.value.ID).then(() => {
+        problems.value = problems.value.map(p => p.ID === selectedProblem.value.ID ? selectedProblem.value : p);
         editProblemDialogVisible.value = false;
     });
 }
 
 const deleteProblem = (id: number) => {
     api.deleteProblem(id).then(() => {
-        problems.value = problems.value.filter(p => p.id !== id);
+        problems.value = problems.value.filter(p => p.ID !== id);
     });
 }
 
 onMounted(async () => {
     problems.value = await getProblems();
 });
+
+const refresh = async () => {
+    problems.value = await getProblems();
+}
 </script>

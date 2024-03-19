@@ -39,7 +39,7 @@ var LocalJudge = map[string]func(*Task) (model.Status, string){
 }
 
 func JudgeEnqueuer(db *gorm.DB) {
-	log.Println("Judge enqueuer process starting...")
+	log.Println("Judge enqueuer process starting with mode ", "...")
 	for {
 		JudgeEnqueue(db)
 		time.Sleep(5 * time.Second)
@@ -48,13 +48,12 @@ func JudgeEnqueuer(db *gorm.DB) {
 
 // Scans the database, and enqueue all pending submissions timely
 func JudgeEnqueue(db *gorm.DB) {
-	repo := database.Repository{DB: db}
-	submissions, err := repo.GetSubmissionsByStatus(model.Pending)
-	if err != nil {
-		fmt.Println(err)
+	submissions := new([]model.Submission)
+	if err := database.GetSubmissionsByStatus(db, model.Pending).Find(submissions).Error; err != nil {
+		log.Println(err)
 		return
 	}
-	for _, submission := range submissions {
+	for _, submission := range *submissions {
 		JudgeQueue <- submission
 	}
 }
@@ -62,6 +61,7 @@ func JudgeEnqueue(db *gorm.DB) {
 func JudgeWorker(db *gorm.DB, config *config.Config) {
 	log.Println("Judge worker processes starting...")
 	if config.ServerType == "web-judge" || config.ServerType == "main" {
+		log.Println("Judge worker containers pool starting...")
 		InitJudgerPool(config)
 		RunJudgerPool()
 		for {
@@ -75,11 +75,15 @@ func JudgeWorker(db *gorm.DB, config *config.Config) {
 			time.Sleep(3 * time.Second)
 		}
 	} else if config.ServerType == "judge" || config.ServerType == "core" {
+		log.Println("Judge worker local native mode starting...")
 		for {
 			if !IsEmpty() {
 				go func() {
 					if t := FetchOneTaskFromList(db); t != nil {
-						LocalJudge[t.Lang](t)
+						status, output := LocalJudge[t.Lang](t)
+						CommitStatus(db, t.Submission, status, output)
+					} else {
+						log.Println("Failed to fetch task")
 					}
 				}()
 			}
@@ -95,10 +99,10 @@ func IsEmpty() bool {
 func FetchOneTaskFromList(db *gorm.DB) *Task { // Create task & enqueue it
 	submission := <-JudgeQueue // read a submission from judgeQueue
 	CommitStatus(db, submission, model.InProgress, "Judging...")
-	repo := database.Repository{DB: db}
 	sourceCode := submission.Code //fetch all required files for judge
-	problem, err := repo.GetProblemByID(submission.ProblemID)
-	if errorHandler(err, submission, "Failed to fetch problem", db) {
+	problem := new(model.Problem)
+	if errorHandler(db.Where("id = ?", submission.ProblemID).First(problem).Error, submission, "Failed to fetch problem", db) {
+		log.Println("Failed to fetch problem")
 		return nil
 	}
 	tempFolder, programFile, inputFiles, outputFiles, shouldReturn := initWorkDir(sourceCode, submission, problem, db)

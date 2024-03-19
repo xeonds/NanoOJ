@@ -57,6 +57,7 @@ const _http = useHttp(baseUrl)
 
 export const http = _http(getToken())
 
+// deprecated
 export const dialogPost = async (
   api: string,
   _data: any,
@@ -68,24 +69,23 @@ export const dialogPost = async (
   if (err.value != null) ElMessage({ message: err.value, type: 'error' })
   else ElMessage({ message: '添加成功', type: 'success' })
   visibleRef.value = false // 关闭弹窗
-  await fetchData(api, dataSrc)
+  await fetchDataThenUpdateRef(()=>http.get(api), dataSrc)
   return err
 }
 
-export const fetchData = async (api: string, dataSrc: any) => {
-  const { get } = http
-  const { data, err } = await get(api)
-  if (err.value != null) ElMessage({ message: err.value, type: 'error' })
-  dataSrc.value = data.value as any
+export const fetchDataThenUpdateRef = async (fetch: Function, dataSrc: any) => {
+  dataSrc.value = await fetch()
+  ElMessage({ message: '数据拉取成功', type: 'success' })
 }
 
+// deprecated
 export const deleteData = async (api: string, id: number, dataSrc: any) => {
   const { del } = http
   const { err } = await del(api, id)
   if (err.value != null) ElMessage({ message: err.value, type: 'warning' })
   else {
     ElMessage({ message: '删除成功', type: 'success' })
-    fetchData(api, dataSrc)
+    fetchDataThenUpdateRef(()=>http.get(api), dataSrc)
   }
 }
 
