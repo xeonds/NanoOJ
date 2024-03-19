@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"embed"
-	"fmt"
 	"log"
 	"net/http"
 	"net/smtp"
@@ -19,9 +18,9 @@ import (
 
 func AddCRUD[T any](router gin.IRouter, path string, db *gorm.DB) *gin.RouterGroup {
 	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
-		group.GET("", GetAll[T](db))
-		group.GET("/:id", Get[T](db))
-		group.POST("", Create[T](db))
+		group.GET("", GetAll[T](db, nil))
+		group.GET("/:id", Get[T](db, nil))
+		group.POST("", Create[T](db, nil))
 		group.PUT("/:id", Update[T](db))
 		group.DELETE("/:id", Delete[T](db))
 		return group
@@ -29,13 +28,13 @@ func AddCRUD[T any](router gin.IRouter, path string, db *gorm.DB) *gin.RouterGro
 }
 func AddCRUDWithAuth[T any](router gin.IRouter, path string, db *gorm.DB, permLo, permHi int) *gin.RouterGroup {
 	return APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
-		group.GET("", GetAll[T](db))
-		group.GET("/:id", Get[T](db))
+		group.GET("", GetAll[T](db, nil))
+		group.GET("/:id", Get[T](db, nil))
 		return group
 	}, func(group *gin.RouterGroup) *gin.RouterGroup {
 		// use should be in the first line of the function
 		group.Use(JWTMiddleware(AuthPermission(permLo, permHi)))
-		group.POST("", Create[T](db))
+		group.POST("", Create[T](db, nil))
 		group.PUT("/:id", Update[T](db))
 		group.DELETE("/:id", Delete[T](db))
 		return group
@@ -65,42 +64,54 @@ func AddCaptchaAPI(router gin.IRouter, path string, conf1 MailConfig, conf2 Capt
 }
 
 // handlers for gorm
-func Create[T any](db *gorm.DB) func(c *gin.Context) {
+func Create[T any](db *gorm.DB, process func(*gorm.DB, *T) *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var d T
-		if err := c.ShouldBindJSON(&d); err != nil {
+		d := new(T)
+		if err := c.ShouldBindJSON(d); err != nil {
 			c.AbortWithStatus(404)
 			log.Println("[gorm]parse creation data failed: ", err)
 		} else {
-			if err := db.Create(&d).Error; err != nil {
+			if process != nil {
+				if process(db, d).Error != nil {
+					c.AbortWithStatus(404)
+					log.Println("[gorm] create data process failed: ", err)
+				}
+			} else if err := db.Create(d).Error; err != nil {
 				c.AbortWithStatus(404)
-				log.Println("[gorm]create data failed: ", err)
-			} else {
-				c.JSON(200, d)
+				log.Println("[gorm] create data failed: ", err)
 			}
+			c.JSON(200, d)
 		}
 	}
 }
-func Get[T any](db *gorm.DB) func(c *gin.Context) {
+func Get[T any](db *gorm.DB, process func(*gorm.DB, string) *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		id, d := c.Param("id"), new(T)
-		if err := db.Where("id = ?", id).First(d).Error; err != nil {
+		if process != nil {
+			if process(db, id).First(d).Error != nil {
+				c.AbortWithStatus(404)
+				log.Println("[gorm] db query process failed")
+			}
+		} else if err := db.Where("id = ?", id).First(d).Error; err != nil {
 			c.AbortWithStatus(404)
-			fmt.Println(err)
-		} else {
-			c.JSON(200, d)
+			log.Println(err)
 		}
+		c.JSON(200, d)
 	}
 }
-func GetAll[T any](db *gorm.DB) func(c *gin.Context) {
+func GetAll[T any](db *gorm.DB, process func(*gorm.DB) *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var d []T
-		if err := db.Find(&d).Error; err != nil {
+		d := new([]T)
+		if process != nil {
+			if process(db).Find(d).Error != nil {
+				c.AbortWithStatus(404)
+				log.Println("[gorm] db query all process failed")
+			}
+		} else if err := db.Find(d).Error; err != nil {
 			c.AbortWithStatus(404)
-			fmt.Println(err)
-		} else {
-			c.JSON(200, d)
+			log.Println(err)
 		}
+		c.JSON(200, d)
 	}
 }
 func Update[T any](db *gorm.DB) func(c *gin.Context) {
@@ -108,7 +119,7 @@ func Update[T any](db *gorm.DB) func(c *gin.Context) {
 		var d T
 		if err := db.Save(&d).Error; err != nil {
 			c.AbortWithStatus(404)
-			fmt.Println(err)
+			log.Println(err)
 		} else {
 			c.JSON(200, d)
 		}
@@ -120,7 +131,7 @@ func Delete[T any](db *gorm.DB) func(c *gin.Context) {
 		var d T
 		if err := db.Where("id = ?", id).Delete(&d).Error; err != nil {
 			c.AbortWithStatus(404)
-			fmt.Println(err)
+			log.Println(err)
 		} else {
 			c.JSON(200, d)
 		}
@@ -239,6 +250,7 @@ func HandleRegister(db *gorm.DB) func(*gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create user"})
 			return
 		}
+		// TODO: fix bug of user & related account info creation
 		if user.ID == 1 { // if it is the first user, set it as admin
 			user.AccountInfo.Permission = 0
 			if err := db.Save(&user).Error; err != nil {

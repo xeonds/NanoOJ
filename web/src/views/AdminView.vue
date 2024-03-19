@@ -73,11 +73,3 @@ const goBack = () => {
   padding: 2rem;
 }
 </style>
-
-<style>
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-</style>

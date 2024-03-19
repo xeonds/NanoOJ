@@ -9,7 +9,6 @@ import (
 
 type Submission struct {
 	gorm.Model
-	ID          uint32      `json:"id" gorm:"primaryKey;autoIncrement"`
 	ProblemID   uint32      `json:"problem_id"`
 	Problem     Problem     `json:"problem"`
 	UserID      uint16      `json:"user_id"`
@@ -36,7 +35,7 @@ type Status string
 
 const (
 	Pending             Status = "Pending"
-	InProgress          Status = "In progress"
+	InProgress          Status = "In Progress"
 	Accepted            Status = "Accepted"
 	WrongAnswer         Status = "Wrong Answer"
 	TimeLimitExceeded   Status = "Time Limit Exceeded"

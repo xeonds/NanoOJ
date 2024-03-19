@@ -2,7 +2,7 @@
   <div id="contest">
     <el-card>
       <template #header>
-        <el-text type="primary">#{{ contest.id }}.{{ contest.title }}</el-text>
+        <el-text type="primary">#{{ contest.ID }}.{{ contest.title }}</el-text>
       </template>
       <h4>时间</h4>
       <el-row>
@@ -20,7 +20,7 @@
       <p v-html="description"></p>
       <el-divider>OwO</el-divider>
       <h4>问题列表</h4>
-      <el-table :data="contest.problems" @row-click="(row) => { router.push(`/problem/${row.id}`) }">
+      <el-table :data="contest.problems" @row-click="(row) => { router.push(`/problem/${row.ID}`) }">
         <el-table-column prop="index" label="ID"></el-table-column>
         <el-table-column prop="title" label="Title"></el-table-column>
         <el-table-column prop="score" label="Result"></el-table-column>

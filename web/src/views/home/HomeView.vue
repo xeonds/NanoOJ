@@ -6,7 +6,7 @@
         <el-card>
           <div v-if="notifications.length === 0">暂无公告</div>
           <el-carousel v-else trigger="click" :interval="5000" indicator-position="outside" arrow="never" height="auto">
-            <el-carousel-item style="height: auto" v-for="item in notifications" :key="item.id">
+            <el-carousel-item style="height: auto" v-for="item in notifications" :key="item.ID">
               <h3>{{ item.title }} </h3>
               <p v-html="item.content"></p>
               <el-divider></el-divider>
@@ -21,8 +21,8 @@
       <el-col :span="16">
         <el-card>
           <h3>最新问题</h3>
-          <el-table :data="problems" @row-click="(row) => { router.push(`/problem/${row.id}`) }">
-            <el-table-column prop="id" label="问题ID"></el-table-column>
+          <el-table :data="problems" @row-click="(row) => { router.push(`/problem/${row.ID}`) }">
+            <el-table-column prop="ID" label="问题ID"></el-table-column>
             <el-table-column prop="title" label="问题标题"></el-table-column>
             <el-table-column label="题目难度">
               <template v-slot="{ row }">
@@ -44,8 +44,8 @@
         </el-card>
         <el-card>
           <h3>近期测试</h3>
-          <el-table :data="contests" @row-click="(row: any) => { router.push(`/contest/${row.id}`) }">
-            <el-table-column prop="id" label="ID"></el-table-column>
+          <el-table :data="contests" @row-click="(row: any) => { router.push(`/contest/${row.ID}`) }">
+            <el-table-column prop="ID" label="ID"></el-table-column>
             <el-table-column prop="title" label="标题"></el-table-column>
             <el-table-column prop="start_time" label="开始时间"></el-table-column>
             <el-table-column prop="end_time" label="结束时间"></el-table-column>

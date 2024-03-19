@@ -18,7 +18,7 @@ export default {
     // need token
     addProblems: (data: any) => http.post("/problems", data),
     addContests: (data: any) => http.post("/contests", data),
-    addSubmissions: (data: any) => http.post("/actions/submit", data),
+    addSubmission: (data: any) => http.post("/actions/submit", data),
     addNotifications: (data: any) => http.post("/notifications", data),
     updateUser: (data: any, id: number) => http.put(`/users`, id, data),
     updateProblem: (data: any, id: number) => http.put(`/problems`, id, data),
@@ -27,5 +27,7 @@ export default {
     deleteUser: (id: number) => http.del('/users', id),
     deleteProblem: (id: number) => http.del('/problems', id),
     deleteContest: (id: number) => http.del('/contests', id),
+    deleteSubmission: (id: number) => http.del('/submissions', id),
     deleteNotification: (id: number) => http.del('/notifications', id),
+    reRunSubmission: (id: number) => http.get(`/actions/rerun/${id}`),
 }

@@ -1,8 +1,8 @@
 <template>
   <div class="problem">
     <h2>问题</h2>
-    <el-table :data="problems" @row-click="(row) => { router.push(`/problem/${row.id}`) }">
-      <el-table-column prop="id" label="问题ID"></el-table-column>
+    <el-table :data="problems" @row-click="(row) => { router.push(`/problem/${row.ID}`) }">
+      <el-table-column prop="ID" label="问题ID"></el-table-column>
       <el-table-column prop="title" label="问题标题"></el-table-column>
       <el-table-column label="题目难度">
         <template v-slot="{ row }">
