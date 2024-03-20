@@ -1,6 +1,6 @@
 NAME=nano-oj
 BINDIR=build
-VERSION=1.0.0
+VERSION=1.1.0
 BUILDTIME=$(shell date -u)
 GOBUILD=cd judge && go mod tidy && go build -ldflags '-s -w -X "main.version=$(VERSION)" -X "main.buildTime=$(BUILDTIME)"'
 FRONTBUILD=cd web && pnpm i && vite build --outDir=../$(BINDIR)/dist --emptyOutDir
@@ -24,6 +24,9 @@ dev:
 
 run:
 	cd $(BINDIR) && ./$(NAME)-linux-amd64-$(VERSION)
+
+deploy: init web linux-amd64
+	docker-compose up -d
 
 init:
 	(cd judge && go mod tidy) && \

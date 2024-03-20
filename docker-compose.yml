@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  nano-oj:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./build:/app
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '512M'
