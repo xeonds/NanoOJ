@@ -5,4 +5,4 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 EXPOSE 8080
 
-CMD ["./nano-oj-linux-amd64-1.1.0"]
+CMD ["./nano-oj-linux-amd64"]
