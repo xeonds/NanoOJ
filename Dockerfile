@@ -1,7 +1,6 @@
 FROM ubuntu:latest
 RUN apt-get update && apt-get install -y \
-    g++ \
-    python3
+    g++ gcc openjdk-17-jdk-headless golang python3
 WORKDIR /app
 EXPOSE 8080
 
