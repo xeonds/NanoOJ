@@ -172,7 +172,8 @@ func (c JudgeServer) Process() {
 				log.Println("failed to run task:", err)
 			}
 			// update the result to the database
-			CommitStatus(c.db, t.Submission, res.Status, res.Info)
+			// TODO: get rank from the result
+			CommitStatus(c.db, t.Submission, res.Status, res.Info, 100)
 		}()
 	}
 }

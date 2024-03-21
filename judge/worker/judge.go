@@ -32,7 +32,7 @@ type Result struct {
 }
 
 var JudgeQueue = make(chan model.Submission, 100)
-var LocalJudge = map[string]func(*Task) (model.Status, string){
+var LocalJudge = map[string]func(*Task) (model.Status, string, int){
 	"cpp":    CPP,
 	"c":      CPP,
 	"python": Python,
@@ -80,8 +80,8 @@ func JudgeWorker(db *gorm.DB, config *config.Config) {
 			if !IsEmpty() {
 				go func() {
 					if t := FetchOneTaskFromList(db); t != nil {
-						status, output := LocalJudge[t.Lang](t)
-						CommitStatus(db, t.Submission, status, output)
+						status, output, rank := LocalJudge[t.Lang](t)
+						CommitStatus(db, t.Submission, status, output, rank)
 					} else {
 						log.Println("Failed to fetch task")
 					}
@@ -98,7 +98,7 @@ func IsEmpty() bool {
 
 func FetchOneTaskFromList(db *gorm.DB) *Task { // Create task & enqueue it
 	submission := <-JudgeQueue // read a submission from judgeQueue
-	CommitStatus(db, submission, model.InProgress, "Judging...")
+	CommitStatus(db, submission, model.InProgress, "Judging...", 0)
 	sourceCode := submission.Code //fetch all required files for judge
 	problem := new(model.Problem)
 	if errorHandler(db.Where("id = ?", submission.ProblemID).First(problem).Error, submission, "Failed to fetch problem", db) {
@@ -151,16 +151,17 @@ func initWorkDir(sourceCode string, submission model.Submission, problem *model.
 
 func errorHandler(err error, submission model.Submission, info string, db *gorm.DB) bool {
 	if err != nil {
-		CommitStatus(db, submission, model.CompilationError, "Internal error, please contact admin")
+		CommitStatus(db, submission, model.CompilationError, "Internal error, please contact admin", 0)
 		log.Println(info, err)
 		return true
 	}
 	return false
 }
 
-func CommitStatus(db *gorm.DB, submission model.Submission, stat model.Status, info ...string) {
+func CommitStatus(db *gorm.DB, submission model.Submission, stat model.Status, info string, rank int) {
 	submission.Status = stat
-	submission.Information = append(submission.Information, info...)
+	submission.Information = append(submission.Information, info)
+	submission.Rank = rank
 	db.Save(&submission)
 }
 

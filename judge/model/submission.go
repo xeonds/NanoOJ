@@ -12,12 +12,14 @@ type Submission struct {
 	ProblemID   uint32      `json:"problem_id"`
 	Problem     Problem     `json:"problem"`
 	UserID      uint16      `json:"user_id"`
+	ContestID   uint        `json:"contest_id"`
 	Language    string      `json:"language"`
 	Code        string      `json:"code"`
 	Status      Status      `json:"status"`
 	Information Information `json:"information" gorm:"type:json"`
 	Time        int         `json:"time"`
 	Memory      int         `json:"memory"`
+	Rank        int         `json:"rank"`
 }
 
 type Information []string

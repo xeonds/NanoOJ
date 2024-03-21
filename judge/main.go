@@ -31,6 +31,7 @@ func main() {
 		lib.APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
 			group.GET("", lib.GetAll[model.Contest](db, database.GetAllContests))
 			group.GET("/:id", lib.Get[model.Contest](db, database.GetContestById))
+			group.GET("rank", lib.Get[model.Rank](db, database.GetRankByContestID))
 			return group
 		}, func(group *gin.RouterGroup) *gin.RouterGroup {
 			group.Use(lib.JWTMiddleware(lib.AuthPermission(0, 1)))
