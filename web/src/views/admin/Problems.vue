@@ -6,8 +6,8 @@
                 <span>All Problems</span>
                 <span>
                     <el-button @click="refresh()" type="primary" text>Refresh</el-button>
-                    <el-button @click="ElMessage.info('Under construction')" type="primary">Import Problems</el-button>
-                    <el-button @click="ElMessage.info('Under construction')" type="primary">Export Problems</el-button>
+                    <el-button @click="handleImportProblems()" type="primary">Import Problems</el-button>
+                    <el-button @click="handleExportProblems()" type="primary">Export Problems</el-button>
                     <el-button @click="createProblemDialogVisible = true" type="primary">Create Problem</el-button>
                 </span>
             </div>
@@ -100,7 +100,7 @@
 <script lang="ts" setup>
 import { Problem } from '@/model';
 import api from '@/api';
-import { getDataArr } from '@/utils/http';
+import { getDataArr, http } from '@/utils/http';
 
 const createProblemDialogVisible = ref(false);
 const editProblemDialogVisible = ref(false);
@@ -139,11 +139,51 @@ const deleteProblem = (id: number) => {
     });
 }
 
-onMounted(async () => {
-    problems.value = await getProblems();
-});
-
 const refresh = async () => {
     problems.value = await getProblems();
 }
+
+const handleImportProblems = async () => {
+    try {
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'application/json';
+
+        fileInput.addEventListener('change', async (event) => {
+            const file = (event.target as HTMLInputElement)?.files?.[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                const response = await http.post('/admin/problems/import', formData);
+                ElMessage({ message: response.data.value, type: "info" })
+            }
+        });
+        fileInput.click();
+    } catch (error) {
+        ElMessage({ message: 'Error importing problems: ' + error, type: "error" })
+    }
+}
+
+const handleExportProblems = async () => {
+    http.get('/admin/problems/export')
+        .then((res) => {
+            if (res.err.value != null) {
+                ElMessage({ message: 'Error exporting problems: ' + res.err.value, type: "error" })
+            } else {
+                const downloadLink = window.document.createElement('a')
+                downloadLink.href = window.URL.createObjectURL(
+                    new Blob([res.data.value], { type: 'application/json' })
+                )
+                downloadLink.download = 'export.json'
+                document.body.appendChild(downloadLink)
+                downloadLink.click()
+                document.body.removeChild(downloadLink)
+                ElMessage({ message: 'Problems exported successfully', type: "info" })
+            }
+        })
+}
+
+onMounted(async () => {
+    problems.value = await getProblems();
+});
 </script>

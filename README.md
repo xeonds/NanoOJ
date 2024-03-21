@@ -94,9 +94,9 @@ NanoOJ/
 - [ ]UI细节修复
 - [ ]响应式布局
 - [ ]负载均衡
-- [ ]数据导入/导出
+- [x]数据导入/导出
 - [ ]token请求时无感刷新
-- [ ]封榜
+- [x]封榜
 - [x]修复各种非标准POST请求：submission, contest等
 
 ## Changelog
