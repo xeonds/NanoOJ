@@ -7,12 +7,16 @@
       <h4>时间</h4>
       <el-row>
         <el-col :span="8">
-          <h2>Start Time</h2>
-          <span>{{ time.formatDate(contest.start_time) }}</span>
+          <div class="el-statistic">
+            <div class="el-statistic__head">Start Time</div>
+            <div class="el-statistic__content">{{ time.formatDate(contest.start_time) }}</div>
+          </div>
         </el-col>
         <el-col :span="8">
-          <h2>End Time</h2>
-          <span>{{ time.formatDate(contest.end_time) }}</span>
+          <div class="el-statistic">
+            <div class="el-statistic__head">End Time</div>
+            <div class="el-statistic__content">{{ time.formatDate(contest.end_time) }}</div>
+          </div>
         </el-col>
         <el-col :span="8">
           <el-countdown title="Countdown" format="DD [days] HH:mm:ss" :value="time.fromString(contest.end_time)" />
