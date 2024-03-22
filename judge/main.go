@@ -27,7 +27,18 @@ func main() {
 		redis := lib.NewRedis(&config.RedisConfig)
 		router := gin.Default()
 		apiRouter := router.Group("/api/v1")
-		lib.AddCRUDWithAuth[model.Problem](apiRouter, "/problems", db, 0, 1)
+		lib.APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
+			group.GET("", lib.GetAll[model.Problem](db, nil))
+			group.GET("/:id", lib.Get[model.Problem](db, nil))
+			group.GET("/:id/submissions", lib.GetAll[model.Submission](db, database.GetSubmissionsByProblemID))
+			return group
+		}, func(group *gin.RouterGroup) *gin.RouterGroup {
+			group.Use(lib.JWTMiddleware(lib.AuthPermission(0, 1)))
+			group.POST("", lib.Create[model.Problem](db, nil))
+			group.PUT("/:id", lib.Update[model.Problem](db))
+			group.DELETE("/:id", lib.Delete[model.Problem](db))
+			return group
+		})(apiRouter, "/problems")
 		lib.AddCRUDWithAuth[model.Submission](apiRouter, "/submissions", db, 0, 1)
 		lib.APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
 			group.GET("", lib.GetAll[model.Contest](db, database.GetAllContests))

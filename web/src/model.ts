@@ -48,6 +48,7 @@ export interface Submission {
     information: string[];
     time: number;
     memory: number;
+    rank: number;
 }
 
 export interface User {

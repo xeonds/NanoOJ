@@ -49,6 +49,11 @@ func GetRankByProblemID(db *gorm.DB, c *gin.Context) *gorm.DB {
 	return db.Where("problem_id = ?", id).Order("rank DESC")
 }
 
+func GetSubmissionsByProblemID(db *gorm.DB, c *gin.Context) *gorm.DB {
+	id := c.Param("id")
+	return db.Where("problem_id = ?", id).Order("created_at DESC")
+}
+
 func GetSubmissionsByUserID(db *gorm.DB, c *gin.Context) *gorm.DB {
 	id := c.Param("id")
 	return db.Where("user_id = ?", id)

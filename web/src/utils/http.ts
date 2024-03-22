@@ -111,6 +111,6 @@ export const getData = <T>(api: string, _pagination = <Pagination>{ pageNum: 1, 
   return { data, get };
 }
 
-export const applyData = async (ref: Ref<any>, getter: Function) => {
-  ref.value = await getter();
+export const applyData = async (ref: Ref<any>, getter: Function, defaultValue: any) => {
+  ref.value = await getter()??defaultValue;
 }

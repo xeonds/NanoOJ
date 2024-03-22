@@ -32,7 +32,7 @@ type Problem struct {
 	Description string  `json:"description"`
 	Inputs      Inputs  `json:"inputs"`
 	Outputs     Outputs `json:"outputs"`
-	Ranks       []int   `json:"ranks" gorm:"type:json"`
+	Ranks       Ranks   `json:"ranks"`
 	TimeLimit   int     `json:"time_limit"`
 }
 
@@ -54,6 +54,16 @@ func (o *Outputs) Scan(value interface{}) error {
 }
 func (o Outputs) Value() (driver.Value, error) {
 	return json.Marshal(o)
+}
+
+type Ranks []int
+
+func (r *Ranks) Scan(value interface{}) error {
+	bytesValue, _ := value.([]byte)
+	return json.Unmarshal(bytesValue, r)
+}
+func (r Ranks) Value() (driver.Value, error) {
+	return json.Marshal(r)
 }
 
 type Submission struct {

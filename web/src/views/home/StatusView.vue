@@ -22,6 +22,7 @@
           <el-button type="default" @click="showInfo(row)">查看</el-button>
         </template>
       </el-table-column>
+      <el-table-column prop="rank" label="分数"></el-table-column>
       <el-table-column prop="time" label="用时"></el-table-column>
       <el-table-column prop="user_id" label="提交者"></el-table-column>
     </el-table>
