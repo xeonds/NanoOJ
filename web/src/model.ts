@@ -30,6 +30,7 @@ export interface Problem {
     description: string;
     inputs: string[];
     outputs: string[];
+    ranks: number[];
     time_limit: number;
 }
 

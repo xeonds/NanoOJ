@@ -39,17 +39,18 @@
             </el-form-item>
             <el-form-item v-for="(_, index) in newProblem.inputs" :key="index" :label="`Test Case ${index + 1}`">
                 <el-row>
-                    <el-col :span="10">
+                    <el-col :span="8">
                         <el-input v-model="newProblem.inputs[index]" type="textarea" />
                     </el-col>
-                    <el-col :span="10" :offset="1">
+                    <el-col :span="8">
                         <el-input v-model="newProblem.outputs[index]" type="textarea" />
                     </el-col>
-                    <el-col :span="3">
-                        <el-button @click="newProblem.inputs.splice(index, 1); newProblem.outputs.splice(index, 1)"
-                            type="danger">Delete</el-button>
+                    <el-col :span="8">
+                        <el-input v-model="newProblem.ranks[index]" type="number" :min="0" :max="100" />
                     </el-col>
                 </el-row>
+                <el-button @click="newProblem.inputs.splice(index, 1); newProblem.outputs.splice(index, 1)"
+                    type="danger">Delete</el-button>
             </el-form-item>
             <el-button @click="newProblem.inputs.push(''); newProblem.outputs.push('')">Add Test Case</el-button>
             <el-form-item label="Difficulty">
@@ -71,18 +72,18 @@
             </el-form-item>
             <el-form-item v-for="(_, index) in selectedProblem.inputs" :key="index" :label="`Test Case ${index + 1}`">
                 <el-row>
-                    <el-col :span="11">
+                    <el-col :span="8">
                         <el-input v-model="selectedProblem.inputs[index]" type="textarea" />
                     </el-col>
-                    <el-col :span="11" :offset="1">
+                    <el-col :span="8">
                         <el-input v-model="selectedProblem.outputs[index]" type="textarea" />
                     </el-col>
-                    <el-col :span="1">
-                        <el-button
-                            @click="selectedProblem.inputs.splice(index, 1); selectedProblem.outputs.splice(index, 1)"
-                            type="danger" icon="el-icon-delete"></el-button>
+                    <el-col :span="4">
+                        <el-input v-model="selectedProblem.ranks[index]" type="number" :min="0" :max="100" />
                     </el-col>
                 </el-row>
+                <el-button @click="selectedProblem.inputs.splice(index, 1); selectedProblem.outputs.splice(index, 1)"
+                    type="danger" icon="el-icon-delete"></el-button>
             </el-form-item>
             <el-button @click="selectedProblem.inputs.push(''); selectedProblem.outputs.push('')">Add Test
                 Case</el-button>
@@ -112,6 +113,7 @@ const newProblem: Ref<Problem> = ref({
     description: '',
     inputs: [''],
     outputs: [''],
+    ranks: [100],
     difficulty: 2
 } as Problem);
 const createProblem = () => {

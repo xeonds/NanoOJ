@@ -32,6 +32,7 @@ type Problem struct {
 	Description string  `json:"description"`
 	Inputs      Inputs  `json:"inputs"`
 	Outputs     Outputs `json:"outputs"`
+	Ranks       []int   `json:"ranks" gorm:"type:json"`
 	TimeLimit   int     `json:"time_limit"`
 }
 

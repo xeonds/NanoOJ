@@ -23,6 +23,7 @@ type Task struct {
 	SourceFile  string
 	InputFiles  []string
 	ExpectFiles []string
+	Ranks       []int
 	TimeLimit   int
 }
 
@@ -34,7 +35,7 @@ type Result struct {
 var JudgeQueue = make(chan model.Submission, 100)
 var LocalJudge = map[string]func(*Task) (model.Status, string, int){
 	"cpp":    CPP,
-	"c":      CPP,
+	"c":      C,
 	"python": Python,
 }
 
@@ -118,6 +119,7 @@ func FetchOneTaskFromList(db *gorm.DB) *Task { // Create task & enqueue it
 		SourceFile:  programFile,
 		InputFiles:  inputFiles,
 		ExpectFiles: outputFiles,
+		Ranks:       problem.Ranks,
 		TimeLimit:   problem.TimeLimit,
 	}
 }
