@@ -16,7 +16,7 @@ export const isAdmin = () => {
 export const isLogin = () => (Date.now() < new Date(getExpire()).getTime());
 export const logout = () => {
     keys.forEach((key) => remove(key)());
-    window.location.href = "/login";
+    window.location.href = "/";
 };
 export const getToken = getter("token");
 export const getUsername = getter("name");
