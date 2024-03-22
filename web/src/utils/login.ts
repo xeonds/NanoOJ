@@ -7,7 +7,7 @@ const getter = (key: string) => () => {
 const remove = (key: string) => () => {
     window.sessionStorage.removeItem(key);
 };
-const keys = ["token", "name", "permission", "expire"];
+const keys = ["token", "name", "id", "permission", "expire"];
 
 export const isAdmin = () => {
     const role = getPermission();
@@ -20,12 +20,14 @@ export const logout = () => {
 };
 export const getToken = getter("token");
 export const getUsername = getter("name");
+export const getUserID = getter("id");
 export const getPermission = getter("permission");
 export const getExpire = getter("expire");
 export const setToken  =  (value: string) => {
     window.sessionStorage.setItem("token", value);
-    const { permission, name, expire } = jwtDecode(value) as { permission: number, name: string, expire: string}
+    const { permission, name, id, expire } = jwtDecode(value) as { permission: number, name: string, id: number, expire: string}
     window.sessionStorage.setItem("name", name);
+    window.sessionStorage.setItem("id", id.toString());
     window.sessionStorage.setItem("permission", permission.toString());
     window.sessionStorage.setItem("expire", expire);
 };

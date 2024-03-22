@@ -3,6 +3,7 @@ package lib
 import "time"
 
 type UserClaim struct {
+	ID         int       `json:"id"`
 	Permission int       `json:"permission"`
 	Name       string    `json:"name"`
 	Expire     time.Time `json:"expire"` // token过期时间

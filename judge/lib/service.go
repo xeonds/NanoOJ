@@ -222,6 +222,7 @@ func HandleLogin(db *gorm.DB) func(*gin.Context) {
 		}
 		token, err := GenerateToken(&UserClaim{
 			Name:       user.Username,
+			ID:         int(user.ID),
 			Expire:     time.Now().Add(time.Hour * 24),
 			Permission: int(user.AccountInfo.Permission),
 		})
