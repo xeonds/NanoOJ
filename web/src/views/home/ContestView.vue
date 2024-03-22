@@ -32,9 +32,8 @@
             <el-text type="primary">#ProblemList</el-text>
           </template>
           <el-table :data="contest.problems" @row-click="(row) => { router.push(`/problem/${row.ID}`) }">
-            <el-table-column prop="index" label="ID"></el-table-column>
+            <el-table-column prop="ID" label="ID"></el-table-column>
             <el-table-column prop="title" label="Title"></el-table-column>
-            <el-table-column prop="score" label="Result"></el-table-column>
           </el-table>
         </el-card>
       </el-col>
