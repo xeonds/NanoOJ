@@ -59,6 +59,7 @@ const login = async () => {
   try {
     const response = await api.login({ email: email.value, password: password.value } as User);
     setToken(response.data.value.token);
+    ElMessage({ message: "Login successful", type: "success" })
     router.push("/");
   } catch (error) {
     ElMessage.error("Invalid email or password");

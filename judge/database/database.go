@@ -1,8 +1,6 @@
 package database
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -30,37 +28,38 @@ func CreateSubmission(db *gorm.DB, submission *model.Submission) *gorm.DB {
 	return db.Create(submission)
 }
 
-func GetAllContests(db *gorm.DB) *gorm.DB {
+func GetAllContests(db *gorm.DB, c *gin.Context) *gorm.DB {
 	return db.Preload(clause.Associations)
 }
 
-func GetContestById(db *gorm.DB, id string) *gorm.DB {
+func GetContestById(db *gorm.DB, c *gin.Context) *gorm.DB {
+	id := c.Param("id")
 	return db.Preload(clause.Associations).Where("contests.id = ?", id)
 }
 
-func GetRankByContestID(db *gorm.DB, id string) *gorm.DB {
-	ranks := new([]model.Rank)
-	// TODO: add query statement for selecting all ranks of a contest, and order result by rank
-	if err := db.Table("Submissions").Where("contest_id = ?", id).Find(ranks).Error; err != nil {
-		log.Println("[gorm] error while fetching contest rank")
-		return nil
-	}
-	return db
+// params: contest_id
+func GetRankByContestID(db *gorm.DB, c *gin.Context) *gorm.DB {
+	id := c.Param("contest_id")
+	return db.Where("contest_id = ?", id).Order("rank DESC")
 }
 
-func GetRankByProblemID(db *gorm.DB, id string) *gorm.DB {
-	// TODO: add query for fetching rank table of a problem
-	return db
+// params: problem_id
+func GetRankByProblemID(db *gorm.DB, c *gin.Context) *gorm.DB {
+	id := c.Param("problem_id")
+	return db.Where("problem_id = ?", id).Order("rank DESC")
 }
 
-func GetSubmissionsByUserID(db *gorm.DB, id string) *gorm.DB {
-	// TODO: query a user's all submissions
-	return db
+func GetSubmissionsByProblemID(db *gorm.DB, c *gin.Context) *gorm.DB {
+	id := c.Param("id")
+	return db.Where("problem_id = ?", id).Order("created_at DESC")
 }
 
-// TODO: query a user's history submissions of a problem
-func GetSubmissionsOfUserInOneProblem(c *gin.Context) func(*gorm.DB) *gorm.DB {
-	return func(db *gorm.DB) *gorm.DB {
-		return db
-	}
+func GetSubmissionsByUserID(db *gorm.DB, c *gin.Context) *gorm.DB {
+	id := c.Param("id")
+	return db.Where("user_id = ?", id)
+}
+
+func GetSubmissionsOfUserInOneProblem(db *gorm.DB, c *gin.Context) *gorm.DB {
+	problem_id, user_id := c.Param("problem_id"), c.Param("user_id")
+	return db.Where("problem_id = ? AND user_id = ?", problem_id, user_id).Order("created_at DESC")
 }

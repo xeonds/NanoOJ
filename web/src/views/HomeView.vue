@@ -2,10 +2,10 @@
   <div>
     <el-row>
       <el-col :span="24">
-        <el-menu mode="horizontal" :ellipsis="false" :default-active="'1'" router>
+        <el-menu mode="horizontal" :default-active="'1'" router>
           <p id="logo">X-OJ</p>
           <el-menu-item class="hidden-lg-and-up" v-for="item in menu" :index="item.index" :route="item.route">{{
-        item.label }}</el-menu-item>
+            item.label }}</el-menu-item>
           <div class="flex-grow"></div>
           <el-menu-item index="0" @click="router.push('/editor')">
             <el-icon>
@@ -99,5 +99,11 @@ body {
 .el-main,
 .el-footer {
   padding: 0px !important;
+}
+
+.el-card {
+  border-radius: 4px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 </style>

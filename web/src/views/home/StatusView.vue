@@ -22,6 +22,7 @@
           <el-button type="default" @click="showInfo(row)">查看</el-button>
         </template>
       </el-table-column>
+      <el-table-column prop="rank" label="分数"></el-table-column>
       <el-table-column prop="time" label="用时"></el-table-column>
       <el-table-column prop="user_id" label="提交者"></el-table-column>
     </el-table>
@@ -38,6 +39,8 @@
           }}</el-descriptions-item>
         <el-descriptions-item label="Time">{{ dialogData.time }}</el-descriptions-item>
         <el-descriptions-item label="User ID">{{ dialogData.user_id }}</el-descriptions-item>
+        <!-- TODO: commited code display line wrap fix -->
+        <el-descriptions-item label="Code"><code>{{ dialogData.code }}</code></el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>

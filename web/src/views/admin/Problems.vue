@@ -6,8 +6,8 @@
                 <span>All Problems</span>
                 <span>
                     <el-button @click="refresh()" type="primary" text>Refresh</el-button>
-                    <el-button @click="ElMessage.info('Under construction')" type="primary">Import Problems</el-button>
-                    <el-button @click="ElMessage.info('Under construction')" type="primary">Export Problems</el-button>
+                    <el-button @click="handleImportProblems()" type="primary">Import Problems</el-button>
+                    <el-button @click="handleExportProblems()" type="primary">Export Problems</el-button>
                     <el-button @click="createProblemDialogVisible = true" type="primary">Create Problem</el-button>
                 </span>
             </div>
@@ -38,14 +38,19 @@
                 <el-input v-model="newProblem.description" type="textarea"></el-input>
             </el-form-item>
             <el-form-item v-for="(_, index) in newProblem.inputs" :key="index" :label="`Test Case ${index + 1}`">
-                <el-row>
-                    <el-col :span="10">
-                        <el-input v-model="newProblem.inputs[index]" type="textarea" />
+                <el-row :gutter="10">
+                    <el-col :span="20">
+                        <el-form-item label="Input">
+                            <el-input v-model="newProblem.inputs[index]" type="textarea" />
+                        </el-form-item>
+                        <el-form-item label="Output">
+                            <el-input v-model="newProblem.outputs[index]" type="textarea" />
+                        </el-form-item>
+                        <el-form-item label="Score">
+                            <el-input v-model.number="newProblem.ranks[index]" type="number" :min="0" :max="100" />
+                        </el-form-item>
                     </el-col>
-                    <el-col :span="10" :offset="1">
-                        <el-input v-model="newProblem.outputs[index]" type="textarea" />
-                    </el-col>
-                    <el-col :span="3">
+                    <el-col :span="4">
                         <el-button @click="newProblem.inputs.splice(index, 1); newProblem.outputs.splice(index, 1)"
                             type="danger">Delete</el-button>
                     </el-col>
@@ -70,17 +75,21 @@
                 <el-input v-model="selectedProblem.description" type="textarea"></el-input>
             </el-form-item>
             <el-form-item v-for="(_, index) in selectedProblem.inputs" :key="index" :label="`Test Case ${index + 1}`">
-                <el-row>
-                    <el-col :span="11">
-                        <el-input v-model="selectedProblem.inputs[index]" type="textarea" />
+                <el-row :gutter="10">
+                    <el-col :span="20">
+                        <el-form-item label="Input">
+                            <el-input v-model="selectedProblem.inputs[index]" type="textarea" />
+                        </el-form-item>
+                        <el-form-item label="Output">
+                            <el-input v-model="selectedProblem.outputs[index]" type="textarea" />
+                        </el-form-item>
+                        <el-form-item label="Score">
+                            <el-input v-model.number="selectedProblem.ranks[index]" type="number" :min="0" :max="100" />
+                        </el-form-item>
                     </el-col>
-                    <el-col :span="11" :offset="1">
-                        <el-input v-model="selectedProblem.outputs[index]" type="textarea" />
-                    </el-col>
-                    <el-col :span="1">
-                        <el-button
-                            @click="selectedProblem.inputs.splice(index, 1); selectedProblem.outputs.splice(index, 1)"
-                            type="danger" icon="el-icon-delete"></el-button>
+                    <el-col :span="4">
+                        <el-button @click="selectedProblem.inputs.splice(index, 1); selectedProblem.outputs.splice(index, 1)"
+                            type="danger">Delete</el-button>
                     </el-col>
                 </el-row>
             </el-form-item>
@@ -100,7 +109,7 @@
 <script lang="ts" setup>
 import { Problem } from '@/model';
 import api from '@/api';
-import { getDataArr } from '@/utils/http';
+import { getDataArr, http } from '@/utils/http';
 
 const createProblemDialogVisible = ref(false);
 const editProblemDialogVisible = ref(false);
@@ -112,10 +121,11 @@ const newProblem: Ref<Problem> = ref({
     description: '',
     inputs: [''],
     outputs: [''],
+    ranks: [100],
     difficulty: 2
 } as Problem);
 const createProblem = () => {
-    api.addProblems(newProblem.value).then(() => {
+    api.addProblems(newProblem.value as Problem).then(() => {
         problems.value.push(newProblem.value);
         createProblemDialogVisible.value = false;
     });
@@ -139,11 +149,51 @@ const deleteProblem = (id: number) => {
     });
 }
 
-onMounted(async () => {
-    problems.value = await getProblems();
-});
-
 const refresh = async () => {
     problems.value = await getProblems();
 }
+
+const handleImportProblems = async () => {
+    try {
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'application/json';
+
+        fileInput.addEventListener('change', async (event) => {
+            const file = (event.target as HTMLInputElement)?.files?.[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                const response = await http.post('/admin/problems/import', formData);
+                ElMessage({ message: response.data.value, type: "info" })
+            }
+        });
+        fileInput.click();
+    } catch (error) {
+        ElMessage({ message: 'Error importing problems: ' + error, type: "error" })
+    }
+}
+
+const handleExportProblems = async () => {
+    http.get('/admin/problems/export')
+        .then((res) => {
+            if (res.err.value != null) {
+                ElMessage({ message: 'Error exporting problems: ' + res.err.value, type: "error" })
+            } else {
+                const downloadLink = window.document.createElement('a')
+                downloadLink.href = window.URL.createObjectURL(
+                    new Blob([res.data.value], { type: 'application/json' })
+                )
+                downloadLink.download = 'export.json'
+                document.body.appendChild(downloadLink)
+                downloadLink.click()
+                document.body.removeChild(downloadLink)
+                ElMessage({ message: 'Problems exported successfully', type: "info" })
+            }
+        })
+}
+
+onMounted(async () => {
+    problems.value = await getProblems();
+});
 </script>

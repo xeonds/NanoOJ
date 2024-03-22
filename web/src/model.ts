@@ -30,6 +30,7 @@ export interface Problem {
     description: string;
     inputs: string[];
     outputs: string[];
+    ranks: number[];
     time_limit: number;
 }
 
@@ -47,6 +48,7 @@ export interface Submission {
     information: string[];
     time: number;
     memory: number;
+    rank: number;
 }
 
 export interface User {

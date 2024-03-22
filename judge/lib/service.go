@@ -84,11 +84,11 @@ func Create[T any](db *gorm.DB, process func(*gorm.DB, *T) *gorm.DB) func(c *gin
 		}
 	}
 }
-func Get[T any](db *gorm.DB, process func(*gorm.DB, string) *gorm.DB) func(c *gin.Context) {
+func Get[T any](db *gorm.DB, process func(*gorm.DB, *gin.Context) *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		id, d := c.Param("id"), new(T)
 		if process != nil {
-			if process(db, id).First(d).Error != nil {
+			if process(db, c).First(d).Error != nil {
 				c.AbortWithStatus(404)
 				log.Println("[gorm] db query process failed")
 			}
@@ -99,11 +99,11 @@ func Get[T any](db *gorm.DB, process func(*gorm.DB, string) *gorm.DB) func(c *gi
 		c.JSON(200, d)
 	}
 }
-func GetAll[T any](db *gorm.DB, process func(*gorm.DB) *gorm.DB) func(c *gin.Context) {
+func GetAll[T any](db *gorm.DB, process func(*gorm.DB, *gin.Context) *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		d := new([]T)
 		if process != nil {
-			if process(db).Find(d).Error != nil {
+			if process(db, c).Find(d).Error != nil {
 				c.AbortWithStatus(404)
 				log.Println("[gorm] db query all process failed")
 			}
@@ -222,6 +222,7 @@ func HandleLogin(db *gorm.DB) func(*gin.Context) {
 		}
 		token, err := GenerateToken(&UserClaim{
 			Name:       user.Username,
+			ID:         int(user.ID),
 			Expire:     time.Now().Add(time.Hour * 24),
 			Permission: int(user.AccountInfo.Permission),
 		})
@@ -234,26 +235,26 @@ func HandleLogin(db *gorm.DB) func(*gin.Context) {
 }
 func HandleRegister(db *gorm.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		var user model.User
+		user := new(model.User)
 		var count int64
-		if err := c.ShouldBindJSON(&user); err != nil {
+		if err := c.ShouldBindJSON(user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		if err := db.Where("username = ?", user.Username).Find(new(model.User)).Count(&count).Error; count != 0 {
-			log.Println("User already exists: ", err)
+			log.Println("Username already exists: ", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
 			return
 		}
 		user.Password = HashedPassword(user.Password)
-		if err := db.Create(&user).Error; err != nil {
+		if err := db.Create(user).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create user"})
 			return
 		}
 		// TODO: fix bug of user & related account info creation
 		if user.ID == 1 { // if it is the first user, set it as admin
 			user.AccountInfo.Permission = 0
-			if err := db.Save(&user).Error; err != nil {
+			if err := db.Save(user).Error; err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
 				return
 			}
