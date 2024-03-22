@@ -39,6 +39,8 @@
           }}</el-descriptions-item>
         <el-descriptions-item label="Time">{{ dialogData.time }}</el-descriptions-item>
         <el-descriptions-item label="User ID">{{ dialogData.user_id }}</el-descriptions-item>
+        <!-- TODO: commited code display line wrap fix -->
+        <el-descriptions-item label="Code"><code>{{ dialogData.code }}</code></el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>

@@ -144,6 +144,7 @@
           }}</el-descriptions-item>
         <el-descriptions-item label="Time">{{ dialogData.time }}</el-descriptions-item>
         <el-descriptions-item label="User ID">{{ dialogData.user_id }}</el-descriptions-item>
+        <el-descriptions-item label="code"><code>{{ dialogData.code }}</code></el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
@@ -161,7 +162,6 @@ import { EpPropMergeType } from "element-plus/es/utils/index.mjs";
 type _EpPropMergeType = EpPropMergeType<StringConstructor, "success" | "warning" | "info" | "primary" | "danger", unknown>;
 
 const route = useRoute();
-const router = useRouter();
 const id = parseInt(route.params.id as string);
 const language = ref('c');
 const code = ref('');
