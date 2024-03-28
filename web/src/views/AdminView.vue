@@ -3,30 +3,30 @@
     <el-affix>
       <el-page-header @back="goBack">
         <template #content>
-          <el-text type="primary" id="title">X-OJ</el-text><el-text id="subtitle"> | Admin Center</el-text>
+          <el-text type="primary" id="title">X-OJ</el-text><el-text id="subtitle"> | {{ t('nav.admin-center') }}</el-text>
         </template>
       </el-page-header>
     </el-affix>
     <el-tabs tab-position="left">
-      <el-tab-pane label="Problems">
+      <el-tab-pane :label="t('nav.problems')">
         <Problems />
       </el-tab-pane>
-      <el-tab-pane label="Contests">
+      <el-tab-pane :label="t('nav.contests')">
         <Contests />
       </el-tab-pane>
-      <el-tab-pane label="Notifications">
+      <el-tab-pane :label="t('nav.notifications')">
         <Notifications />
       </el-tab-pane>
-      <el-tab-pane label="Submissions">
+      <el-tab-pane :label="t('nav.submissions')">
         <Submisssions />
       </el-tab-pane>
-      <el-tab-pane label="Users">
+      <el-tab-pane :label="t('nav.users')">
         <Users />
       </el-tab-pane>
-      <el-tab-pane label="System">
+      <el-tab-pane :label="t('nav.system')">
         <System />
       </el-tab-pane>
-      <el-tab-pane label="Manual">
+      <el-tab-pane :label="t('nav.manual')">
         <Manual />
       </el-tab-pane>
     </el-tabs>
@@ -41,11 +41,11 @@ import Submisssions from '@/views/admin/Submissions.vue';
 import Users from '@/views/admin/Users.vue';
 import System from '@/views/admin/System.vue';
 import Manual from '@/views/admin/Manual.vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
-const goBack = () => {
-  router.go(-1);
-}
+const goBack = () => router.go(-1);
 </script>
 
 <style scoped>

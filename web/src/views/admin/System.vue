@@ -1,23 +1,26 @@
 <template>
-    <h2>System</h2>
-    <h3>Danger Zone</h3>
+    <h2>{{ t('nav.system') }}</h2>
+    <h3>{{ t('message.danger-zone') }}</h3>
     <el-row>
         <el-col :span="24">
-            <el-button type="danger" @click="clearCache">Clear Cache</el-button>
-            <el-button type="danger" @click="shutdown">Shutdown</el-button>
-            <el-button type="danger" @click="restart">Restart</el-button>
+            <el-button type="danger" @click="clearCache">{{ t('system.clear-cache') }}</el-button>
+            <el-button type="danger" @click="shutdown">{{ t('system.shutdown') }}</el-button>
+            <el-button type="danger" @click="restart">{{ t('system.restart') }}</el-button>
         </el-col>
     </el-row>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n()
 const clearCache = () => {
-    ElMessage.info('Not implemented yet')
+    ElMessage.info(t('message.not-implemented'))
 }
 const shutdown = () => {
-    ElMessage.info('Not implemented yet')
+    ElMessage.info(t('message.not-implemented'))
 }
 const restart = () => {
-    ElMessage.info('Not implemented yet')
+    ElMessage.info(t('message.not-implemented'))
 }
 </script>

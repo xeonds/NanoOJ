@@ -18,6 +18,7 @@
     "monaco-editor": "^0.47.0",
     "monaco-editor-locales-plugin": "^0.0.3",
     "vue": "^3.4.19",
+    "vue-i18n": "^9.10.2",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {

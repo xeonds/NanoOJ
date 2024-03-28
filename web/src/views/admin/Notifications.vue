@@ -1,5 +1,5 @@
 <template>
-    <h2>Notifications</h2>
+    <h2>{{ t('nav.notifications') }}</h2>
     <el-row>
         <el-col :span="24">
         </el-col>
@@ -7,53 +7,53 @@
     <el-card>
         <template #header>
             <div class="card-header">
-                <span>All Notifications</span>
+                <span>{{ t('contest.all') }}</span>
                 <span>
-                    <el-button type="primary" @click="refresh()" text>Refresh</el-button>
-                    <el-button type="primary" @click="createNotificationDialogVisible = true">Create Notification</el-button>
+                    <el-button type="primary" @click="refresh()" text>{{ t('message.refresh') }}</el-button>
+                    <el-button type="primary" @click="createNotificationDialogVisible = true">{{ t('message.create') }}</el-button>
                 </span>
             </div>
         </template>
         <el-table :data="notifications" style="width: 100%">
-            <el-table-column prop="ID" label="ID"></el-table-column>
-            <el-table-column prop="title" label="通知标题"></el-table-column>
-            <el-table-column prop="author" label="发布者"></el-table-column>
-            <el-table-column prop="CreatedAt" label="发布时间"></el-table-column>
-            <el-table-column label="Actions">
+            <el-table-column prop="ID" :label="t('message.id')"></el-table-column>
+            <el-table-column prop="title" :label="t('message.title')"></el-table-column>
+            <el-table-column prop="author" :label="t('message.author')"></el-table-column>
+            <el-table-column prop="CreatedAt" :label="t('message.created-at')"></el-table-column>
+            <el-table-column :label="t('message.action')">
                 <template #default="{ row }">
-                    <el-button @click="editNotification(row)">Edit</el-button>
-                    <el-button @click="deleteNotification(row.ID)">Delete</el-button>
+                    <el-button @click="editNotification(row)">{{ t('message.edit') }}</el-button>
+                    <el-button @click="deleteNotification(row.ID)">{{ t('message.delete') }}</el-button>
                 </template>
             </el-table-column>
         </el-table>
     </el-card>
-    <el-dialog v-model="createNotificationDialogVisible" title="Create Notification">
+    <el-dialog v-model="createNotificationDialogVisible" :title="t('notification.create')">
         <el-form :model="newNotification" label-width="100px">
-            <el-form-item label="Title">
+            <el-form-item :label="t('message.title')">
                 <el-input v-model="newNotification.title"></el-input>
             </el-form-item>
-            <el-form-item label="Content">
+            <el-form-item :label="t('message.content')">
                 <el-input v-model="newNotification.content" type="textarea"></el-input>
             </el-form-item>
         </el-form>
         <div class="dialog-footer">
-            <el-button @click="createNotificationDialogVisible = false">Cancel</el-button>
+            <el-button @click="createNotificationDialogVisible = false">{{ t('message.cancel') }}</el-button>
             <el-button type="primary"
-                @click="createNotification(newNotification); createNotificationDialogVisible = false">Create</el-button>
+                @click="createNotification(newNotification); createNotificationDialogVisible = false">{{ t('message.create') }}</el-button>
         </div>
     </el-dialog>
-    <el-dialog v-model="editNotificationDialogVisible" title="Edit Notification">
+    <el-dialog v-model="editNotificationDialogVisible" :title="t('message.title')">
         <el-form :model="selectedNotification" label-width="100px">
-            <el-form-item label="Title">
+            <el-form-item :label="t('message.title')">
                 <el-input v-model="selectedNotification.title"></el-input>
             </el-form-item>
-            <el-form-item label="Content">
+            <el-form-item :label="t('message.content')">
                 <el-input v-model="selectedNotification.content" type="textarea"></el-input>
             </el-form-item>
         </el-form>
         <div class="dialog-footer">
-            <el-button @click="editNotificationDialogVisible = false">Cancel</el-button>
-            <el-button type="primary" @click="handleEditNotification">Create</el-button>
+            <el-button @click="editNotificationDialogVisible = false">{{ t('message.cancel') }}</el-button>
+            <el-button type="primary" @click="handleEditNotification">{{ t('message.create') }}</el-button>
         </div>
     </el-dialog>
 </template>
@@ -62,9 +62,10 @@
 import { getDataArr } from '@/utils/http';
 import { Notification } from '@/model';
 import api from '@/api';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const { data: notifications, get: getNotifications } = getDataArr<Notification>('/notifications');
-
 const newNotification = ref<Notification>({} as Notification);
 const createNotificationDialogVisible = ref(false);
 const createNotification = (notification: Notification) => {

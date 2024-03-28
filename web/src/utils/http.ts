@@ -1,3 +1,4 @@
+import { useI18n } from "vue-i18n"
 import { getToken } from "./login"
 import { Pagination } from "@/model"
 
@@ -64,53 +65,71 @@ export const dialogPost = async (
   visibleRef: any,
   dataSrc: any
 ) => {
+  const { t } = useI18n()
   const { post } = http
   const { err } = await post(api, _data)
   if (err.value != null) ElMessage({ message: err.value, type: 'error' })
-  else ElMessage({ message: '添加成功', type: 'success' })
+  else ElMessage({ message: t('message.add-success'), type: 'success' })
   visibleRef.value = false // 关闭弹窗
-  await fetchDataThenUpdateRef(()=>http.get(api), dataSrc)
+  await fetchDataThenUpdateRef(() => http.get(api), dataSrc)
   return err
 }
 
 export const fetchDataThenUpdateRef = async (fetch: Function, dataSrc: any) => {
   dataSrc.value = await fetch()
-  ElMessage({ message: '数据拉取成功', type: 'success' })
+  const { t } = useI18n()
+  ElMessage({ message: t('message.data-pull-success'), type: 'success' })
 }
 
 // deprecated
 export const deleteData = async (api: string, id: number, dataSrc: any) => {
   const { del } = http
+  const { t } = useI18n()
   const { err } = await del(api, id)
   if (err.value != null) ElMessage({ message: err.value, type: 'warning' })
   else {
-    ElMessage({ message: '删除成功', type: 'success' })
-    fetchDataThenUpdateRef(()=>http.get(api), dataSrc)
+    ElMessage({ message: t('message.delete-success'), type: 'success' })
+    fetchDataThenUpdateRef(() => http.get(api), dataSrc)
   }
 }
 
 export const getDataArr = <T>(api: string, _pagination = <Pagination>{ pageNum: 1, pageSize: 25, total: 25 }) => {
   const data: Ref<T[]> = ref([]);
+  const { t } = useI18n()
   const get = async (): Promise<T[]> => {
     const { data, err } = await http.get(api);
     console.log(data.value)
-    if (err.value != null) ElMessage({ message: `数据拉取失败：${err}`, type: 'error' });
+    if (err.value != null) ElMessage({ message: `${t('message.data-pull-failed')}：${err}`, type: 'error' });
     return (data as Ref<T[]>).value;
   };
   return { data, get };
 }
 
 export const getData = <T>(api: string, _pagination = <Pagination>{ pageNum: 1, pageSize: 25, total: 25 }) => {
+  const { t } = useI18n()
   const data = ref({} as T);
   const get = async (): Promise<T> => {
     const { data, err } = await http.get(api);
     console.log(data.value)
-    if (err.value != null) ElMessage({ message: `数据拉取失败：${err}`, type: 'error' });
+    if (err.value != null) ElMessage({ message: `${t('message.data-pull-failed')}：${err}`, type: 'error' });
     return (data as Ref<T>).value;
   };
   return { data, get };
 }
 
 export const applyData = async (ref: Ref<any>, getter: Function, defaultValue: any) => {
-  ref.value = await getter()??defaultValue;
+  ref.value = await getter() ?? defaultValue;
+}
+
+// TODO: add i18n for default error message
+export const handleHttp = (ret: { data: Ref<any>, err: Ref<any> }, _ok: Function, _err?: Function) => {
+  const { t } = useI18n()
+  if (ret.err.value != null) _err ? _err(ret.err.value) : ElMessage({ message: `${t('message.data-pull-failed')}：${ret.err.value}`, type: 'error' });
+  else _ok(ret.data);
+}
+
+export const handleArrRefresh = <T>(src: Ref<T[]>, data: T[]) => {
+  const { t } = useI18n()
+  src.value = data;
+  ElMessage({ message: t('message.refresh-success'), type: 'success' });
 }
