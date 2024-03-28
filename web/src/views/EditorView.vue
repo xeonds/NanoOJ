@@ -47,6 +47,7 @@ import CodeEditor from '@/components/CodeEditor.vue';
 import FooterBox from '@/components/FooterBox.vue';
 import * as monaco from 'monaco-editor';
 import api from '@/api';
+import { handleHttp } from '@/utils/http';
 
 const code = ref('Hello, World');
 const language = ref('c');
@@ -55,17 +56,13 @@ const output = ref('');
 const languages: Ref<string[]> = ref([]);
 const router = useRouter();
 
-const submitCode = () => {
-    api
-        .addSubmission({ code: code.value, language: language.value, state: 'waiting', mode: 'playground' })
-        .then((response: any) => {
-            if (response.status === 200) {
-                console.log('Code submitted successfully');
-            }
-        })
-        .catch((error) => {
-            console.error('Failed to submit code:', error);
-        });
+const submitCode = async () => {
+    handleHttp(await api.addSubmission({ code: code.value, language: language.value, state: 'Pending', mode: 'playground' }),
+    (data: any)=> {
+        ElMessage.success('Submit successfully');
+        output.value = data.output;
+    },
+    (err: any)=> ElMessage.error('Submit failed: ', err));
 };
 const goBack = () => { router.go(-1) };
 const copyToClipboard = async (text: string) => {

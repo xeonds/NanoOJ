@@ -154,7 +154,7 @@
 import { marked } from "marked";
 import { onMounted } from "vue";
 import CodeEditor from '@/components/CodeEditor.vue';
-import { applyData, getData, getDataArr } from "@/utils/http";
+import { applyData, getData, getDataArr, handleHttp } from "@/utils/http";
 import { Problem, Submission } from "@/model";
 import api from "@/api";
 import { EpPropMergeType } from "element-plus/es/utils/index.mjs";
@@ -167,7 +167,6 @@ const language = ref('c');
 const code = ref('');
 const { data: problem, get: getProblemInfo } = getData<Problem>(`/problems/${id}`);
 const description = computed(() => marked(problem.value.description ?? 'loading...'));
-const submission: Ref<Submission> = ref({} as Submission);
 const { data: commits, get: _getCommits } = getDataArr<Submission>(`/problems/${id}/submissions`);
 const dialogVisible = ref(false);
 const dialogData = ref({} as Submission);
@@ -178,12 +177,9 @@ const showInfo = (row: Submission) => {
   dialogVisible.value = true;
 };
 const submitCode = async () => {
-  submission.value = { code: code.value, language: language.value, status: 'Pending', problem_id: id } as Submission;
-  const { err } = await api.addSubmission(submission.value);
-  if (err.value !== null) ElMessage({ message: 'Code submission failed', type: 'error' });
-  else {
-    ElMessage({ message: 'Code submitted successfully', type: 'success' });
-  }
+  handleHttp(await api.addSubmission({ code: code.value, language: language.value, status: 'Pending', problem_id: id } as Submission),
+    () => ElMessage({ message: 'Code submitted successfully', type: 'success' }),
+    (err: any) => ElMessage({ message: 'Code submission failed: ' + err, type: 'error' }));
 }
 const getCommits = async () => applyData(commits, _getCommits, []);
 

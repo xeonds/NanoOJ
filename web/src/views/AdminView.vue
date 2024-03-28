@@ -43,9 +43,7 @@ import System from '@/views/admin/System.vue';
 import Manual from '@/views/admin/Manual.vue';
 
 const router = useRouter();
-const goBack = () => {
-  router.go(-1);
-}
+const goBack = () => router.go(-1);
 </script>
 
 <style scoped>

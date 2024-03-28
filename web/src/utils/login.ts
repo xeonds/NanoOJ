@@ -26,6 +26,7 @@ export const getExpire = getter("expire");
 export const setToken  =  (value: string) => {
     window.sessionStorage.setItem("token", value);
     const { permission, name, id, expire } = jwtDecode(value) as { permission: number, name: string, id: number, expire: string}
+    console.log(permission, name, id, expire)
     window.sessionStorage.setItem("name", name);
     window.sessionStorage.setItem("id", id.toString());
     window.sessionStorage.setItem("permission", permission.toString());

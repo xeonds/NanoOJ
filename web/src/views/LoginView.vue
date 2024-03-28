@@ -47,6 +47,7 @@ import api from '@/api';
 import FooterBox from '@/components/FooterBox.vue';
 import { setToken } from '@/utils/login';
 import { User } from '@/model';
+import { handleHttp } from '@/utils/http';
 
 const router = useRouter();
 const route = useRoute();
@@ -55,25 +56,26 @@ const username = ref("");
 const email = ref("");
 const password = ref("");
 
-const login = async () => {
-  try {
-    const response = await api.login({ email: email.value, password: password.value } as User);
-    setToken(response.data.value.token);
-    ElMessage({ message: "Login successful", type: "success" })
-    router.push("/");
-  } catch (error) {
-    ElMessage.error("Invalid email or password");
-  }
-};
+const login = async () =>
+  handleHttp(
+    await api.login({ email: email.value, password: password.value } as User),
+    (data: { value: { token: string; }; }) => {
+      setToken(data.value.token);
+      ElMessage({ message: "Login successful", type: "success" });
+      router.push("/");
+    },
+    (err: any) => ElMessage.error("Invalid email or password: ", err)
+  );
 
-const register = async () => {
-  try {
-    await api.register({ username: username.value, email: email.value, password: password.value } as User);
-    router.push("/login");
-  } catch (error) {
-    ElMessage.error("Invalid email or password");
-  }
-};
+const register = async () =>
+  handleHttp(
+    await api.register({ username: username.value, email: email.value, password: password.value } as User),
+    () => {
+      router.push("/login");
+    },
+    (err: any) => ElMessage.error("Invalid email or password: ", err)
+  );
+
 </script>
 
 <style scoped>

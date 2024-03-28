@@ -69,7 +69,7 @@ export const dialogPost = async (
   if (err.value != null) ElMessage({ message: err.value, type: 'error' })
   else ElMessage({ message: '添加成功', type: 'success' })
   visibleRef.value = false // 关闭弹窗
-  await fetchDataThenUpdateRef(()=>http.get(api), dataSrc)
+  await fetchDataThenUpdateRef(() => http.get(api), dataSrc)
   return err
 }
 
@@ -85,7 +85,7 @@ export const deleteData = async (api: string, id: number, dataSrc: any) => {
   if (err.value != null) ElMessage({ message: err.value, type: 'warning' })
   else {
     ElMessage({ message: '删除成功', type: 'success' })
-    fetchDataThenUpdateRef(()=>http.get(api), dataSrc)
+    fetchDataThenUpdateRef(() => http.get(api), dataSrc)
   }
 }
 
@@ -112,5 +112,10 @@ export const getData = <T>(api: string, _pagination = <Pagination>{ pageNum: 1, 
 }
 
 export const applyData = async (ref: Ref<any>, getter: Function, defaultValue: any) => {
-  ref.value = await getter()??defaultValue;
+  ref.value = await getter() ?? defaultValue;
+}
+
+export const handleHttp = (ret: { data: Ref<any>, err: Ref<any> }, _ok: Function, _err: Function) => {
+  if (ret.err.value != null) _err(ret.err);
+  else _ok(ret.data);
 }
