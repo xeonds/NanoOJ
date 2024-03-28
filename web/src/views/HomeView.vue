@@ -56,6 +56,7 @@
 import { getUsername, isAdmin, isLogin, logout } from "@/utils/login";
 import FooterBox from "@/components/FooterBox.vue";
 import { useI18n } from "vue-i18n";
+
 const { t } = useI18n();
 const router = useRouter();
 const username = getUsername();

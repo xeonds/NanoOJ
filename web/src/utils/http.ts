@@ -115,7 +115,13 @@ export const applyData = async (ref: Ref<any>, getter: Function, defaultValue: a
   ref.value = await getter() ?? defaultValue;
 }
 
-export const handleHttp = (ret: { data: Ref<any>, err: Ref<any> }, _ok: Function, _err: Function) => {
-  if (ret.err.value != null) _err(ret.err);
+// TODO: add i18n for default error message
+export const handleHttp = (ret: { data: Ref<any>, err: Ref<any> }, _ok: Function, _err?: Function) => {
+  if (ret.err.value != null) _err ? _err(ret.err.value) : ElMessage({ message: `数据拉取失败：${ret.err.value}`, type: 'error' });
   else _ok(ret.data);
+}
+
+export const handleArrRefresh = <T>(src: Ref<T[]>, data: T[]) => {
+  src.value = data;
+  ElMessage({ message: '刷新成功', type: 'success' });
 }

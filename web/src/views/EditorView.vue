@@ -5,31 +5,31 @@
                 <el-page-header @back="goBack">
                     <template #content>
                         <el-text type="primary" class="title">X-OJ</el-text>
-                        <el-text class="subtitle"> | Playground</el-text>
+                        <el-text class="subtitle"> | {{ t('nav.editor') }}</el-text>
                     </template>
                 </el-page-header>
                 <div style="flex-grow: 1;"></div>
-                <el-form-item label="language">
-                    <el-select v-model="language" placeholder="Select Language" style="width: 100px">
+                <el-form-item :label="t('message.language')">
+                    <el-select v-model="language" :placeholder="t('message.select-language')" style="width: 100px">
                         <el-option v-for="lang in languages" :key="lang" :label="lang" :value="lang"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-button type="primary" @click="submitCode" text>Commit</el-button>
-                <el-button type="primary" @click="show_output = true" text>Show Output</el-button>
+                <el-button type="primary" @click="submitCode" text>{{ t('message.submit') }}</el-button>
+                <el-button type="primary" @click="show_output = true" text>{{ t('message.show-output') }}</el-button>
             </div>
         </template>
     </CodeEditor>
     <el-drawer v-model="show_output" :show-close="false" direction="btt">
         <template #header="">
             <div>
-                <el-text class="title">Running result</el-text>
-                <el-text class="subtitle"> | Output</el-text>
+                <el-text class="title">{{ t('message.run-result') }}</el-text>
+                <el-text class="subtitle"> | {{ t('problem.output') }}</el-text>
             </div>
             <el-button type="success" @click="copyToClipboard(output)" text>
                 <el-icon class="el-icon--left">
                     <DocumentCopy />
                 </el-icon>
-                Copy Output
+                {{ t('message.copy') }}
             </el-button>
         </template>
         <div id="console">
@@ -48,7 +48,9 @@ import FooterBox from '@/components/FooterBox.vue';
 import * as monaco from 'monaco-editor';
 import api from '@/api';
 import { handleHttp } from '@/utils/http';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const code = ref('Hello, World');
 const language = ref('c');
 const show_output = ref(false);
@@ -58,11 +60,11 @@ const router = useRouter();
 
 const submitCode = async () => {
     handleHttp(await api.addSubmission({ code: code.value, language: language.value, state: 'Pending', mode: 'playground' }),
-    (data: any)=> {
-        ElMessage.success('Submit successfully');
-        output.value = data.output;
-    },
-    (err: any)=> ElMessage.error('Submit failed: ', err));
+        (data: any) => {
+            ElMessage.success('Submit successfully');
+            output.value = data.output;
+        },
+        (err: any) => ElMessage.error('Submit failed: ', err));
 };
 const goBack = () => { router.go(-1) };
 const copyToClipboard = async (text: string) => {
