@@ -1,6 +1,6 @@
 NAME=nano-oj
 BINDIR=build
-VERSION=1.0.0
+VERSION=1.1.0
 BUILDTIME=$(shell date -u)
 GOBUILD=cd judge && go mod tidy && go build -ldflags '-s -w -X "main.version=$(VERSION)" -X "main.buildTime=$(BUILDTIME)"'
 FRONTBUILD=cd web && pnpm i && vite build --outDir=../$(BINDIR)/dist --emptyOutDir
@@ -13,17 +13,20 @@ web:
 	$(FRONTBUILD)
 
 linux-amd64: 
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@-$(VERSION)
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@
 
 windows-amd64: 
-	GOOS=windows GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@-$(VERSION).exe
+	GOOS=windows GOARCH=amd64 $(GOBUILD) -o ../$(BINDIR)/$(NAME)-$@.exe
 
 dev:
-	(cd $(BINDIR) && ./$(NAME)-linux-amd64-$(VERSION)) & \
+	(cd $(BINDIR) && ./$(NAME)-linux-amd64) & \
 	(cd web && pnpm i && vite dev --host --port 8080)
 
 run:
-	cd $(BINDIR) && ./$(NAME)-linux-amd64-$(VERSION)
+	cd $(BINDIR) && ./$(NAME)-linux-amd64
+
+deploy: init web linux-amd64
+	docker-compose up -d
 
 init:
 	(cd judge && go mod tidy) && \

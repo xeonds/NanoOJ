@@ -2,23 +2,23 @@
   <div>
     <el-row>
       <el-col :span="24">
-        <el-menu mode="horizontal" :ellipsis="false" :default-active="'1'" router>
+        <el-menu mode="horizontal" :default-active="'1'" router>
           <p id="logo">X-OJ</p>
           <el-menu-item class="hidden-lg-and-up" v-for="item in menu" :index="item.index" :route="item.route">{{
-        item.label }}</el-menu-item>
+            item.label }}</el-menu-item>
           <div class="flex-grow"></div>
           <el-menu-item index="0" @click="router.push('/editor')">
             <el-icon>
               <EditPen />
-            </el-icon>在线代码编辑器
+            </el-icon>{{ t('nav.editor') }}
           </el-menu-item>
           <el-sub-menu v-if="isLogin()" index="1">
-            <template #title>{{ username }}, 欢迎。</template>
-            <el-menu-item index="1-1" @click="router.push('/profile')">个人中心</el-menu-item>
-            <el-menu-item index="1-2" @click="logout()">登出</el-menu-item>
-            <el-menu-item v-if="isAdmin()" index="1-3" @click="router.push('/admin')">管理</el-menu-item>
+            <template #title>{{ username }}, {{ t('message.welcome') }}</template>
+            <el-menu-item index="1-1" @click="router.push('/profile')">{{ t('nav.personal-center') }}</el-menu-item>
+            <el-menu-item index="1-2" @click="logout()">{{ t('nav.logout') }}</el-menu-item>
+            <el-menu-item v-if="isAdmin()" index="1-3" @click="router.push('/admin')">{{ t('nav.admin') }}</el-menu-item>
           </el-sub-menu>
-          <el-menu-item v-else index="1" @click="router.push('/login')">登录/注册</el-menu-item>
+          <el-menu-item v-else index="1" @click="router.push('/login')">{{ t('nav.login-register') }}</el-menu-item>
         </el-menu>
       </el-col>
     </el-row>
@@ -28,19 +28,19 @@
           <el-menu id="vertical-menu" default-active="1" router>
             <el-menu-item index="1" route="/"><el-icon>
                 <HomeFilled />
-              </el-icon>主页</el-menu-item>
+              </el-icon>{{ t('nav.home') }}</el-menu-item>
             <el-menu-item index="2" route="/problem"><el-icon>
                 <List />
-              </el-icon>问题</el-menu-item>
+              </el-icon>{{ t('nav.problem') }}</el-menu-item>
             <el-menu-item index="3" route="/contest"><el-icon>
                 <Flag />
-              </el-icon>竞赛/作业</el-menu-item>
+              </el-icon>{{ t('nav.assignment') }}</el-menu-item>
             <el-menu-item index="4" route="/status"><el-icon>
                 <HelpFilled />
-              </el-icon>状态</el-menu-item>
+              </el-icon>{{ t('nav.status') }}</el-menu-item>
             <el-menu-item index="5" route="/ranklist"><el-icon>
                 <Histogram />
-              </el-icon>排名</el-menu-item>
+              </el-icon>{{ t('nav.rank') }}</el-menu-item>
           </el-menu>
         </el-affix>
       </el-col>
@@ -55,14 +55,17 @@
 <script lang="ts" setup>
 import { getUsername, isAdmin, isLogin, logout } from "@/utils/login";
 import FooterBox from "@/components/FooterBox.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 const router = useRouter();
 const username = getUsername();
 const menu = [
-  { index: "1", label: "主页", route: "/" },
-  { index: "2", label: "问题", route: "/problem" },
-  { index: "3", label: "竞赛/作业", route: "/contest" },
-  { index: "4", label: "状态", route: "/status" },
-  { index: "5", label: "排名", route: "/ranklist" },
+  { index: "1", label: t('nav.home'), route: "/" },
+  { index: "2", label: t('nav.problem'), route: "/problem" },
+  { index: "3", label: t('nav.assignment'), route: "/contest" },
+  { index: "4", label: t('nav.status'), route: "/status" },
+  { index: "5", label: t('nav.rank'), route: "/ranklist" },
 ];
 </script>
 
@@ -99,5 +102,11 @@ body {
 .el-main,
 .el-footer {
   padding: 0px !important;
+}
+
+.el-card {
+  border-radius: 4px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 </style>
