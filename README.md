@@ -95,7 +95,7 @@ NanoOJ/
 - [x]响应式布局
 - [ ]负载均衡
 - [x]数据导入/导出
-- [ ]token请求时无感刷新
+- [x]token请求时无感刷新
 - [x]封榜
 - [x]修复各种非标准POST请求：submission, contest等
 

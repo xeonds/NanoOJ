@@ -1,8 +1,7 @@
 import { useI18n } from "vue-i18n"
-import { getToken } from "./login"
+import { getExpire, getToken, setToken } from "./login"
 import { Pagination } from "@/model"
 
-// TODO: validate & update token when fetch
 export const useFetch = async (url: string, init?: RequestInit | undefined) => {
   const data: Ref<any> = ref(null)
   const err: Ref<any> = ref(null)
@@ -13,7 +12,30 @@ export const useFetch = async (url: string, init?: RequestInit | undefined) => {
   return { data, err }
 }
 
-const useHttp = (baseUrl: string) => (token: string) => {
+const useHttp = (baseUrl: string) => async (token: string) => {
+  const checkTokenExpiration = async () => {
+    // Check if token is close to expiration
+    const expirationTime = parseInt(getExpire())
+    const timeUntilExpiration = expirationTime - Date.now();
+    const threshold = 5 * 60 * 1000; // 5 minutes
+
+    if (timeUntilExpiration < threshold) {
+      const refreshUrl = `${baseUrl}/refresh`;
+
+      await fetch(refreshUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${token}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((json) => setToken(json.token))
+        .catch((err) => console.error('Failed to refresh token:', err));
+    }
+  };
+
+  await checkTokenExpiration();
   const get = (url: string) => {
     return useFetch(`${baseUrl}${url}`, {
       headers: {
@@ -56,7 +78,7 @@ const baseUrl = '/api/v1'
 
 const _http = useHttp(baseUrl)
 
-export const http = _http(getToken())
+export const http = await _http(getToken())
 
 // deprecated
 export const dialogPost = async (
