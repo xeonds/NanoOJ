@@ -3,7 +3,7 @@ BINDIR=build
 VERSION=1.1.0
 BUILDTIME=$(shell date -u)
 GOBUILD=cd judge && go mod tidy && go build -ldflags '-s -w -X "main.version=$(VERSION)" -X "main.buildTime=$(BUILDTIME)"'
-FRONTBUILD=cd web && pnpm i && vite build --outDir=../$(BINDIR)/dist --emptyOutDir
+FRONTBUILD=cd web && pnpm i && pnpm run build --outDir=../$(BINDIR)/dist --emptyOutDir
 
 .PHONY: web init
 
