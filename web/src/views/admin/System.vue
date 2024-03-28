@@ -15,12 +15,12 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n()
 const clearCache = () => {
-    ElMessage.info('Not implemented yet')
+    ElMessage.info(t('message.not-implemented'))
 }
 const shutdown = () => {
-    ElMessage.info('Not implemented yet')
+    ElMessage.info(t('message.not-implemented'))
 }
 const restart = () => {
-    ElMessage.info('Not implemented yet')
+    ElMessage.info(t('message.not-implemented'))
 }
 </script>

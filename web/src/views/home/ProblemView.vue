@@ -184,8 +184,8 @@ const showInfo = (row: Submission) => {
 };
 const submitCode = async () => {
   handleHttp(await api.addSubmission({ code: code.value, language: language.value, status: 'Pending', problem_id: id } as Submission),
-    () => ElMessage({ message: 'Code submitted successfully', type: 'success' }),
-    (err: any) => ElMessage({ message: 'Code submission failed: ' + err, type: 'error' }));
+    () => ElMessage({ message: t('message.code-submit-success'), type: 'success' }),
+    (err: any) => ElMessage({ message: t('message.code-submit-fail') + err, type: 'error' }));
 }
 const getCommits = async () => applyData(commits, _getCommits, []);
 

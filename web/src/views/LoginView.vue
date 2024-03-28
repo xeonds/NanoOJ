@@ -63,10 +63,10 @@ const login = async () =>
     await api.login({ email: email.value, password: password.value } as User),
     (data: { value: { token: string; }; }) => {
       setToken(data.value.token);
-      ElMessage({ message: "Login successful", type: "success" });
+      ElMessage({ message: t('message.login-success'), type: "success" });
       router.push("/");
     },
-    (err: any) => ElMessage.error("Invalid email or password: ", err)
+    (err: any) => ElMessage.error(t("message.invalid-email-or-pass"), err)
   );
 
 const register = async () =>
@@ -75,7 +75,7 @@ const register = async () =>
     () => {
       router.push("/login");
     },
-    (err: any) => ElMessage.error("Invalid email or password: ", err)
+    (err: any) => ElMessage.error(t("message.invalid-email-or-pass"), err)
   );
 
 </script>

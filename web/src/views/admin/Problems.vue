@@ -171,7 +171,7 @@ const handleImportProblems = async () => {
         });
         fileInput.click();
     } catch (error) {
-        ElMessage({ message: 'Error importing problems: ' + error, type: "error" })
+        ElMessage({ message: t('message.import-problem-fail') + error, type: "error" })
     }
 }
 
@@ -179,7 +179,7 @@ const handleExportProblems = async () => {
     http.get('/admin/problems/export')
         .then((res) => {
             if (res.err.value != null) {
-                ElMessage({ message: 'Error exporting problems: ' + res.err.value, type: "error" })
+                ElMessage({ message: t('message.export-problem-fail') + res.err.value, type: "error" })
             } else {
                 const downloadLink = window.document.createElement('a')
                 downloadLink.href = window.URL.createObjectURL(
@@ -189,7 +189,7 @@ const handleExportProblems = async () => {
                 document.body.appendChild(downloadLink)
                 downloadLink.click()
                 document.body.removeChild(downloadLink)
-                ElMessage({ message: 'Problems exported successfully', type: "info" })
+                ElMessage({ message: t('message.export-problem-success'), type: "info" })
             }
         })
 }

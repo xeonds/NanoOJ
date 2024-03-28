@@ -61,18 +61,17 @@ const router = useRouter();
 const submitCode = async () => {
     handleHttp(await api.addSubmission({ code: code.value, language: language.value, state: 'Pending', mode: 'playground' }),
         (data: any) => {
-            ElMessage.success('Submit successfully');
+            ElMessage.success(t('message.submit-success'));
             output.value = data.output;
-        },
-        (err: any) => ElMessage.error('Submit failed: ', err));
+        })
 };
 const goBack = () => { router.go(-1) };
 const copyToClipboard = async (text: string) => {
     try {
         await navigator.clipboard.writeText(text);
-        console.log('Copied to clipboard');
+        ElMessage.success(t('message.copy-success'));
     } catch (err) {
-        console.error('Failed to copy to clipboard');
+        ElMessage.error(t('message.copy-fail'));
     }
 };
 

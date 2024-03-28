@@ -38,7 +38,7 @@ const handleDeleteSubmission = async (id: number) => {
     const { err } = await api.deleteSubmission(id);
     if (err.value != null ) ElMessage.error(err.value.message);
     else {
-        ElMessage.success('Submission deleted successfully');
+        ElMessage.success(t('message.delete-success'));
         submissions.value = submissions.value.filter(submission => submission.ID !== id);
     }
 }
@@ -46,7 +46,7 @@ const handleReRunJudge = async (id: number) => {
     const { err } = await api.reRunSubmission(id);
     if (err.value != null ) ElMessage.error(err.value.message);
     else {
-        ElMessage.success('Judge re-run successfully');
+        ElMessage.success(t('message.re-run-success'));
         submissions.value = await getSubmissions();
     }
 }
