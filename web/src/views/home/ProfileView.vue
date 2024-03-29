@@ -33,7 +33,7 @@ import { getDataArr, getData } from '@/utils/http';
 import { getUsername } from '@/utils/login';
 import { useI18n } from 'vue-i18n';
 
-const {t } = useI18n();
+const { t } = useI18n();
 const username = getUsername();
 const { data: user, get: getUser } = getData<User>('/users/' + username);
 const { data: submissions, get: getSubmissions } = getDataArr<Submission>('/submissions/' + username);
