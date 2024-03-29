@@ -24,6 +24,7 @@ export const checkTokenExpiration = async () => {
   }
 };
 
+// TODO: pagination
 export const useFetch = async (url: string, init?: RequestInit | undefined) => {
   await checkTokenExpiration()
   const data: Ref<any> = ref(null)
@@ -39,8 +40,10 @@ export const useFetch = async (url: string, init?: RequestInit | undefined) => {
 const useHttp = (baseUrl: string) => (token: string) => {
   const get = (url: string) => {
     return useFetch(`${baseUrl}${url}`, {
+      method: 'GET',
       headers: {
-        Authorization: `${token}`,
+      'Content-Type': 'application/json',
+      Authorization: `${token}`,
       },
     })
   }
@@ -116,7 +119,7 @@ export const getDataArr = <T>(api: string, _pagination = <Pagination>{ pageNum: 
   const get = async (): Promise<T[]> => {
     const { data, err } = await http.get(api);
     console.log(data.value)
-    if (err.value != null) ElMessage({ message: `${t('message.data-pull-failed')}：${err}`, type: 'error' });
+    if (err.value != null) ElMessage({ message: `${t('message.data-pull-failed')}: ${err}`, type: 'error' });
     return (data as Ref<T[]>).value;
   };
   return { data, get };
@@ -128,7 +131,7 @@ export const getData = <T>(api: string, _pagination = <Pagination>{ pageNum: 1, 
     const { get: _get } = http
     const { data, err } = await _get(api);
     console.log(data.value)
-    if (err.value != null) ElMessage({ message: `${t('message.data-pull-failed')}：${err}`, type: 'error' });
+    if (err.value != null) ElMessage({ message: `${t('message.data-pull-failed')}: ${err}`, type: 'error' });
     return (data as Ref<T>).value;
   };
   return { data, get };

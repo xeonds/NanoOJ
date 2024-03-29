@@ -104,19 +104,19 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 const router = useRouter();
 const colors = { 2: '#01D842', 4: '#66CCFF', 5: '#FF4040' };
-const { data: notifications, get } = getDataArr<Notification>('/notifications');
+const { data: notifications, get: getNotifications } = getDataArr<Notification>('/notifications');
 const { data: problems, get: getProblems } = getDataArr<Problem>('/problems');
 const { data: ranks, get: getRanks } = getDataArr<Rank>('/ranks');
 const { data: contests, get: getContests } = getDataArr<Contest>('/contests');
 const refresh = async () => {
-  handleArrRefresh<Notification>(notifications, await get())
+  handleArrRefresh<Notification>(notifications, await getNotifications())
   handleArrRefresh<Problem>(problems, await getProblems())
   handleArrRefresh<Rank>(ranks, await getRanks())
   handleArrRefresh<Contest>(contests, await getContests())
 }
 
 onMounted(async () => {
-  notifications.value = (await get()).map((item) => {
+  notifications.value = (await getNotifications()).map((item) => {
     item.content = marked(item.content) as string;
     return item;
   });
