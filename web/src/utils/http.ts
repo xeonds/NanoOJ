@@ -2,7 +2,28 @@ import { useI18n } from "vue-i18n"
 import { getExpire, getToken, setToken } from "./login"
 import { Pagination } from "@/model"
 
+export const checkTokenExpiration = async () => {
+  const expirationTime = parseInt(getExpire())
+  const token = getToken()
+  const timeUntilExpiration = expirationTime - Date.now();
+  const threshold = 5 * 60 * 1000; // 5 minutes
+
+  if (timeUntilExpiration < threshold) {
+    await fetch(`${baseUrl}/refresh`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((json) => setToken(json.token))
+      .catch((err) => console.error('Failed to refresh token:', err));
+  }
+};
+
 export const useFetch = async (url: string, init?: RequestInit | undefined) => {
+  await checkTokenExpiration()
   const data: Ref<any> = ref(null)
   const err: Ref<any> = ref(null)
   await fetch(url, init)
@@ -12,30 +33,8 @@ export const useFetch = async (url: string, init?: RequestInit | undefined) => {
   return { data, err }
 }
 
-const useHttp = (baseUrl: string) => async (token: string) => {
-  const checkTokenExpiration = async () => {
-    // Check if token is close to expiration
-    const expirationTime = parseInt(getExpire())
-    const timeUntilExpiration = expirationTime - Date.now();
-    const threshold = 5 * 60 * 1000; // 5 minutes
 
-    if (timeUntilExpiration < threshold) {
-      const refreshUrl = `${baseUrl}/refresh`;
-
-      await fetch(refreshUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((json) => setToken(json.token))
-        .catch((err) => console.error('Failed to refresh token:', err));
-    }
-  };
-
-  await checkTokenExpiration();
+const useHttp = (baseUrl: string) => (token: string) => {
   const get = (url: string) => {
     return useFetch(`${baseUrl}${url}`, {
       headers: {
@@ -78,7 +77,7 @@ const baseUrl = '/api/v1'
 
 const _http = useHttp(baseUrl)
 
-export const http = await _http(getToken())
+export const http =  _http(getToken())
 
 // deprecated
 export const dialogPost = async (
@@ -88,8 +87,7 @@ export const dialogPost = async (
   dataSrc: any
 ) => {
   const { t } = useI18n()
-  const { post } = http
-  const { err } = await post(api, _data)
+  const { err } = await http.post(api, _data)
   if (err.value != null) ElMessage({ message: err.value, type: 'error' })
   else ElMessage({ message: t('message.add-success'), type: 'success' })
   visibleRef.value = false // 关闭弹窗
@@ -105,9 +103,8 @@ export const fetchDataThenUpdateRef = async (fetch: Function, dataSrc: any) => {
 
 // deprecated
 export const deleteData = async (api: string, id: number, dataSrc: any) => {
-  const { del } = http
   const { t } = useI18n()
-  const { err } = await del(api, id)
+  const { err } = await http.del(api, id)
   if (err.value != null) ElMessage({ message: err.value, type: 'warning' })
   else {
     ElMessage({ message: t('message.delete-success'), type: 'success' })
@@ -131,7 +128,8 @@ export const getData = <T>(api: string, _pagination = <Pagination>{ pageNum: 1, 
   const { t } = useI18n()
   const data = ref({} as T);
   const get = async (): Promise<T> => {
-    const { data, err } = await http.get(api);
+    const { get: _get } = http
+    const { data, err } = await _get(api);
     console.log(data.value)
     if (err.value != null) ElMessage({ message: `${t('message.data-pull-failed')}：${err}`, type: 'error' });
     return (data as Ref<T>).value;
@@ -143,7 +141,6 @@ export const applyData = async (ref: Ref<any>, getter: Function, defaultValue: a
   ref.value = await getter() ?? defaultValue;
 }
 
-// TODO: add i18n for default error message
 export const handleHttp = (ret: { data: Ref<any>, err: Ref<any> }, _ok: Function, _err?: Function) => {
   const { t } = useI18n()
   if (ret.err.value != null) _err ? _err(ret.err.value) : ElMessage({ message: `${t('message.data-pull-failed')}：${ret.err.value}`, type: 'error' });
