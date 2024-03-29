@@ -63,3 +63,8 @@ func GetSubmissionsOfUserInOneProblem(db *gorm.DB, c *gin.Context) *gorm.DB {
 	problem_id, user_id := c.Param("problem_id"), c.Param("user_id")
 	return db.Where("problem_id = ? AND user_id = ?", problem_id, user_id).Order("created_at DESC")
 }
+
+// TODO
+func GetProblemByIdWithoutTestCases(db *gorm.DB, c *gin.Context) *gorm.DB {
+	return db
+}

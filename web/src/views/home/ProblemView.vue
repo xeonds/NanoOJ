@@ -10,16 +10,19 @@
           <p v-html="description"></p><br>
           <h4 type="primary" size="large">{{ t('problem.demo-test-case') }}</h4>
           <template v-for="(_, index) in problem.inputs" :key="index">
-            <el-row>
-              <el-col :span="12">
-                <h5>{{ t('problem.input') }}</h5>
-                <pre>{{ problem.inputs[index] }}</pre>
-              </el-col>
-              <el-col :span="12">
-                <h5>{{ t('problem.output') }}</h5>
-                <pre>{{ problem.outputs[index] }}</pre>
-              </el-col>
-            </el-row>
+            <!-- TODO: backend implementation -->
+            <template v-if="problem.is_test_cases[index]">
+              <el-row>
+                <el-col :span="12">
+                  <h5>{{ t('problem.input') }}</h5>
+                  <pre>{{ problem.inputs[index] }}</pre>
+                </el-col>
+                <el-col :span="12">
+                  <h5>{{ t('problem.output') }}</h5>
+                  <pre>{{ problem.outputs[index] }}</pre>
+                </el-col>
+              </el-row>
+            </template>
           </template>
         </el-card>
       </el-col>
@@ -141,10 +144,13 @@
       <el-descriptions :bordered="true" :column="1">
         <el-descriptions-item :label="t('message.id')">{{ dialogData.ID }}</el-descriptions-item>
         <el-descriptions-item :label="t('submission.problem-id')">{{ dialogData.problem_id }}</el-descriptions-item>
-        <el-descriptions-item :label="t('submission.status')"><el-tag class="ml-2" :type="statusTag(dialogData.status)">{{
+        <el-descriptions-item :label="t('submission.status')"><el-tag class="ml-2"
+            :type="statusTag(dialogData.status)">{{
       dialogData.status
     }}</el-tag></el-descriptions-item>
-        <el-descriptions-item :label="t('submission.info')">{{ dialogData.information ? dialogData.information.join('\n') : ''
+        <el-descriptions-item :label="t('submission.info')">{{ dialogData.information ?
+      dialogData.information.join('\n') :
+      ''
           }}</el-descriptions-item>
         <el-descriptions-item :label="t('submission.time-cost')">{{ dialogData.time }}</el-descriptions-item>
         <el-descriptions-item :label="t('submission.user-id')">{{ dialogData.user_id }}</el-descriptions-item>

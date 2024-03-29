@@ -54,7 +54,7 @@
                             <el-input v-model.number="newProblem.ranks[index]" type="number" :min="0" :max="100" />
                         </el-form-item>
                         <el-form-item :label="t('problem.is-demo')">
-                            <el-switch v-model.bool="newProblem.ranks[index]" />
+                            <el-switch v-model="newProblem.is_test_cases[index]" />
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -96,7 +96,7 @@
                             <el-input v-model.number="selectedProblem.ranks[index]" type="number" :min="0" :max="100" />
                         </el-form-item>
                         <el-form-item :label="t('problem.is-demo')">
-                            <el-switch v-model.bool="selectedProblem.ranks[index]" />
+                            <el-switch v-model="selectedProblem.is_test_cases[index]" />
                         </el-form-item>
                     </el-col>
                     <el-col :span="4">
@@ -122,7 +122,7 @@
 <script lang="ts" setup>
 import { Problem } from '@/model';
 import api from '@/api';
-import { getDataArr, http } from '@/utils/http';
+import { getDataArr, handleHttp, http } from '@/utils/http';
 import { useI18n } from 'vue-i18n';
 import { time } from '@/utils/datetime';
 
@@ -137,14 +137,15 @@ const newProblem: Ref<Problem> = ref({
     description: '',
     inputs: [''],
     outputs: [''],
+    is_test_cases: [false],
     ranks: [100],
     difficulty: 2
 } as Problem);
-const createProblem = () => {
-    api.addProblems(newProblem.value as Problem).then(() => {
+const createProblem = async () => {
+    handleHttp(await api.addProblems(newProblem.value as Problem), () => {
         problems.value.push(newProblem.value);
         createProblemDialogVisible.value = false;
-    });
+    })
 }
 
 const selectedProblem: Ref<Problem> = ref({} as Problem);
