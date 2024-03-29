@@ -27,6 +27,7 @@ func main() {
 		redis := lib.NewRedis(&config.RedisConfig)
 		router := gin.Default()
 		apiRouter := router.Group("/api/v1")
+		apiRouter.POST("/refresh", lib.JWTMiddleware(nil), lib.RefreshToken(db))
 		lib.APIBuilder(router, func(group *gin.RouterGroup) *gin.RouterGroup {
 			group.GET("", lib.GetAll[model.Problem](db, nil))
 			group.GET("/:id", lib.Get[model.Problem](db, nil))

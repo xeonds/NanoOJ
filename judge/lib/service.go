@@ -262,3 +262,17 @@ func HandleRegister(db *gorm.DB) func(*gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "user created successfully"})
 	}
 }
+
+func RefreshToken(db *gorm.DB) func(*gin.Context) {
+	return func(c *gin.Context) {
+		token := c.GetHeader("Authorization") // Authed by JWTMiddleware, so the token is valid
+		claim, _ := ParseToken(token)
+		claim.Expire = time.Now().Add(time.Hour * 24)
+		token, err := GenerateToken(claim)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"token": token})
+	}
+}
