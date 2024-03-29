@@ -10,7 +10,8 @@
                 <span>{{ t('contest.all') }}</span>
                 <span>
                     <el-button type="primary" @click="refresh()" text>{{ t('message.refresh') }}</el-button>
-                    <el-button type="primary" @click="createNotificationDialogVisible = true">{{ t('message.create') }}</el-button>
+                    <el-button type="primary" @click="createNotificationDialogVisible = true">{{ t('message.create')
+                        }}</el-button>
                 </span>
             </div>
         </template>
@@ -18,7 +19,9 @@
             <el-table-column prop="ID" :label="t('message.id')"></el-table-column>
             <el-table-column prop="title" :label="t('message.title')"></el-table-column>
             <el-table-column prop="author" :label="t('message.author')"></el-table-column>
-            <el-table-column prop="CreatedAt" :label="t('message.created-at')"></el-table-column>
+            <el-table-column :label="t('message.created-at')">
+                <template #default="{ row }"> <span type="info">{{ time.formatDate(row.CreatedAt) }}</span> </template>
+            </el-table-column>
             <el-table-column :label="t('message.action')">
                 <template #default="{ row }">
                     <el-button @click="editNotification(row)">{{ t('message.edit') }}</el-button>
@@ -39,7 +42,9 @@
         <div class="dialog-footer">
             <el-button @click="createNotificationDialogVisible = false">{{ t('message.cancel') }}</el-button>
             <el-button type="primary"
-                @click="createNotification(newNotification); createNotificationDialogVisible = false">{{ t('message.create') }}</el-button>
+                @click="createNotification(newNotification); createNotificationDialogVisible = false">{{
+        t('message.create')
+    }}</el-button>
         </div>
     </el-dialog>
     <el-dialog v-model="editNotificationDialogVisible" :title="t('message.title')">
@@ -63,6 +68,7 @@ import { getDataArr } from '@/utils/http';
 import { Notification } from '@/model';
 import api from '@/api';
 import { useI18n } from 'vue-i18n';
+import { time } from '@/utils/datetime';
 
 const { t } = useI18n();
 const { data: notifications, get: getNotifications } = getDataArr<Notification>('/notifications');

@@ -32,6 +32,7 @@ type Problem struct {
 	Description string  `json:"description"`
 	Inputs      Inputs  `json:"inputs"`
 	Outputs     Outputs `json:"outputs"`
+	IsTestCases []bool  `json:"is_test_cases" gorm:"serializer:json"`
 	Ranks       Ranks   `json:"ranks"`
 	TimeLimit   int     `json:"time_limit"`
 }

@@ -1,6 +1,9 @@
 <template>
   <div id="home">
-    <h2>{{ t('nav.home') }}</h2>
+    <div class="card-header">
+      <h2>{{ t('nav.home') }}</h2>
+      <el-button @click="refresh()" type="primary" text>{{ t('message.refresh') }}</el-button>
+    </div>
     <el-row>
       <el-col :span="24">
         <el-card>
@@ -94,7 +97,7 @@
 <script lang="ts" setup>
 import { Notification, Contest, Problem, Rank } from '@/model';
 import { marked } from "marked";
-import { getDataArr } from '@/utils/http';
+import { getDataArr, handleArrRefresh } from '@/utils/http';
 import { time } from "@/utils/datetime";
 import { useI18n } from 'vue-i18n';
 
@@ -105,6 +108,12 @@ const { data: notifications, get } = getDataArr<Notification>('/notifications');
 const { data: problems, get: getProblems } = getDataArr<Problem>('/problems');
 const { data: ranks, get: getRanks } = getDataArr<Rank>('/ranks');
 const { data: contests, get: getContests } = getDataArr<Contest>('/contests');
+const refresh = async () => {
+  handleArrRefresh<Notification>(notifications, await get())
+  handleArrRefresh<Problem>(problems, await getProblems())
+  handleArrRefresh<Rank>(ranks, await getRanks())
+  handleArrRefresh<Contest>(contests, await getContests())
+}
 
 onMounted(async () => {
   notifications.value = (await get()).map((item) => {

@@ -5,10 +5,8 @@
       <el-button @click="refresh()" type="primary" text>{{ t('message.refresh') }}</el-button>
     </div>
     <el-table :data="submissions.slice((currentPage - 1) * pageSize, currentPage * pageSize)">
-      <el-table-column :label="t('submission.submit-time')">
-        <template #default="{ row }">
-          <span type="info">{{ time.fromString(row.CreatedAt) }}</span>
-        </template>
+      <el-table-column :label="t('submission.submit-time')" :width="160">
+        <template #default="{ row }"> <span type="info">{{ time.formatDate(row.CreatedAt) }}</span> </template>
       </el-table-column>
       <el-table-column prop="ID" :label="t('message.id')"></el-table-column>
       <el-table-column prop="problem_id" :label="t('submission.problem-id')"></el-table-column>
@@ -32,10 +30,13 @@
       <el-descriptions :bordered="true" :column="1">
         <el-descriptions-item :label="t('message.id')">{{ dialogData.ID }}</el-descriptions-item>
         <el-descriptions-item :label="t('submission.problem-id')">{{ dialogData.problem_id }}</el-descriptions-item>
-        <el-descriptions-item :label="t('submission.status')"><el-tag class="ml-2" :type="statusTag(dialogData.status)">{{
+        <el-descriptions-item :label="t('submission.status')"><el-tag class="ml-2"
+            :type="statusTag(dialogData.status)">{{
         dialogData.status
       }}</el-tag></el-descriptions-item>
-        <el-descriptions-item :label="t('submission.info')">{{ dialogData.information ? dialogData.information.join('\n') : ''
+        <el-descriptions-item :label="t('submission.info')">{{ dialogData.information ?
+        dialogData.information.join('\n') :
+        ''
           }}</el-descriptions-item>
         <el-descriptions-item :label="t('submission.time-cost')">{{ dialogData.time }}</el-descriptions-item>
         <el-descriptions-item :label="t('submission.user-id')">{{ dialogData.user_id }}</el-descriptions-item>

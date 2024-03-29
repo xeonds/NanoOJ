@@ -14,7 +14,9 @@
         <el-table :data="contests" style="width: 100%">
             <el-table-column prop="ID" :label="t('message.id')"></el-table-column>
             <el-table-column prop="title" :label="t('message.title')"></el-table-column>
-            <el-table-column prop="CreatedAt" :label="t('message.created-at')"></el-table-column>
+            <el-table-column :label="t('message.created-at')">
+                <template #default="{ row }"> <span type="info">{{ time.formatDate(row.CreatedAt) }}</span> </template>
+            </el-table-column>
             <el-table-column :label="t('message.action')">
                 <template #default="{ row }">
                     <el-button @click="editContest(row)">{{ t('message.edit') }}</el-button>
@@ -62,8 +64,9 @@
                 </el-select>
             </el-form-item>
             <el-form-item :label="t('message.time-duration')">
-                <el-date-picker v-model="selectedContestTimePeriod" type="datetimerange" :range-separator="t('message.to')"
-                    :start-placeholder="t('message.start-date')" :end-placeholder="t('message.end-date')" />
+                <el-date-picker v-model="selectedContestTimePeriod" type="datetimerange"
+                    :range-separator="t('message.to')" :start-placeholder="t('message.start-date')"
+                    :end-placeholder="t('message.end-date')" />
             </el-form-item>
         </el-form>
         <div class="dialog-footer">
@@ -75,6 +78,7 @@
 
 <script lang="ts" setup>
 import api from '@/api';
+import { time } from '@/utils/datetime';
 import { Contest, Problem } from '@/model';
 import { getDataArr, handleHttp } from '@/utils/http';
 import { useI18n } from 'vue-i18n';

@@ -8,7 +8,8 @@
                     <el-button @click="refresh()" type="primary" text>{{ t('message.refresh') }}</el-button>
                     <el-button @click="handleImportProblems()" type="primary">{{ t('problem.import') }}</el-button>
                     <el-button @click="handleExportProblems()" type="primary">{{ t('problem.export') }}</el-button>
-                    <el-button @click="createProblemDialogVisible = true" type="primary">{{ t('problem.create') }}</el-button>
+                    <el-button @click="createProblemDialogVisible = true" type="primary">{{ t('problem.create')
+                        }}</el-button>
                 </span>
             </div>
         </template>
@@ -20,7 +21,9 @@
                     <el-rate v-model="row.difficulty" :colors="colors" disabled />
                 </template>
             </el-table-column>
-            <el-table-column prop="CreatedAt" :label="t('message.created-at')"></el-table-column>
+            <el-table-column :label="t('message.created-at')">
+                <template #default="{ row }"> <span type="info">{{ time.formatDate(row.CreatedAt) }}</span> </template>
+            </el-table-column>
             <el-table-column :label="t('message.action')">
                 <template #default="{ row }">
                     <el-button @click="editProblem(row)">{{ t('message.edit') }}</el-button>
@@ -37,7 +40,8 @@
             <el-form-item :label="t('message.description')">
                 <el-input v-model="newProblem.description" type="textarea"></el-input>
             </el-form-item>
-            <el-form-item v-for="(_, index) in newProblem.inputs" :key="index" :label="`${t('problem.test-case')} ${index + 1}`">
+            <el-form-item v-for="(_, index) in newProblem.inputs" :key="index"
+                :label="`${t('problem.test-case')} ${index + 1}`">
                 <el-row :gutter="10">
                     <el-col :span="20">
                         <el-form-item :label="t('problem.input')">
@@ -49,6 +53,9 @@
                         <el-form-item :label="t('problem.score')">
                             <el-input v-model.number="newProblem.ranks[index]" type="number" :min="0" :max="100" />
                         </el-form-item>
+                        <el-form-item :label="t('problem.is-demo')">
+                            <el-switch v-model.bool="newProblem.ranks[index]" />
+                        </el-form-item>
                     </el-col>
                     <el-col :span="4">
                         <el-button @click="newProblem.inputs.splice(index, 1); newProblem.outputs.splice(index, 1)"
@@ -56,7 +63,8 @@
                     </el-col>
                 </el-row>
             </el-form-item>
-            <el-button @click="newProblem.inputs.push(''); newProblem.outputs.push('')">{{ t('problem.add-test-case') }}</el-button>
+            <el-button @click="newProblem.inputs.push(''); newProblem.outputs.push('')">{{ t('problem.add-test-case')
+                }}</el-button>
             <el-form-item :label="t('problem.difficulty')">
                 <el-rate v-model="newProblem.difficulty" :colors="colors" />
             </el-form-item>
@@ -74,7 +82,8 @@
             <el-form-item :label="t('message.description')">
                 <el-input v-model="selectedProblem.description" type="textarea"></el-input>
             </el-form-item>
-            <el-form-item v-for="(_, index) in selectedProblem.inputs" :key="index" :label="`${t('problem.test-case')} ${index + 1}`">
+            <el-form-item v-for="(_, index) in selectedProblem.inputs" :key="index"
+                :label="`${t('problem.test-case')} ${index + 1}`">
                 <el-row :gutter="10">
                     <el-col :span="20">
                         <el-form-item :label="t('problem.input')">
@@ -86,14 +95,19 @@
                         <el-form-item :label="t('problem.score')">
                             <el-input v-model.number="selectedProblem.ranks[index]" type="number" :min="0" :max="100" />
                         </el-form-item>
+                        <el-form-item :label="t('problem.is-demo')">
+                            <el-switch v-model.bool="selectedProblem.ranks[index]" />
+                        </el-form-item>
                     </el-col>
                     <el-col :span="4">
-                        <el-button @click="selectedProblem.inputs.splice(index, 1); selectedProblem.outputs.splice(index, 1)"
+                        <el-button
+                            @click="selectedProblem.inputs.splice(index, 1); selectedProblem.outputs.splice(index, 1)"
                             type="danger">{{ t('message.delete') }}</el-button>
                     </el-col>
                 </el-row>
             </el-form-item>
-            <el-button @click="selectedProblem.inputs.push(''); selectedProblem.outputs.push('')">{{ t('problem.add-test-case') }}</el-button>
+            <el-button @click="selectedProblem.inputs.push(''); selectedProblem.outputs.push('')">{{
+        t('problem.add-test-case') }}</el-button>
             <el-form-item :label="t('problem.difficulty')">
                 <el-rate v-model="selectedProblem.difficulty" :colors="colors" />
             </el-form-item>
@@ -110,6 +124,7 @@ import { Problem } from '@/model';
 import api from '@/api';
 import { getDataArr, http } from '@/utils/http';
 import { useI18n } from 'vue-i18n';
+import { time } from '@/utils/datetime';
 
 const { t } = useI18n();
 const createProblemDialogVisible = ref(false);

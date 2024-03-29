@@ -13,7 +13,9 @@
             <el-table-column prop="ID" :label="t('message.id')"></el-table-column>
             <el-table-column prop="username" :label="t('user.name')"></el-table-column>
             <el-table-column prop="email" :label="t('user.email')"></el-table-column>
-            <el-table-column prop="CreatedAt" :label="t('message.created-at')"></el-table-column>
+            <el-table-column :label="t('message.created-at')">
+                <template #default="{ row }"> <span type="info">{{ time.formatDate(row.CreatedAt) }}</span> </template>
+            </el-table-column>
             <el-table-column :label="t('message.action')">
                 <template #default="{ row }">
                     <el-button @click="deleteUser(row.ID)">{{ t('message.delete') }}</el-button>
@@ -26,6 +28,7 @@
 <script lang="ts" setup>
 import api from '@/api';
 import { User } from '@/model';
+import { time } from '@/utils/datetime';
 import { getDataArr } from '@/utils/http';
 import { useI18n } from 'vue-i18n';
 

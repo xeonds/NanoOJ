@@ -117,6 +117,7 @@ const messages = {
             'pass-rate': '通过率',
             'submit-status': '提交状态',
             'commit-history': '提交历史',
+            'is-demo': '是否为用例',
         },
         submission: {
             all: '全部提交',
@@ -269,6 +270,7 @@ const messages = {
             'pass-rate': 'Pass Rate',
             'submit-status': 'Commit Status',
             'commit-history': 'Commit History',
+            'is-demo': 'Is Test Case',
         },
         submission: {
             all: 'All Submissions',

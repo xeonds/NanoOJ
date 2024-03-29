@@ -15,7 +15,9 @@
             <el-table-column prop="user_id" :label="t('message.user-id')"></el-table-column>
             <el-table-column prop="language" :label="t('message.language')"></el-table-column>
             <el-table-column prop="status" :label="t('nav.status')"></el-table-column>
-            <el-table-column prop="CreatedAt" :label="t('message.created-at')"></el-table-column>
+            <el-table-column :label="t('message.created-at')">
+                <template #default="{ row }"> <span type="info">{{ time.formatDate(row.CreatedAt) }}</span> </template>
+            </el-table-column>
             <el-table-column :label="t('message.action')">
                 <template #default="{ row }">
                     <el-button @click="handleDeleteSubmission(row.ID)">{{ t('message.delete') }}</el-button>
@@ -31,12 +33,13 @@ import { Submission } from '@/model';
 import { getDataArr } from '@/utils/http';
 import api from '@/api'
 import { useI18n } from 'vue-i18n';
+import { time } from '@/utils/datetime';
 
 const { t } = useI18n();
 const { data: submissions, get: getSubmissions } = getDataArr<Submission>('/submissions');
 const handleDeleteSubmission = async (id: number) => {
     const { err } = await api.deleteSubmission(id);
-    if (err.value != null ) ElMessage.error(err.value.message);
+    if (err.value != null) ElMessage.error(err.value.message);
     else {
         ElMessage.success(t('message.delete-success'));
         submissions.value = submissions.value.filter(submission => submission.ID !== id);
@@ -44,7 +47,7 @@ const handleDeleteSubmission = async (id: number) => {
 }
 const handleReRunJudge = async (id: number) => {
     const { err } = await api.reRunSubmission(id);
-    if (err.value != null ) ElMessage.error(err.value.message);
+    if (err.value != null) ElMessage.error(err.value.message);
     else {
         ElMessage.success(t('message.re-run-success'));
         submissions.value = await getSubmissions();

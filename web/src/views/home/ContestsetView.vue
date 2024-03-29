@@ -1,6 +1,9 @@
 <template>
   <div id="contests">
-    <h2>{{ t('nav.assignment') }}</h2>
+    <div class="card-header">
+      <h2>{{ t('nav.assignment') }}</h2>
+      <el-button @click="refresh()" type="primary" text>{{ t('message.refresh') }}</el-button>
+    </div>
     <el-table :data="contests" @row-click="(row: any) => { router.push(`/contest/${row.ID}`) }">
       <el-table-column prop="ID" :label="t('message.id')"></el-table-column>
       <el-table-column prop="title" :label="t('message.title')"></el-table-column>
@@ -12,13 +15,14 @@
 
 <script lang="ts" setup>
 import { Contest } from '@/model';
-import { getDataArr } from '@/utils/http';
+import { getDataArr, handleArrRefresh } from '@/utils/http';
 import { time } from '@/utils/datetime';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 const router = useRouter();
 const { data: contests, get } = getDataArr<Contest>('/contests');
+const refresh = async () => handleArrRefresh<Contest>(contests, await get())
 
 onMounted(async () => {
   contests.value = (await get()).map((contest) => {
