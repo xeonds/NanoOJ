@@ -5,7 +5,7 @@ import { Pagination } from "@/model"
 const t = i18n.global.t
 
 export const checkTokenExpiration = async () => {
-  const expirationTime = parseInt(getExpire())
+  const expirationTime = new Date(getExpire()).getTime();
   const token = getToken()
   const timeUntilExpiration = expirationTime - Date.now();
   const threshold = 5 * 60 * 1000; // 5 minutes
@@ -79,7 +79,7 @@ const baseUrl = '/api/v1'
 
 const _http = useHttp(baseUrl)
 
-export const http =  _http(getToken())
+export const http = _http(getToken())
 
 // deprecated
 export const dialogPost = async (
