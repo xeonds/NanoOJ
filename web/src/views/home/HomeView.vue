@@ -49,10 +49,13 @@
         <el-card>
           <h3>{{ t('contest.latest') }}</h3>
           <el-table :data="contests" @row-click="(row: any) => { router.push(`/contest/${row.ID}`) }">
-            <el-table-column prop="ID" :label="t('message.id')"></el-table-column>
             <el-table-column prop="title" :label="t('message.title')"></el-table-column>
-            <el-table-column prop="start_time" :label="t('message.start-date')"></el-table-column>
-            <el-table-column prop="end_time" :label="t('message.end-date')"></el-table-column>
+            <el-table-column :label="t('message.start-date')" :width="160">
+              <template #default="{ row }"> <span type="info">{{ time.formatDate(row.start_time) }}</span> </template>
+            </el-table-column>
+            <el-table-column :label="t('message.end-date')" :width="160">
+              <template #default="{ row }"> <span type="info">{{ time.formatDate(row.end_time) }}</span> </template>
+            </el-table-column>
           </el-table>
         </el-card>
       </el-col>
